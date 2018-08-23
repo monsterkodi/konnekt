@@ -1,0 +1,6 @@
+name          online
+version       0.0.1
+description   svg experiment
+main          online.js
+author        monsterkodi
+license       Unlicense
