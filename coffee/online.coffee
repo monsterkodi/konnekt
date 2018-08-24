@@ -12,8 +12,8 @@ elem = (typ,opt) ->
 w=window
 rx=ry=0
 cx=cy=0
-sw=0
-sh=0
+sw=sh=0
+mx=my=0
 lst=0
 
 size = -> 
@@ -27,7 +27,12 @@ size = ->
     ry = rd
 size()
 
-w.addEventListener 'resize', size
+move = (event) ->
+    mx = event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft
+    my = event.clientY + document.documentElement.scrollTop  + document.body.scrollTop
+    
+w.addEventListener 'resize',    size
+w.addEventListener 'mousemove', move
     
 l = elem 'path'
 c = elem 'ellipse'
@@ -35,6 +40,57 @@ c = elem 'ellipse'
 svg.appendChild l
 svg.appendChild c
 
+# deCasteljauPos: (index, point, factor) ->
+#     
+    # thisp = @posAt index
+    # prevp = @posAt index-1
+#     
+    # switch point[0]
+        # when 'C'
+            # ctrl1 = @posAt index, 'ctrl1'
+            # ctrl2 = @posAt index, 'ctrl2'
+        # when 'Q'
+            # ctrl1 = @posAt index, 'ctrlq'
+            # ctrl2 = ctrl1
+        # when 'S'
+            # ctrl1 = @posAt index, 'ctrlr'
+            # ctrl2 = @posAt index, 'ctrls'
+
+    # p1 = prevp.interpolate ctrl1, factor
+    # p2 = ctrl1.interpolate ctrl2, factor
+    # p3 = ctrl2.interpolate thisp, factor
+#     
+    # p4 = p1.interpolate p2, factor
+    # p5 = p2.interpolate p3, factor
+    # p6 = p4.interpolate p5, factor
+
+# deCasteljau: (index, point) ->
+#     
+    # thisp = @posAt index
+    # prevp = @posAt index-1
+#     
+    # ctrl1 = @posAt index, 'ctrl1'
+    # ctrl2 = @posAt index, 'ctrl2'
+
+    # p23 = ctrl1.mid ctrl2
+    # p12 = prevp.mid ctrl1
+    # p34 = thisp.mid ctrl2
+#     
+    # p123  = p12.mid p23
+    # p234  = p23.mid p34
+    # p1234 = p123.mid p234
+#     
+    # point[1] = p12.x
+    # point[2] = p12.y
+    # point[3] = p123.x
+    # point[4] = p123.y
+    # point[5] = p1234.x
+    # point[6] = p1234.y
+#     
+    # ['C', p234.x, p234.y, p34.x, p34.y, thisp.x, thisp.y]
+
+dist = (l,p) ->
+    
 anim = (now) ->
 
     while svg.children.length > 2
@@ -56,6 +112,16 @@ anim = (now) ->
     for x in lp
         svg.appendChild elem 'circle', cx:cx+x[0]*rx, cy:cy+x[1]*ry, r:sh/100, fill:'white'
     
+    svg.appendChild elem 'circle', cx:mx, cy:my, r:sh/200, stroke:'red', fill:'red'
+    
+    minDist = 2e+20
+    for x in lp
+        d = dist x, [mx, my]
+        if d < minDist
+            minL = x
+            
+    log minL
+            
     l.setAttribute 'd', "M " + (lp.map (p) -> "#{cx+p[0]*rx} #{cy+p[1]*ry}" ).join ' T '
         
     w.requestAnimationFrame anim
