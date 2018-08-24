@@ -14,8 +14,12 @@ rx=ry=0
 cx=cy=0
 sw=sh=0
 mx=my=0
+rd=0
 lst=0
-
+drg=null
+    
+lp = [[1,0], [0.5, 0.5, 'Q'], [0.2, 0.2], [-0.5, -0.5, 'T'], [-1, 0]]
+    
 size = -> 
     br = svg.getBoundingClientRect()
     sw = br.width
@@ -28,17 +32,71 @@ size = ->
 size()
 
 move = (event) ->
-    mx = event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft
-    my = event.clientY + document.documentElement.scrollTop  + document.body.scrollTop
+    dot = event.target
+    if drg
+        id = parseInt drg
+        lp[id][0] = (event.clientX/sw-0.5)/(rd/sw)
+        lp[id][1] = (event.clientY/sh-0.5)/(rd/sh)
+        log 'drag move', drg, lp[id][0], lp[id][1]
+        
+    mx = event.clientX
+    my = event.clientY
+    
+down = (event) -> 
+    dot = event.target
+    if dot.classList.contains 'dot'
+        drg = dot.id
+
+up = (event) -> 
+    drg = null
     
 w.addEventListener 'resize',    size
 w.addEventListener 'mousemove', move
+w.addEventListener 'mousedown', down
+w.addEventListener 'mouseup',   up
     
 l = elem 'path'
 c = elem 'ellipse'
 
 svg.appendChild l
 svg.appendChild c
+        
+dist = (a,b,p) ->
+    Math.min Math.pow(a[0]-p[0],2)+Math.pow(a[1]-p[1],2), Math.pow(b[0]-p[0],2)+Math.pow(b[1]-p[1],2) 
+    
+anim = (now) ->
+
+    while svg.children.length > 2
+        svg.lastChild.remove()
+    
+    c.setAttribute 'cx', cx
+    c.setAttribute 'cy', cy
+    c.setAttribute 'rx', rx
+    c.setAttribute 'ry', ry
+    
+    for i in [0...lp.length]
+        x = lp[i]
+        dot = svg.appendChild elem 'circle', class:'dot', id:i, cx:cx+x[0]*rx, cy:cy+x[1]*ry, r:sh/100, fill:'white'
+    
+    svg.appendChild elem 'circle', cx:mx, cy:my, r:sh/200, stroke:'red', fill:'red', style:"pointer-events:none"
+    
+    # minDist = 2e+20
+    # for i in [1...lp.length]
+        # a = lp[i-1]
+        # b = lp[i]
+        # d = dist a, b, [mx, my]
+        # if d < minDist
+            # minL = i
+            
+    # log 'minL', minL
+            
+    l.setAttribute 'd', "M " + (lp.map (x) -> "#{x[2] ? ' '}#{cx+x[0]*rx} #{cy+x[1]*ry} ").join '' 
+        
+    w.requestAnimationFrame anim
+    lst=now
+        
+w.requestAnimationFrame anim
+    
 
 # deCasteljauPos: (index, point, factor) ->
 #     
@@ -88,44 +146,3 @@ svg.appendChild c
     # point[6] = p1234.y
 #     
     # ['C', p234.x, p234.y, p34.x, p34.y, thisp.x, thisp.y]
-
-dist = (l,p) ->
-    
-anim = (now) ->
-
-    while svg.children.length > 2
-        svg.lastChild.remove()
-    
-    d = now-lst
-    s1 = Math.sin now/5000
-    c1 = Math.cos now/5000
-    s2 = Math.sin now/100
-    c2 = Math.cos now/100
-    
-    lp = [[c1, s1], [0.5, 0.5], [0.2, 0.2], [-c1, -s1]]
-    
-    c.setAttribute 'cx', cx
-    c.setAttribute 'cy', cy
-    c.setAttribute 'rx', rx
-    c.setAttribute 'ry', ry
-    
-    for x in lp
-        svg.appendChild elem 'circle', cx:cx+x[0]*rx, cy:cy+x[1]*ry, r:sh/100, fill:'white'
-    
-    svg.appendChild elem 'circle', cx:mx, cy:my, r:sh/200, stroke:'red', fill:'red'
-    
-    minDist = 2e+20
-    for x in lp
-        d = dist x, [mx, my]
-        if d < minDist
-            minL = x
-            
-    log minL
-            
-    l.setAttribute 'd', "M " + (lp.map (p) -> "#{cx+p[0]*rx} #{cy+p[1]*ry}" ).join ' T '
-        
-    w.requestAnimationFrame anim
-    lst=now
-        
-w.requestAnimationFrame anim
-    
