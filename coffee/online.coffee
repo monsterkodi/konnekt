@@ -92,7 +92,6 @@ anim = (now) ->
 
     ctr cr
     cr.setAttribute 'r', rd
-    # q = Quat.axis  0, 1, 0, -0.0001*(lst-now)
     iq.slerp new Quat(), 0.05
     ms.setAttribute 'cx', mx
     ms.setAttribute 'cy', my
@@ -104,11 +103,9 @@ anim = (now) ->
         d.parentNode.appendChild d
         ctr d
         d.v = iq.rotate d.v
-        l = (d.v.z + 1.1)/1.8
-        d.style.zIndex = parseInt l*1000
-        d.setAttribute 'z-index', parseInt l*1000
+        l = (d.v.z + 1.3)/1.5
         d.setAttribute 'fill', "rgb(#{l*255},#{l*255},#{l*255})"
-        d.setAttribute 'r', (d.v.z+1.1)*rd/40
+        d.setAttribute 'r', l*rd/40
     
     ms.parentNode.appendChild ms
         
