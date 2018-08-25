@@ -16,8 +16,20 @@ sw=sh=0
 mx=my=0
 rd=0
 lst=0
-drg=null
+drg= null
+iq = new Quat
+rq = null
+dt = []
     
+add = (t,o) -> 
+    e = elem t,o
+    svg.appendChild e
+    e
+    
+ctr = (s) ->
+    s.setAttribute 'cx', cx+s.v.x*rd
+    s.setAttribute 'cy', cy+s.v.y*rd
+
 size = -> 
     br = svg.getBoundingClientRect()
     sw = br.width
@@ -30,22 +42,33 @@ size = ->
 size()
 
 move = (event) ->
-    dot = event.target
-    if drg
+    if drg == 'rot' 
+        qx = Quat.axis 0, 1, 0, event.movementX / rd
+        qy = Quat.axis 1, 0, 0, event.movementY / -rd
+        rq = qx.mul qy
+        for d in dt
+            d.v = rq.rotate d.v
+            ctr d
+    else if drg
         id = parseInt drg
-        lp[id][0] = (event.clientX/sw-0.5)/(rd/sw)
-        lp[id][1] = (event.clientY/sh-0.5)/(rd/sh)
-        log 'drag move', drg, lp[id][0], lp[id][1]
+        drg.v.x = (event.clientX/sw-0.5)/(rd/sw)
+        drg.v.y = (event.clientY/sh-0.5)/(rd/sh)
+        drg.v.norm()
+        ctr drg
         
     mx = event.clientX
     my = event.clientY
     
 down = (event) -> 
+    iq = new Quat
     dot = event.target
     if dot.classList.contains 'dot'
-        drg = dot.id
+        drg = dot
+    else
+        drg = 'rot'
 
 up = (event) -> 
+    iq = rq
     drg = null
     
 w.addEventListener 'resize',    size
@@ -53,32 +76,42 @@ w.addEventListener 'mousemove', move
 w.addEventListener 'mousedown', down
 w.addEventListener 'mouseup',   up
     
-l = elem 'path'
-c = elem 'ellipse'
-
-svg.appendChild l
-svg.appendChild c
-        
-dist = (a,b,p) ->
-    Math.min Math.pow(a[0]-p[0],2)+Math.pow(a[1]-p[1],2), Math.pow(b[0]-p[0],2)+Math.pow(b[1]-p[1],2) 
-    
-vec = (x,y,z) -> new Vect x,y,z
-    
-q = Quat.axis  0, 1, 0, -0.01
 v = vec 1, 0, 0
     
+cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width': 1
+cr.v = vec()
+ms = add 'circle', stroke:'none', fill:'red', style:"pointer-events:none"
+for i in [0...parseInt randr(50,150)]
+    v = vec randr(-1,1), randr(-1,1), randr(-1,1)
+    v.norm()
+    c = add 'circle', class:'dot', id:i, cx:cx+v.x*rx, cy:cy+v.y*rx, r:(v.z+1.1)*rd/50, stroke:'none', fill:"#555", style:"stroke-width:2"
+    c.v = v
+    dt.push c
+   
 anim = (now) ->
 
-    while svg.children.length
-        svg.lastChild.remove()
-
-    svg.appendChild elem 'circle', cx:cx, cy:cy, r:rd, stroke:'gray', 'stroke-width': 1
+    ctr cr
+    cr.setAttribute 'r', rd
+    # q = Quat.axis  0, 1, 0, -0.0001*(lst-now)
+    iq.slerp new Quat(), 0.05
+    ms.setAttribute 'cx', mx
+    ms.setAttribute 'cy', my
+    ms.setAttribute 'r',  rd/50
     
-    svg.appendChild elem 'circle', cx:mx, cy:my, r:sh/200, stroke:'red', fill:'red', style:"pointer-events:none"
+    dt.sort (a,b) -> a.v.z - b.v.z
     
-    v = q.rotate v
-    svg.appendChild elem 'circle', cx:cx+v.x*rx, cy:cy+v.y*rx, r:(v.z+1.1)*rd/50, stroke:'blue', fill:'blue', style:"pointer-events:none;stroke-width:2"
+    for d in dt
+        d.parentNode.appendChild d
+        ctr d
+        d.v = iq.rotate d.v
+        l = (d.v.z + 1.1)/1.8
+        d.style.zIndex = parseInt l*1000
+        d.setAttribute 'z-index', parseInt l*1000
+        d.setAttribute 'fill', "rgb(#{l*255},#{l*255},#{l*255})"
+        d.setAttribute 'r', (d.v.z+1.1)*rd/40
     
+    ms.parentNode.appendChild ms
+        
     w.requestAnimationFrame anim
     lst=now
         
