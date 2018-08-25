@@ -20,6 +20,7 @@ drg= null
 iq = new Quat
 rq = null
 dt = []
+dl = []
     
 add = (t,o) -> 
     e = elem t,o
@@ -47,28 +48,26 @@ move = (event) ->
         qy = Quat.axis 1, 0, 0, event.movementY / -rd
         rq = qx.mul qy
         for d in dt
-            d.v = rq.rotate d.v
-            ctr d
+            d.rot rq
     else if drg
-        id = parseInt drg
         drg.v.x = (event.clientX/sw-0.5)/(rd/sw)
         drg.v.y = (event.clientY/sh-0.5)/(rd/sh)
         drg.v.norm()
-        ctr drg
+        drg.upd()
         
     mx = event.clientX
     my = event.clientY
     
 down = (event) -> 
     iq = new Quat
-    dot = event.target
-    if dot.classList.contains 'dot'
+    
+    if dot = event.target.dot
         drg = dot
     else
         drg = 'rot'
 
 up = (event) -> 
-    iq = rq
+    iq  = rq
     drg = null
     
 w.addEventListener 'resize',    size
@@ -76,17 +75,56 @@ w.addEventListener 'mousemove', move
 w.addEventListener 'mousedown', down
 w.addEventListener 'mouseup',   up
     
-v = vec 1, 0, 0
+v = null
     
 cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width': 1
 cr.v = vec()
 ms = add 'circle', stroke:'none', fill:'red', style:"pointer-events:none"
+
+class Dot
+    
+    constructor: ->
+        @l = []
+        @n = []
+        @i = dt.length
+        @v = vec randr(-1,1), randr(-1,1), randr(-1,1)
+        @v.norm()
+        @c = add 'circle', class:'dot', id:@i, cx:cx+@v.x*rx, cy:cy+@v.y*rx, r:(@v.z+1.1)*rd/50, stroke:'none', fill:"#555", style:"stroke-width:2"
+        @c.dot= @
+        dt.push @
+        
+    line: (d) ->
+        l = add 'line', class:'line', id:@i, x1:cx+@v.x*rx, y1:cy+@v.y*rx, x2:cx+d.v.x*rx, y2:cy+d.v.y*ry, stroke:"#222", style:"stroke-width:2"
+        @l.push l
+        @n.push d
+        
+    rot: (q) ->
+        @v = q.rotate @v
+        @upd()
+        
+    upd: ->
+        
+        @c.setAttribute 'cx', cx+@v.x*rd
+        @c.setAttribute 'cy', cy+@v.y*rd
+        
+        l = (@v.z + 1.3)/1.5
+        @c.setAttribute 'fill', "rgb(#{l*255},#{l*255},#{l*255})"
+        @c.setAttribute 'r', l*rd/40
+        
+        for i in [0...@n.length]
+            l = @l[i]
+            n = @n[i]
+            l.setAttribute 'x1', cx+@v.x*rx
+            l.setAttribute 'y1', cy+@v.y*rx
+            l.setAttribute 'x2', cx+n.v.x*rx
+            l.setAttribute 'y2', cy+n.v.y*ry
+    
 for i in [0...parseInt randr(50,150)]
-    v = vec randr(-1,1), randr(-1,1), randr(-1,1)
-    v.norm()
-    c = add 'circle', class:'dot', id:i, cx:cx+v.x*rx, cy:cy+v.y*rx, r:(v.z+1.1)*rd/50, stroke:'none', fill:"#555", style:"stroke-width:2"
-    c.v = v
-    dt.push c
+
+    d = new Dot
+    
+    if dt.length > 1
+        d.line dt[dt.length-2]
    
 anim = (now) ->
 
@@ -100,13 +138,9 @@ anim = (now) ->
     dt.sort (a,b) -> a.v.z - b.v.z
     
     for d in dt
-        d.parentNode.appendChild d
-        ctr d
-        d.v = iq.rotate d.v
-        l = (d.v.z + 1.3)/1.5
-        d.setAttribute 'fill', "rgb(#{l*255},#{l*255},#{l*255})"
-        d.setAttribute 'r', l*rd/40
-    
+        d.rot iq
+        d.c.parentNode.appendChild d.c
+        
     ms.parentNode.appendChild ms
         
     w.requestAnimationFrame anim
