@@ -81,11 +81,21 @@ cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width': 1
 cr.v = vec()
 ms = add 'circle', stroke:'none', fill:'red', style:"pointer-events:none"
 
+class Line
+    
+    constructor: (@s,@e) ->
+        @l = add 'line', class:'line', x1:cx+@s.v.x*rx, y1:cy+@s.v.y*rx, x2:cx+@e.v.x*rx, y2:cy+@e.v.y*ry, stroke:"#222", style:"stroke-width:2"
+       
+    upd: ->
+        @l.setAttribute 'x1', cx+@s.v.x*rx
+        @l.setAttribute 'y1', cy+@s.v.y*rx
+        @l.setAttribute 'x2', cx+@e.v.x*rx
+        @l.setAttribute 'y2', cy+@e.v.y*ry
+
 class Dot
     
     constructor: ->
         @l = []
-        @n = []
         @i = dt.length
         @v = vec randr(-1,1), randr(-1,1), randr(-1,1)
         @v.norm()
@@ -93,10 +103,7 @@ class Dot
         @c.dot= @
         dt.push @
         
-    line: (d) ->
-        l = add 'line', class:'line', id:@i, x1:cx+@v.x*rx, y1:cy+@v.y*rx, x2:cx+d.v.x*rx, y2:cy+d.v.y*ry, stroke:"#222", style:"stroke-width:2"
-        @l.push l
-        @n.push d
+    line: (d) -> @l.push new Line @, d
         
     rot: (q) ->
         @v = q.rotate @v
@@ -111,13 +118,8 @@ class Dot
         @c.setAttribute 'fill', "rgb(#{l*255},#{l*255},#{l*255})"
         @c.setAttribute 'r', l*rd/40
         
-        for i in [0...@n.length]
-            l = @l[i]
-            n = @n[i]
-            l.setAttribute 'x1', cx+@v.x*rx
-            l.setAttribute 'y1', cy+@v.y*rx
-            l.setAttribute 'x2', cx+n.v.x*rx
-            l.setAttribute 'y2', cy+n.v.y*ry
+        for l in @l
+            l.upd()
     
 for i in [0...parseInt randr(50,150)]
 
