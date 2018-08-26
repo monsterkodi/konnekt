@@ -30,6 +30,9 @@ class Quat
         @w = c1 * c2 * c3 - (s1 * s2 * s3)
         @
 
+    @vecs: (a,b) ->
+        
+        
     @axis: (x,y,z,r=0) ->
         h = r / 2
         s = sin h

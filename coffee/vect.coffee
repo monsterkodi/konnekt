@@ -15,11 +15,20 @@ clamp = (a,b,v) -> max a, min b, v
 class Vect
 
     constructor: (@x=0,@y=0,@z=0) ->
+    cpy: -> new Vect @x, @y, @z
 
     add: (v) -> 
         @x+=v.x 
         @y+=v.y 
         @z+=v.z
+        @
+        
+    mul: (f) ->
+        @x*=f
+        @y*=f
+        @z*=f
+        @
+        
         
     length: -> sqrt @x * @x + @y * @y + @z * @z
 

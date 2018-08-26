@@ -18,7 +18,7 @@ rd=0
 lst=0
 drg= null
 iq = new Quat
-rq = null
+rq = new Quat
 dt = []
 dl = []
     
@@ -81,16 +81,41 @@ cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width': 1
 cr.v = vec()
 ms = add 'circle', stroke:'none', fill:'red', style:"pointer-events:none"
 
+# 000      000  000   000  00000000  
+# 000      000  0000  000  000       
+# 000      000  000 0 000  0000000   
+# 000      000  000  0000  000       
+# 0000000  000  000   000  00000000  
+
 class Line
     
     constructor: (@s,@e) ->
-        @l = add 'line', class:'line', x1:cx+@s.v.x*rx, y1:cy+@s.v.y*rx, x2:cx+@e.v.x*rx, y2:cy+@e.v.y*ry, stroke:"#222", style:"stroke-width:2"
+        @l = add 'line', class:'line', x1:cx+@s.v.x*rx, y1:cy+@s.v.y*rx, x2:cx+@e.v.x*rx, y2:cy+@e.v.y*ry, stroke:"#111", style:"stroke-width:2"
+        @c = add 'path', class:'path', stroke:"#222", style:"stroke-width:2;pointer-events:none"
        
     upd: ->
-        @l.setAttribute 'x1', cx+@s.v.x*rx
-        @l.setAttribute 'y1', cy+@s.v.y*rx
-        @l.setAttribute 'x2', cx+@e.v.x*rx
-        @l.setAttribute 'y2', cy+@e.v.y*ry
+        x1 = cx+@s.v.x*rx
+        y1 = cy+@s.v.y*rx
+        x2 = cx+@e.v.x*rx
+        y2 = cy+@e.v.y*ry
+        
+        m = @s.v.cpy().add(@e.v).mul(0.5).norm()
+        
+        xm = cx+m.x*rx
+        ym = cy+m.y*ry
+                
+        @l.setAttribute 'x1', x1
+        @l.setAttribute 'y1', y1
+        @l.setAttribute 'x2', x2
+        @l.setAttribute 'y2', y2
+        
+        @c.setAttribute 'd', "M#{x1} #{y1} Q#{xm} #{ym} #{x2} #{y2}"
+
+# 0000000     0000000   000000000  
+# 000   000  000   000     000     
+# 000   000  000   000     000     
+# 000   000  000   000     000     
+# 0000000     0000000      000     
 
 class Dot
     
@@ -128,6 +153,12 @@ for i in [0...parseInt randr(50,150)]
     if dt.length > 1
         d.line dt[dt.length-2]
    
+#  0000000   000   000  000  00     00  
+# 000   000  0000  000  000  000   000  
+# 000000000  000 0 000  000  000000000  
+# 000   000  000  0000  000  000 0 000  
+# 000   000  000   000  000  000   000  
+
 anim = (now) ->
 
     ctr cr
