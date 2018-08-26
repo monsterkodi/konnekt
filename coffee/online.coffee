@@ -20,7 +20,7 @@ drg= null
 iq = new Quat
 rq = new Quat
 dt = []
-dl = []
+lt= []
     
 add = (t,o) -> 
     e = elem t,o
@@ -77,7 +77,7 @@ win.addEventListener 'mouseup',   up
     
 v = null
     
-cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width': 1
+cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width': 0
 cr.v = vec()
 ms = add 'circle', stroke:'none', fill:'red', style:"pointer-events:none"
 
@@ -87,17 +87,27 @@ slp = (l,p) ->
         for a in ['x','y']
             l.setAttribute "#{a}#{i}", p[i-1][a]
 
-arc = (a,b,n) ->
-    al = []
-    angle = a.angle b
-    q = Quat.axis a.cross(b).norm(), angle/(n+1)
+arc = (a,b) ->
+    r = a.angle b
+    n = parseInt r/0.087
+    s = u2s a
+    d = "M #{s.x} #{s.y}"
+    
+    q = Quat.axis a.cross(b).norm(), r/(n+1)
     v = a.cpy()
     for i in [0...n]
         v = q.rotate v
-        al.push v 
-    al.push b
-    al
-            
+        s = u2s v
+        d += " L #{s.x} #{s.y}"
+    
+    s = u2s b
+    d += " L #{s.x} #{s.y}"
+    d
+    
+color = (d) ->
+    l = (d.depth() + 0.3)/1.5
+    "rgb(#{l*255},#{l*255},#{l*255})"
+    
 # 000      000  000   000  00000000  
 # 000      000  0000  000  000       
 # 000      000  000 0 000  0000000   
@@ -107,18 +117,16 @@ arc = (a,b,n) ->
 class Line
     
     constructor: (@s,@e) ->
-        @c = add 'path', class:'path', stroke:"#222", style:"stroke-width:2;pointer-events:none"
+        
+        @c = add 'path', class:'path', stroke:"#fff", 'stroke-linejoin':"round", 'stroke-linecap':"round", style:'pointer-events:none'
        
+    depth: -> (@s.depth()+@e.depth())/2 
     upd: ->
         
-        ap = arc @s.v, @e.v, parseInt r2d(@s.v.angle @e.v)/5
-             
-        s = u2s @s.v
-        d = "M #{s.x} #{s.y}"
-        for p in ap
-            s = u2s p
-            d += " L #{s.x} #{s.y}"
-        @c.setAttribute 'd', d
+        @c.setAttribute 'd', arc @s.v, @e.v
+        @c.setAttribute 'stroke', color @
+        mz = min @s.v.z, @e.v.z
+        @c.style.strokeWidth = 2 + (mz+1) * 5
         
 # 0000000     0000000   000000000  
 # 000   000  000   000     000     
@@ -130,14 +138,32 @@ class Dot
     
     constructor: ->
         @l = []
+        @n = []
         @i = dt.length
         @v = vec randr(-1,1), randr(-1,1), randr(-1,1)
         @v.norm()
-        @c = add 'circle', class:'dot', id:@i, cx:cx+@v.x*rx, cy:cy+@v.y*rx, r:(@v.z+1.1)*rd/50, stroke:'none', fill:"#555", style:"stroke-width:2"
+        @c = add 'circle', class:'dot', id:@i, cx:cx+@v.x*rx, cy:cy+@v.y*rx, r:(@v.z+1.1)*rd/50, stroke:'none', fill:"#555"
         @c.dot= @
         dt.push @
         
-    line: (d) -> @l.push new Line @, d
+    depth: -> (@v.z+1)/2
+    linked: (d) -> d==undefined or d==@ or (d in @n) or (@ in d.n)
+    dist: (d) -> @v.angle d.v
+    closest: -> dt.slice(0).sort (a,b) => @dist(a)-@dist(b)
+        
+    line: (d) -> 
+        if d == @
+            log 'self?'
+            return
+        if @linked d
+            log 'linked?'
+            return
+        @n.push d
+        d.n.push @
+        l = new Line @, d
+        @l.push l
+        lt.push l
+        l
         
     rot: (q) ->
         @v = q.rotate @v
@@ -147,20 +173,19 @@ class Dot
         
         @c.setAttribute 'cx', cx+@v.x*rd
         @c.setAttribute 'cy', cy+@v.y*rd
-        
-        l = (@v.z + 1.3)/1.5
-        @c.setAttribute 'fill', "rgb(#{l*255},#{l*255},#{l*255})"
-        @c.setAttribute 'r', l*rd/40
+                
+        @c.setAttribute 'fill', color @
+        @c.setAttribute 'r', ((d.depth() + 0.3)/1.5)*rd/20
         
         for l in @l
             l.upd()
-    
-for i in [0...parseInt randr(2,30)]
-
+            
+for i in [0...parseInt randr(10,50)]
     d = new Dot
-    
-    if dt.length > 1
-        d.line dt[dt.length-2]
+
+for d in dt
+    c = d.closest().filter (a) -> not d.linked(a)
+    d.line c[0]
    
 #  0000000   000   000  000  00     00  
 # 000   000  0000  000  000  000   000  
@@ -177,12 +202,12 @@ anim = (now) ->
     ms.setAttribute 'cy', my
     ms.setAttribute 'r',  rd/50
     
-    dt.sort (a,b) -> a.v.z - b.v.z
-    
     for d in dt
         d.rot iq
-        d.c.parentNode.appendChild d.c
-        
+     
+    for x in (dt.concat lt).sort (a,b) -> a.depth()-b.depth()
+        x.c.parentNode.appendChild x.c
+    
     ms.parentNode.appendChild ms
         
     win.requestAnimationFrame anim
