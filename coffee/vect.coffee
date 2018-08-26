@@ -8,9 +8,13 @@ atan2 = Math.atan2
 max   = Math.max
 min   = Math.min
 rand  = Math.random
+PI    = Math.PI
 
 randr = (a,b) -> a+(b-a)*rand()
 clamp = (a,b,v) -> max a, min b, v
+
+r2d = (r) -> 180 * r / PI
+d2r = (d) -> PI * d / 180
 
 class Vect
 
@@ -29,7 +33,8 @@ class Vect
         @z*=f
         @
         
-        
+    dot: (v) -> @x * v.x + @y * v.y + @z * v.z
+    cross: (v) -> new Vect @y * v.z - @z * v.y, @z * v.x - @x * v.z, @x * v.y - @y * v.x
     length: -> sqrt @x * @x + @y * @y + @z * @z
 
     norm: ->
@@ -43,8 +48,9 @@ class Vect
             @x *= l
             @y *= l
             @z *= l
-            @w *= l
         @
+        
+    angle: (v) -> acos clamp -1, 1, @dot(v) / sqrt( @length() * v.length() )
         
 vec = (x,y,z) -> new Vect x,y,z        
             

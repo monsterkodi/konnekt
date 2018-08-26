@@ -9,7 +9,7 @@ elem = (typ,opt) ->
         e.setAttribute k, opt[k]
     e
 
-w=window
+win=window
 rx=ry=0
 cx=cy=0
 sw=sh=0
@@ -44,8 +44,8 @@ size()
 
 move = (event) ->
     if drg == 'rot' 
-        qx = Quat.axis 0, 1, 0, event.movementX / rd
-        qy = Quat.axis 1, 0, 0, event.movementY / -rd
+        qx = Quat.xyza 0, 1, 0, event.movementX / rd
+        qy = Quat.xyza 1, 0, 0, event.movementY / -rd
         rq = qx.mul qy
         for d in dt
             d.rot rq
@@ -70,10 +70,10 @@ up = (event) ->
     iq  = rq
     drg = null
     
-w.addEventListener 'resize',    size
-w.addEventListener 'mousemove', move
-w.addEventListener 'mousedown', down
-w.addEventListener 'mouseup',   up
+win.addEventListener 'resize',    size
+win.addEventListener 'mousemove', move
+win.addEventListener 'mousedown', down
+win.addEventListener 'mouseup',   up
     
 v = null
     
@@ -81,6 +81,23 @@ cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width': 1
 cr.v = vec()
 ms = add 'circle', stroke:'none', fill:'red', style:"pointer-events:none"
 
+u2s = (v) -> vec cx+v.x*rx, cy+v.y*ry
+slp = (l,p) ->
+    for i in [1,2]
+        for a in ['x','y']
+            l.setAttribute "#{a}#{i}", p[i-1][a]
+
+arc = (a,b,n) ->
+    al = []
+    angle = a.angle b
+    q = Quat.axis a.cross(b).norm(), angle/(n+1)
+    v = a.cpy()
+    for i in [0...n]
+        v = q.rotate v
+        al.push v 
+    al.push b
+    al
+            
 # 000      000  000   000  00000000  
 # 000      000  0000  000  000       
 # 000      000  000 0 000  0000000   
@@ -90,27 +107,19 @@ ms = add 'circle', stroke:'none', fill:'red', style:"pointer-events:none"
 class Line
     
     constructor: (@s,@e) ->
-        @l = add 'line', class:'line', x1:cx+@s.v.x*rx, y1:cy+@s.v.y*rx, x2:cx+@e.v.x*rx, y2:cy+@e.v.y*ry, stroke:"#111", style:"stroke-width:2"
         @c = add 'path', class:'path', stroke:"#222", style:"stroke-width:2;pointer-events:none"
        
     upd: ->
-        x1 = cx+@s.v.x*rx
-        y1 = cy+@s.v.y*rx
-        x2 = cx+@e.v.x*rx
-        y2 = cy+@e.v.y*ry
         
-        m = @s.v.cpy().add(@e.v).mul(0.5).norm()
+        ap = arc @s.v, @e.v, parseInt r2d(@s.v.angle @e.v)/5
+             
+        s = u2s @s.v
+        d = "M #{s.x} #{s.y}"
+        for p in ap
+            s = u2s p
+            d += " L #{s.x} #{s.y}"
+        @c.setAttribute 'd', d
         
-        xm = cx+m.x*rx
-        ym = cy+m.y*ry
-                
-        @l.setAttribute 'x1', x1
-        @l.setAttribute 'y1', y1
-        @l.setAttribute 'x2', x2
-        @l.setAttribute 'y2', y2
-        
-        @c.setAttribute 'd', "M#{x1} #{y1} Q#{xm} #{ym} #{x2} #{y2}"
-
 # 0000000     0000000   000000000  
 # 000   000  000   000     000     
 # 000   000  000   000     000     
@@ -146,7 +155,7 @@ class Dot
         for l in @l
             l.upd()
     
-for i in [0...parseInt randr(50,150)]
+for i in [0...parseInt randr(2,30)]
 
     d = new Dot
     
@@ -163,7 +172,7 @@ anim = (now) ->
 
     ctr cr
     cr.setAttribute 'r', rd
-    iq.slerp new Quat(), 0.05
+    iq.slerp new Quat(), 0.01
     ms.setAttribute 'cx', mx
     ms.setAttribute 'cy', my
     ms.setAttribute 'r',  rd/50
@@ -176,8 +185,8 @@ anim = (now) ->
         
     ms.parentNode.appendChild ms
         
-    w.requestAnimationFrame anim
+    win.requestAnimationFrame anim
     lst=now
         
-w.requestAnimationFrame anim
+win.requestAnimationFrame anim
     

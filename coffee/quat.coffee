@@ -14,7 +14,7 @@ class Quat
         @w = q.w
         @
 
-    euler: (e) ->
+    @euler: (e) ->
         x = e.x
         y = e.y
         z = e.z
@@ -24,17 +24,20 @@ class Quat
         s1 = sin x / 2
         s2 = sin y / 2
         s3 = sin z / 2
-        @x = s1 * c2 * c3 + c1 * s2 * s3
-        @y = c1 * s2 * c3 - (s1 * c2 * s3)
-        @z = c1 * c2 * s3 + s1 * s2 * c3
-        @w = c1 * c2 * c3 - (s1 * s2 * s3)
-        @
+        new Quat s1 * c2 * c3 + c1 * s2 * s3,
+                 c1 * s2 * c3 - (s1 * c2 * s3),
+                 c1 * c2 * s3 + s1 * s2 * c3,
+                 c1 * c2 * c3 - (s1 * s2 * s3)
 
     @vecs: (a,b) ->
+        c = a.cross b
+        r = a.dot(b)+1
+        new Quat c.x, c.y, c.z, r
         
+    @axis: (v,a) -> @xyza v.x, v.y, v.z, a
         
-    @axis: (x,y,z,r=0) ->
-        h = r / 2
+    @xyza: (x,y,z,a=0) ->
+        h = a / 2
         s = sin h
         new Quat x*s, y*s, z*s, cos h
         
