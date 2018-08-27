@@ -1,32 +1,23 @@
-log = console.log
+###
+00     00   0000000   000  000   000    
+000   000  000   000  000  0000  000    
+000000000  000000000  000  000 0 000    
+000 0 000  000   000  000  000  0000    
+000   000  000   000  000  000   000    
+###
 
-main = document.getElementById 'main'
-menu = main.children[1]
-svg  = main.children[0]
-
-win   = window
-rx=ry = 0
-cx=cy = 0
-sw=sh = 0
-mx=my = 0
-rd    = 0
-lst   = 0
-upd   = 1
-drg   = null
-iq    = new Quat
-rq    = new Quat
-dt    = []
-lt    = []
-cr    = null
-dbg   = null
-rsum  = vec()
- 
 opt = (e,o) ->
     if o?
         for k in Object.keys o
             e.setAttribute k, o[k]
     e
     
+# 00000000  000      00000000  00     00  
+# 000       000      000       000   000  
+# 0000000   000      0000000   000000000  
+# 000       000      000       000 0 000  
+# 00000000  0000000  00000000  000   000  
+
 elem = (t,o) ->
     e = document.createElement t
     if o.text?
@@ -40,7 +31,10 @@ app = (p,t,o) ->
     e
     
 add = (t,o) -> app svg, t, o
-    
+  
+s2u = (v) -> vec((v.x/sw-0.5)/(rd/sw), (v.y/sh-0.5)/(rd/sh), v.z).norm()
+u2s = (v) -> vec cx+v.x*rx, cy+v.y*ry
+
 ctr = (s) ->
     s.setAttribute 'cx', cx+s.v.x*rd
     s.setAttribute 'cy', cy+s.v.y*rd
@@ -69,6 +63,7 @@ rotq = (v) ->
     qx.mul qy
 
 move = (e) ->
+    
     if drg == 'rot' 
         rq = rotq vec e.movementX, e.movementY
         for d in dt
@@ -79,14 +74,13 @@ move = (e) ->
         rsum.y += e.movementY/10
                 
     else if drg
-        v = vec (e.clientX/sw-0.5)/(rd/sw), (e.clientY/sh-0.5)/(rd/sh), drg.v.z
-        v.norm()
+    
         switch e.buttons
             when 1
-                drg.send v
+                drg.send vec e.clientX, e.clientY
                 upd = 1
             when 2
-                drg.v = v
+                drg.v = s2u vec e.clientX, e.clientY, drg.v.z
                 upd = 1
         
     mx = e.clientX
@@ -98,11 +92,16 @@ move = (e) ->
 # 000   000  000   000  000   000  000  0000  
 # 0000000     0000000   00     00  000   000  
 
-down = (e) ->    
-    
+delTmpl = ->
+    tmpl?.remove()
+    tmpl = null
+
+down = (e) ->   
+    delTmpl()
     iq = new Quat
     if drg = e.target.dot
-        return
+        if drg.c.classList.contains 'linked'
+            return
     drg = 'rot'
 
 # 000   000  00000000   
@@ -112,11 +111,18 @@ down = (e) ->
 #  0000000   000        
 
 up = (e) -> 
+    slp dbg, [vec(), vec()]    
     if drg == 'rot'
         iq = rotq rsum
     else
         iq = new Quat
+        if tmpl?
+            drg.line tmpl.dot
+            
+    delTmpl()
+        
     drg = null
+    upd = 1
     
 win.addEventListener 'resize',    size
 win.addEventListener 'mousemove', move
@@ -124,7 +130,6 @@ win.addEventListener 'mousedown', down
 win.addEventListener 'mouseup',   up
 win.addEventListener 'contextmenu', (e) -> e.preventDefault()
         
-u2s = (v) -> vec cx+v.x*rx, cy+v.y*ry
 slp = (l,p) ->
     for i in [1,2]
         for a in ['x','y']
@@ -169,80 +174,30 @@ class Line
         
         @c.setAttribute 'd', arc @s.v, @e.v
         @c.setAttribute 'stroke', color @
-        
         @c.style.strokeWidth = ((@depth() + 0.3)/1.5)*rd/50
         
-# 0000000     0000000   000000000  
-# 000   000  000   000     000     
-# 000   000  000   000     000     
-# 000   000  000   000     000     
-# 0000000     0000000      000     
+# 00000000   00000000   0000000  00000000  000000000  
+# 000   000  000       000       000          000     
+# 0000000    0000000   0000000   0000000      000     
+# 000   000  000            000  000          000     
+# 000   000  00000000  0000000   00000000     000     
 
-class Dot
-    
-    constructor: ->
-        @l = []
-        @n = []
-        @i = dt.length
-        @v = vec randr(-1,1), randr(-1,1), randr(-1,1)
-        @v.norm()
-        @g = add 'g'
-        @c = app @g, 'circle', class:'dot', id:@i, cx:cx+@v.x*rx, cy:cy+@v.y*rx, r:(@v.z+1.1)*rd/50, stroke:'none', fill:"#555"
-        @c.dot = @
-        dt.push @
-        
-    depth: -> (@v.z+1)/2
-    raise: -> @g.parentNode.appendChild @g
-    linked: (d) -> d==undefined or d==@ or (d in @n) or (@ in d.n)
-    dist: (d) -> @v.angle d.v
-    closest: -> dt.slice(0).sort (a,b) => @dist(a)-@dist(b)
-        
-    line: (d) -> 
-        if d == @
-            log 'self?'
-            return
-        if @linked d
-            log 'linked?'
-            return
-        @n.push d
-        d.n.push @
-        l = new Line @, d
-        @l.push l
-        lt.push l
-        l
-        
-    send: (v) -> log "send #{v.length()}", v
-        
-    rot: (q) -> @v = q.rotate @v
-        
-    upd: ->
-        
-        @c.setAttribute 'cx', cx+@v.x*rd
-        @c.setAttribute 'cy', cy+@v.y*rd
-                
-        @c.setAttribute 'fill', color @
-        @c.setAttribute 'r', ((@depth() + 0.3)/1.5)*rd/20
-        
-        for l in @l
-            l.upd()
-    
 reset = ->
     
     svg.innerHTML = ''
     cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width':1
     cr.v = vec()
     
-    dbg = add 'line', stroke:"#ff0", 'stroke-width':1
+    dbg = add 'line', stroke:"#ff0", 'stroke-width':5
     
-    dt = []
+    dt = [new Dot]
+    dt[0].link()
+    dt[0].v = vec 0,0,1
     for i in [0...parseInt randr(10,50)]
         new Dot
-    
+
     lt = []
-    for d in dt
-        c = d.closest().filter (a) -> not d.linked(a)
-        d.line c[0]
-        
+    
     upd = 1   
     
 reset()
@@ -261,25 +216,35 @@ anim = (now) ->
     dta = (now-lst)/16
     rsum.mul 0.8 * dta
     
-    # slp dbg, [u2s(vec(0,0)), u2s(vec(rsum.x/100,rsum.y/100))]
-    
     iq.slerp new Quat(), 0.01 * dta
-    
+        
     if not iq.zero() or upd
         
         for d in dt
             d.rot iq
             d.upd()
             
+        for l in lt
+            l.upd()
+            
         for x in (dt.concat lt).sort (a,b) -> a.depth()-b.depth()
             x.raise()
             
         upd = 0
     
+    dbg.parentNode.appendChild dbg
+    tmpl?.parentNode?.appendChild tmpl
+    
     win.requestAnimationFrame anim
     lst=now
         
 win.requestAnimationFrame anim
+
+# 00     00  00000000  000   000  000   000    
+# 000   000  000       0000  000  000   000    
+# 000000000  0000000   000 0 000  000   000    
+# 000 0 000  000       000  0000  000   000    
+# 000   000  00000000  000   000   0000000     
 
 b = elem 'div', class:'button', text:'FULLSCREEN'
 b.addEventListener 'click', ->
@@ -289,4 +254,4 @@ b.addEventListener 'click', ->
 b = elem 'div', class:'button', text:'RESET'
 b.addEventListener 'click', reset
     
-b = elem 'div', class:'button', text:'PAUSE'
+# b = elem 'div', class:'button', text:'PAUSE'

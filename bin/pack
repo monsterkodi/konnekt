@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+cd `dirname $0`/..
+
+rm -rf js
+konrad
+
+cd coffee
+
+cat vect.coffee quat.coffee glob.coffee dot.coffee online.coffee > ../js/min.coffee
+
+cd ../js
+
+mkdir min
+
+coffee --no-header -c min.coffee 
+
+../node_modules/.bin/babel-minify min.js -d . -o min/min.js
+../node_modules/.bin/minify style.css > min/style.css
+../node_modules/.bin/minify index.html > min/index.html
+
+cd min
+zip -q ../online.zip *
+cd ..
+
+~/s/colorls/bin/color-ls -lp online.zip
