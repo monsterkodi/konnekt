@@ -68,6 +68,7 @@ class Quat
 
     dot: (v) -> @x * v.x + @y * v.y + @z * v.z + @w * v.w
     length: -> sqrt @x * @x + @y * @y + @z * @z + @w * @w
+    zero: -> @x + @y + @z < 0.00001
 
     norm: ->
         l = @length()

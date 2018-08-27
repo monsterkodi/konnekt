@@ -1,13 +1,8 @@
 log = console.log
 
-svg = document.getElementById('main').children[0]
-
-elem = (typ,opt) ->
-    e = document.createElementNS "http://www.w3.org/2000/svg", typ
-    return e if not opt
-    for k in Object.keys opt
-        e.setAttribute k, opt[k]
-    e
+main = document.getElementById 'main'
+menu = main.children[1]
+svg  = main.children[0]
 
 win=window
 rx=ry=0
@@ -16,16 +11,32 @@ sw=sh=0
 mx=my=0
 rd=0
 lst=0
+upd=1
 drg= null
 iq = new Quat
 rq = new Quat
 dt = []
 lt= []
-    
-add = (t,o) -> 
-    e = elem t,o
-    svg.appendChild e
+ 
+opt = (e,o) ->
+    if o?
+        for k in Object.keys o
+            e.setAttribute k, o[k]
     e
+    
+elem = (t,o) ->
+    e = document.createElement t
+    if o.text?
+        e.innerText = o.text
+    menu.appendChild opt e, o
+    e
+        
+app = (p,t,o) ->
+    e = document.createElementNS "http://www.w3.org/2000/svg", t
+    p.appendChild opt e, o
+    e
+    
+add = (t,o) -> app svg, t, o
     
 ctr = (s) ->
     s.setAttribute 'cx', cx+s.v.x*rd
@@ -40,33 +51,52 @@ size = ->
     rd = 0.4 * Math.min sw, sh
     rx = rd
     ry = rd
+    upd = 1
 size()
 
-move = (event) ->
+# 00     00   0000000   000   000  00000000  
+# 000   000  000   000  000   000  000       
+# 000000000  000   000   000 000   0000000   
+# 000 0 000  000   000     000     000       
+# 000   000   0000000       0      00000000  
+
+move = (e) ->
     if drg == 'rot' 
-        qx = Quat.xyza 0, 1, 0, event.movementX / rd
-        qy = Quat.xyza 1, 0, 0, event.movementY / -rd
+        qx = Quat.xyza 0, 1, 0, e.movementX / rd
+        qy = Quat.xyza 1, 0, 0, e.movementY / -rd
         rq = qx.mul qy
         for d in dt
             d.rot rq
+            upd = 1
     else if drg
-        drg.v.x = (event.clientX/sw-0.5)/(rd/sw)
-        drg.v.y = (event.clientY/sh-0.5)/(rd/sh)
-        drg.v.norm()
-        drg.upd()
+        v = vec (e.clientX/sw-0.5)/(rd/sw), (e.clientY/sh-0.5)/(rd/sh), drg.v.z
+        v.norm()
+        switch e.button
+            when 0
+                drg.send v
+                upd = 1
+            when 2
+                drg.v = v
+                upd = 1
+                # drg.upd()
         
-    mx = event.clientX
-    my = event.clientY
+    mx = e.clientX
+    my = e.clientY
     
-down = (event) -> 
-    iq = new Quat
-    
-    if dot = event.target.dot
-        drg = dot
-    else
-        drg = 'rot'
+# 0000000     0000000   000   000  000   000  
+# 000   000  000   000  000 0 000  0000  000  
+# 000   000  000   000  000000000  000 0 000  
+# 000   000  000   000  000   000  000  0000  
+# 0000000     0000000   00     00  000   000  
 
-up = (event) -> 
+down = (e) ->    
+    
+    iq = new Quat
+    if drg = e.target.dot
+        return
+    drg = 'rot'
+
+up = (e) -> 
     iq  = rq
     drg = null
     
@@ -78,9 +108,8 @@ win.addEventListener 'contextmenu', (e) -> e.preventDefault()
     
 v = null
     
-cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width': 0
+cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width': 1
 cr.v = vec()
-ms = add 'circle', stroke:'none', fill:'red', style:"pointer-events:none"
 
 u2s = (v) -> vec cx+v.x*rx, cy+v.y*ry
 slp = (l,p) ->
@@ -122,12 +151,13 @@ class Line
         @c = add 'path', class:'path', stroke:"#fff", 'stroke-linejoin':"round", 'stroke-linecap':"round", style:'pointer-events:none'
        
     depth: -> (@s.depth()+@e.depth())/2 
+    raise: -> @c.parentNode.appendChild @c
     upd: ->
         
         @c.setAttribute 'd', arc @s.v, @e.v
         @c.setAttribute 'stroke', color @
-        mz = min @s.v.z, @e.v.z
-        @c.style.strokeWidth = 2 + (mz+1) * 5
+        
+        @c.style.strokeWidth = ((@depth() + 0.3)/1.5)*rd/50
         
 # 0000000     0000000   000000000  
 # 000   000  000   000     000     
@@ -143,11 +173,13 @@ class Dot
         @i = dt.length
         @v = vec randr(-1,1), randr(-1,1), randr(-1,1)
         @v.norm()
-        @c = add 'circle', class:'dot', id:@i, cx:cx+@v.x*rx, cy:cy+@v.y*rx, r:(@v.z+1.1)*rd/50, stroke:'none', fill:"#555"
-        @c.dot= @
+        @g = add 'g'
+        @c = app @g, 'circle', class:'dot', id:@i, cx:cx+@v.x*rx, cy:cy+@v.y*rx, r:(@v.z+1.1)*rd/50, stroke:'none', fill:"#555"
+        @c.dot = @
         dt.push @
         
     depth: -> (@v.z+1)/2
+    raise: -> @g.parentNode.appendChild @g
     linked: (d) -> d==undefined or d==@ or (d in @n) or (@ in d.n)
     dist: (d) -> @v.angle d.v
     closest: -> dt.slice(0).sort (a,b) => @dist(a)-@dist(b)
@@ -166,9 +198,9 @@ class Dot
         lt.push l
         l
         
-    rot: (q) ->
-        @v = q.rotate @v
-        @upd()
+    send: (v) -> log "send #{v.length()}", v
+        
+    rot: (q) -> @v = q.rotate @v
         
     upd: ->
         
@@ -198,21 +230,28 @@ anim = (now) ->
 
     ctr cr
     cr.setAttribute 'r', rd
+    
     iq.slerp new Quat(), 0.01
-    ms.setAttribute 'cx', mx
-    ms.setAttribute 'cy', my
-    ms.setAttribute 'r',  rd/50
     
-    for d in dt
-        d.rot iq
-     
-    for x in (dt.concat lt).sort (a,b) -> a.depth()-b.depth()
-        x.c.parentNode.appendChild x.c
-    
-    ms.parentNode.appendChild ms
+    if not iq.zero() or upd
         
+        for d in dt
+            d.rot iq
+            d.upd()
+            
+        for x in (dt.concat lt).sort (a,b) -> a.depth()-b.depth()
+            x.raise()
+            
+        upd = 0
+    
     win.requestAnimationFrame anim
     lst=now
         
 win.requestAnimationFrame anim
-    
+
+b = elem 'div', class:'button', text:'FULLSCREEN'
+b.addEventListener 'click', ->
+    el = document.documentElement
+    rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
+    rfs.call el
+b = elem 'div', class:'button', text:'PAUSE'
