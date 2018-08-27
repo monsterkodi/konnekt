@@ -1,6 +1,10 @@
-name          online
-version       0.0.1
-description   svg experiment
-main          online.js
-author        monsterkodi
-license       Unlicense
+name            online
+version         0.0.1
+description     svg experiment
+main            online.js
+author          monsterkodi
+license         Unlicense
+devDependencies
+                babel-minify  ^0.4.3
+dependencies
+                minify  ^3.0.5

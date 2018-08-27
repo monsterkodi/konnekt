@@ -74,6 +74,7 @@ win.addEventListener 'resize',    size
 win.addEventListener 'mousemove', move
 win.addEventListener 'mousedown', down
 win.addEventListener 'mouseup',   up
+win.addEventListener 'contextmenu', (e) -> e.preventDefault()
     
 v = null
     

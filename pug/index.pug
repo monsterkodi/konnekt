@@ -1,8 +1,10 @@
 doctype html
 html
-    body(style="overflow:hidden;")
-        #main(style="background:black;position:absolute;left:0;top:0;right:0;bottom:0;padding:0;margin:0;overflow:hidden;")
-            svg(style="width:100%;height:100%;stroke-width:10px;stroke:white;fill:none;")
+    head
+        link(rel="stylesheet" href="./style.css" type="text/css")
+    body
+        #main
+            svg
     script(src="./vect.js")
     script(src="./quat.js")
     script(src="./online.js")
