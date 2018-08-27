@@ -1,7 +1,7 @@
 
+abs   = Math.abs
 cos   = Math.cos
 acos  = Math.acos
-abs   = Math.abs
 sin   = Math.sin
 sqrt  = Math.sqrt
 atan2 = Math.atan2
@@ -9,9 +9,11 @@ max   = Math.max
 min   = Math.min
 rand  = Math.random
 PI    = Math.PI
+EPS   = Number.EPSILON
 
 randr = (a,b) -> a+(b-a)*rand()
 clamp = (a,b,v) -> max a, min b, v
+zero  = (v) -> abs(v) < EPS
 
 r2d = (r) -> 180 * r / PI
 d2r = (d) -> PI * d / 180
@@ -35,7 +37,7 @@ class Vect
         
     dot: (v) -> @x * v.x + @y * v.y + @z * v.z
     cross: (v) -> new Vect @y * v.z - @z * v.y, @z * v.x - @x * v.z, @x * v.y - @y * v.x
-    length: -> sqrt @x * @x + @y * @y + @z * @z
+    length: -> sqrt @x*@x + @y*@y + @z*@z
 
     norm: ->
         l = @length()

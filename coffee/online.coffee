@@ -4,19 +4,22 @@ main = document.getElementById 'main'
 menu = main.children[1]
 svg  = main.children[0]
 
-win=window
-rx=ry=0
-cx=cy=0
-sw=sh=0
-mx=my=0
-rd=0
-lst=0
-upd=1
-drg= null
-iq = new Quat
-rq = new Quat
-dt = []
-lt= []
+win   = window
+rx=ry = 0
+cx=cy = 0
+sw=sh = 0
+mx=my = 0
+rd    = 0
+lst   = 0
+upd   = 1
+drg   = null
+iq    = new Quat
+rq    = new Quat
+dt    = []
+lt    = []
+cr    = null
+dbg   = null
+rsum  = vec()
  
 opt = (e,o) ->
     if o?
@@ -60,25 +63,31 @@ size()
 # 000 0 000  000   000     000     000       
 # 000   000   0000000       0      00000000  
 
+rotq = (v) ->
+    qx = Quat.xyza 0, 1, 0, v.x / rd
+    qy = Quat.xyza 1, 0, 0, v.y / -rd
+    qx.mul qy
+
 move = (e) ->
     if drg == 'rot' 
-        qx = Quat.xyza 0, 1, 0, e.movementX / rd
-        qy = Quat.xyza 1, 0, 0, e.movementY / -rd
-        rq = qx.mul qy
+        rq = rotq vec e.movementX, e.movementY
         for d in dt
             d.rot rq
             upd = 1
+            
+        rsum.x += e.movementX/10
+        rsum.y += e.movementY/10
+                
     else if drg
         v = vec (e.clientX/sw-0.5)/(rd/sw), (e.clientY/sh-0.5)/(rd/sh), drg.v.z
         v.norm()
-        switch e.button
-            when 0
+        switch e.buttons
+            when 1
                 drg.send v
                 upd = 1
             when 2
                 drg.v = v
                 upd = 1
-                # drg.upd()
         
     mx = e.clientX
     my = e.clientY
@@ -96,8 +105,17 @@ down = (e) ->
         return
     drg = 'rot'
 
+# 000   000  00000000   
+# 000   000  000   000  
+# 000   000  00000000   
+# 000   000  000        
+#  0000000   000        
+
 up = (e) -> 
-    iq  = rq
+    if drg == 'rot'
+        iq = rotq rsum
+    else
+        iq = new Quat
     drg = null
     
 win.addEventListener 'resize',    size
@@ -105,12 +123,7 @@ win.addEventListener 'mousemove', move
 win.addEventListener 'mousedown', down
 win.addEventListener 'mouseup',   up
 win.addEventListener 'contextmenu', (e) -> e.preventDefault()
-    
-v = null
-    
-cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width': 1
-cr.v = vec()
-
+        
 u2s = (v) -> vec cx+v.x*rx, cy+v.y*ry
 slp = (l,p) ->
     for i in [1,2]
@@ -208,18 +221,32 @@ class Dot
         @c.setAttribute 'cy', cy+@v.y*rd
                 
         @c.setAttribute 'fill', color @
-        @c.setAttribute 'r', ((d.depth() + 0.3)/1.5)*rd/20
+        @c.setAttribute 'r', ((@depth() + 0.3)/1.5)*rd/20
         
         for l in @l
             l.upd()
-            
-for i in [0...parseInt randr(10,50)]
-    d = new Dot
-
-for d in dt
-    c = d.closest().filter (a) -> not d.linked(a)
-    d.line c[0]
-   
+    
+reset = ->
+    
+    svg.innerHTML = ''
+    cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width':1
+    cr.v = vec()
+    
+    dbg = add 'line', stroke:"#ff0", 'stroke-width':1
+    
+    dt = []
+    for i in [0...parseInt randr(10,50)]
+        new Dot
+    
+    lt = []
+    for d in dt
+        c = d.closest().filter (a) -> not d.linked(a)
+        d.line c[0]
+        
+    upd = 1   
+    
+reset()
+        
 #  0000000   000   000  000  00     00  
 # 000   000  0000  000  000  000   000  
 # 000000000  000 0 000  000  000000000  
@@ -231,7 +258,12 @@ anim = (now) ->
     ctr cr
     cr.setAttribute 'r', rd
     
-    iq.slerp new Quat(), 0.01
+    dta = (now-lst)/16
+    rsum.mul 0.8 * dta
+    
+    # slp dbg, [u2s(vec(0,0)), u2s(vec(rsum.x/100,rsum.y/100))]
+    
+    iq.slerp new Quat(), 0.01 * dta
     
     if not iq.zero() or upd
         
@@ -254,4 +286,7 @@ b.addEventListener 'click', ->
     el = document.documentElement
     rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
     rfs.call el
+b = elem 'div', class:'button', text:'RESET'
+b.addEventListener 'click', reset
+    
 b = elem 'div', class:'button', text:'PAUSE'
