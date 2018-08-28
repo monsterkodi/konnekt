@@ -18,6 +18,8 @@ max   = Math.max
 min   = Math.min
 rand  = Math.random
 PI    = Math.PI
+ceil  = Math.ceil
+floor = Math.floor
 EPS   = Number.EPSILON
 
 randr = (a,b) -> a+(b-a)*rand()
@@ -44,13 +46,13 @@ class Vec
         @y*=f
         @z*=f
         @
-        
+    times: (f) -> @cpy().mul f
     minus: (v) -> vec @x-v.x,@y-v.y,@z-v.z
-    to: (v) -> v.minus @
-    dist: (v) -> @minus(v).length()
-    dot: (v) -> @x * v.x + @y * v.y + @z * v.z
+    to:    (v) -> v.minus @
+    dist:  (v) -> @minus(v).length()
+    dot:   (v) -> @x * v.x + @y * v.y + @z * v.z
     cross: (v) -> vec @y * v.z - @z * v.y, @z * v.x - @x * v.z, @x * v.y - @y * v.x
-    length: -> sqrt @x*@x + @y*@y + @z*@z
+    length:    -> sqrt @x*@x + @y*@y + @z*@z
 
     norm: ->
         l = @length()

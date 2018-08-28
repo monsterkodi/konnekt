@@ -31,12 +31,28 @@ svg
     color           #222
     user-select     none
     
+.line
+    stroke          #fff
+    pointer-events  none
+    
 .dot
     cursor          pointer
+    stroke-width    0.1
+    stroke          none
+    fill            #fff
     &.linked    
-        stroke      none
         &:hover
             fill    #ff0
     &.neutral
-        stroke-width 1
+        fill        #000
         stroke      #555
+        
+.pie
+    pointer-events  none
+    stroke          none
+    fill            #000
+    
+.dbg
+    stroke          #ff0
+    stroke-width    1
+    

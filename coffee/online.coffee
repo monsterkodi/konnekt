@@ -58,7 +58,7 @@ size()
 # 000   000   0000000       0      00000000  
 
 rotq = (v) ->
-    qx = Quat.xyza 0, 1, 0, v.x / rd
+    qx = Quat.xyza 0, 1, 0, v.x /  rd
     qy = Quat.xyza 1, 0, 0, v.y / -rd
     qx.mul qy
 
@@ -72,7 +72,7 @@ move = (e) ->
             
         rsum.x += e.movementX/10
         rsum.y += e.movementY/10
-                
+                        
     else if drg
     
         switch e.buttons
@@ -96,7 +96,8 @@ delTmpl = ->
     tmpl?.remove()
     tmpl = null
 
-down = (e) ->   
+down = (e) ->
+    # rsum = vec()
     delTmpl()
     iq = new Quat
     if drg = e.target.dot
@@ -111,7 +112,6 @@ down = (e) ->
 #  0000000   000        
 
 up = (e) -> 
-    slp dbg, [vec(), vec()]    
     if drg == 'rot'
         iq = rotq rsum
     else
@@ -152,9 +152,7 @@ arc = (a,b) ->
     d += " L #{s.x} #{s.y}"
     d
     
-color = (d) ->
-    l = (d.depth() + 0.3)/1.5
-    "rgb(#{l*255},#{l*255},#{l*255})"
+brightness = (d) -> d.c.style.opacity = (d.depth() + 0.3)/1.5
     
 # 000      000  000   000  00000000  
 # 000      000  0000  000  000       
@@ -166,14 +164,15 @@ class Line
     
     constructor: (@s,@e) ->
         
-        @c = add 'path', class:'path', stroke:"#fff", 'stroke-linejoin':"round", 'stroke-linecap':"round", style:'pointer-events:none'
+        @c = add 'path', class:'line'
        
     depth: -> (@s.depth()+@e.depth())/2 
+    zdepth: -> Math.min(@s.depth(),@e.depth()) - 0.001
     raise: -> @c.parentNode.appendChild @c
     upd: ->
         
         @c.setAttribute 'd', arc @s.v, @e.v
-        @c.setAttribute 'stroke', color @
+        brightness @
         @c.style.strokeWidth = ((@depth() + 0.3)/1.5)*rd/50
         
 # 00000000   00000000   0000000  00000000  000000000  
@@ -188,10 +187,10 @@ reset = ->
     cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width':1
     cr.v = vec()
     
-    dbg = add 'line', stroke:"#ff0", 'stroke-width':5
+    dbg = add 'line', class:'dbg'
     
     dt = [new Dot]
-    dt[0].link()
+    dt[0].startTimer 360
     dt[0].v = vec 0,0,1
     for i in [0...parseInt randr(10,50)]
         new Dot
@@ -214,7 +213,8 @@ anim = (now) ->
     cr.setAttribute 'r', rd
     
     dta = (now-lst)/16
-    rsum.mul 0.8 * dta
+    rsum.mul 0.8
+    # slp dbg, [u2s(vec()), u2s(rsum.times 1/100)]
     
     iq.slerp new Quat(), 0.01 * dta
         
@@ -227,7 +227,7 @@ anim = (now) ->
         for l in lt
             l.upd()
             
-        for x in (dt.concat lt).sort (a,b) -> a.depth()-b.depth()
+        for x in (lt.concat dt).sort (a,b) -> a.zdepth()-b.zdepth()
             x.raise()
             
         upd = 0

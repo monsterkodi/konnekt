@@ -10,6 +10,9 @@ class Dot
     
     constructor: ->
         
+        @units = 0
+        @targetUnits = 0
+        
         @n = []
         @i = dt.length
         
@@ -27,20 +30,58 @@ class Dot
             
         @v.norm()
         @g = add 'g'
-        @c = app @g, 'circle', class:'dot neutral', id:@i, cx:cx+@v.x*rx, cy:cy+@v.y*rx, r:(@v.z+1.1)*rd/50
+        @c = app @g, 'circle', class:'dot neutral', id:@i, cx:0, cy:0, r:1.3
         @c.dot = @
         dt.push @
         
+    startTimer: (units) ->
+        @targetUnits += units
+        @timer = setInterval @onTimer, 100
+        if not @pie
+            @pie = app @g, 'path', class:'pie'
+        
+    onTimer: => 
+        
+        if @targetUnits > @units
+            @units += 5
+            if @units >= @targetUnits
+                @units = @targetUnits
+                clearInterval @timer
+                delete @timer
+        else
+            @units -= 5
+            if @units <= @targetUnits
+                @units = @targetUnits
+                clearInterval @timer
+                delete @timer
+            
+        if @units == 0
+            @c.classList.add 'neutral'
+        else
+            @c.classList.remove 'neutral'
+            
+        if @units > 1
+            @c.classList.add 'linked'
+        else
+            @c.classList.remove 'linked'
+            
+        #A rx ry x-axis-rotation large-arc-flag sweep-flag x y
+        if @units <= 1
+            s =  0
+            c = -1
+            @pie.setAttribute 'd', "M0,-1 A1,1 0 1,0 0,1 A1,1 0 0,0 0,-1 z"
+        else
+            s =   sin d2r @units
+            c = - cos d2r @units
+            f = @units <= 180 and '1,0' or '0,0'
+            @pie.setAttribute 'd', "M0,0 L0,-1 A1,1 0 #{f} #{s},#{c} z"
+        
     depth:      -> (@v.z+1)/2
+    zdepth:     -> @depth()
     raise:      -> @g.parentNode.appendChild @g
     closest:    -> dt.slice(0).sort((a,b) => @dist(a)-@dist(b)).slice 1
     dist:   (d) -> @v.angle d.v
     linked: (d) -> d==undefined or d==@ or (d in @n) or (@ in d.n)
-    link: -> 
-        @c.classList.remove 'neutral'
-        @c.classList.add 'linked'
-        log @c.className
-        
     line: (d) -> 
         if d == @
             log 'self?'
@@ -48,8 +89,9 @@ class Dot
         if @linked d
             log 'linked?'
             return
-        @link()
-        d.link()
+        uh = ceil @units/2
+        @startTimer -uh
+        d.startTimer  uh
         @n.push d
         d.n.push @
         l = new Line @, d
@@ -79,13 +121,6 @@ class Dot
     rot: (q) -> @v = q.rotate @v
         
     upd: ->
-        
-        @c.setAttribute 'cx', cx+@v.x*rd
-        @c.setAttribute 'cy', cy+@v.y*rd
-        
-        if @c.classList.contains 'neutral'
-            @c.setAttribute 'fill', 'black'
-        else
-            @c.setAttribute 'fill', color @
-        @c.setAttribute 'r', ((@depth() + 0.3)/1.5)*rd/20
-        
+        @g.setAttribute 'transform', "translate(#{cx+@v.x*rd},#{cy+@v.y*rd}) scale(#{((@depth() + 0.3)/1.5)*rd/20})"
+        brightness @
+            
