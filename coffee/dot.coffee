@@ -62,6 +62,15 @@ class Dot
         if @units == 0
             @unlink()
             
+        @drawPie()
+        
+    addUnit: ->
+        if @targetUnits < 360 and @units > @minUnits
+            @targetUnits += 1
+            @units += 1
+            @drawPie()
+        
+    drawPie: ->
         #A rx ry x-axis-rotation large-arc-flag sweep-flag x y
         if @units <= @minUnits
             @c.classList.remove 'linked'
@@ -92,18 +101,14 @@ class Dot
     
     linked: (d) -> (d in @n) or (@ in d.n)
     unlink: () ->
-        log 'unlink', lt.length, @
         lt = lt.filter (l) => 
             if l.s == @ or l.e == @
-                log 'remove l1ne', l, l.e.n.length, l.s.n.length
-                l.e.n = l.e.n.filter (n) -> n != @
-                l.s.n = l.s.n.filter (n) -> n != @
+                l.e.n = l.e.n.filter (n) => n != @
+                l.s.n = l.s.n.filter (n) => n != @
                 l.c.remove()
-                log 'remove line', l, l.e.n.length, l.s.n.length
                 false
             else
                 true
-        log 'unlink', lt.length, @
         @n = []
         @neutralize()
             
@@ -118,14 +123,13 @@ class Dot
             return
         
         if @units < @minUnits
-            log 'empty!'
+            # log 'empty!'
             return
             
         uh = ceil @units/2
         ou = uh
                         
         if d.own != '' and d.own != @own
-            log 'attack!', @, d
             ou = -uh
             if uh == d.targetUnits
                 log 'draw!'                
@@ -133,10 +137,9 @@ class Dot
                 log 'lost!'
             else 
                 lnk = true
+                ou = uh - d.targetUnits
                 d.unlink() 
                 d.setOwn @own
-                ou = uh - d.targetUnits
-                log 'won!'
         else
             lnk = true
             d.setOwn @own 
@@ -149,6 +152,7 @@ class Dot
             d.n.push @
             l = new Line @, d
             lt.push l
+            upd = 1
             l
         else
             null

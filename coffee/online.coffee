@@ -22,6 +22,8 @@ elem = (t,o) ->
     e = document.createElement t
     if o.text?
         e.innerText = o.text
+    if o.click?
+        e.addEventListener 'click', o.click
     menu.appendChild opt e, o
     e
         
@@ -213,12 +215,23 @@ reset()
 # 000   000  000  0000  000  000 0 000  
 # 000   000  000   000  000  000   000  
 
+tsum = 0
 anim = (now) ->
 
     ctr cr
     cr.setAttribute 'r', rd
     
     dta = (now-lst)/16
+    
+    tsum += dta
+    if tsum > 60
+        tsum = 0
+        for ow in ['bot', 'usr']
+            dots = dt.filter (d) -> d.own == ow
+            units = dots.reduce ((a,b)->a+b.targetUnits), 0
+            cnt[ow].innerHTML = "&#9679; #{dots.length} &#9650; #{units}"
+            for d in dots
+                d.addUnit()
     
     bot.anim dta
     
@@ -255,12 +268,11 @@ win.requestAnimationFrame anim
 # 000 0 000  000       000  0000  000   000    
 # 000   000  00000000  000   000   0000000     
 
-b = elem 'div', class:'button', text:'FULLSCREEN'
-b.addEventListener 'click', ->
+elem 'div', class:'button', text:'FULLSCREEN', click: ->
     el = document.documentElement
     rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
     rfs.call el
-b = elem 'div', class:'button', text:'RESET'
-b.addEventListener 'click', reset
+elem 'div', class:'button', text:'RESET', click:reset
     
-# b = elem 'div', class:'button', text:'PAUSE'
+cnt['bot'] = elem 'div', class:'button bot'
+cnt['usr'] = elem 'div', class:'button usr'

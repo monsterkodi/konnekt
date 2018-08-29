@@ -28,3 +28,4 @@ dbg   = null
 bot   = null 
 tmpl  = null
 rsum  = vec()
+cnt   = {}
