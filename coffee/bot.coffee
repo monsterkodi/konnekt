@@ -18,13 +18,11 @@ class Bot
 
     anim: (dta) ->
         @tsum += dta
-        # log "bot anim #{dta}"
         if @tsum > @delay
             @tsum = 0
             @dots = @dots.filter (d) -> d.own == 'bot'
             @dots.sort (a,b) -> b.units - a.units
             d = @dots[0]
-            log "units: #{d.units}"
             cls = d.closest()
             for c in cls
                 if not d.linked c

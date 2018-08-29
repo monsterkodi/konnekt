@@ -95,11 +95,11 @@ class Dot
         log 'unlink', lt.length, @
         lt = lt.filter (l) => 
             if l.s == @ or l.e == @
-                log 'remove l1ne', l
+                log 'remove l1ne', l, l.e.n.length, l.s.n.length
                 l.e.n = l.e.n.filter (n) -> n != @
                 l.s.n = l.s.n.filter (n) -> n != @
                 l.c.remove()
-                log 'remove line', l
+                log 'remove line', l, l.e.n.length, l.s.n.length
                 false
             else
                 true
