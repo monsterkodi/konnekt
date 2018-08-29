@@ -34,22 +34,19 @@ app = (p,t,o) ->
     
 add = (t,o) -> app svg, t, o
   
-s2u = (v) -> vec((v.x/sw-0.5)/(rd/sw), (v.y/sh-0.5)/(rd/sh), v.z).norm()
-u2s = (v) -> vec cx+v.x*rx, cy+v.y*ry
+s2u = (v) -> vec((v.x/screen.size.x-0.5)/(screen.radius/screen.size.x), (v.y/screen.size.y-0.5)/(screen.radius/screen.size.y), v.z).norm()
+u2s = (v) -> vec screen.center.x+v.x*screen.radius, screen.center.y+v.y*screen.radius
 
 ctr = (s) ->
-    s.setAttribute 'cx', cx+s.v.x*rd
-    s.setAttribute 'cy', cy+s.v.y*rd
+    p = u2s s.v
+    s.setAttribute 'cx', p.x
+    s.setAttribute 'cy', p.y
 
 size = -> 
     br = svg.getBoundingClientRect()
-    sw = br.width
-    sh = br.height
-    cx = sw/2
-    cy = sh/2
-    rd = 0.4 * Math.min sw, sh
-    rx = rd
-    ry = rd
+    screen.size   = vec br.width,   br.height
+    screen.center = vec br.width/2, br.height/2
+    screen.radius = 0.4 * Math.min screen.size.x, screen.size.y
     upd = 1
 size()
 
@@ -60,15 +57,15 @@ size()
 # 000   000   0000000       0      00000000  
 
 rotq = (v) ->
-    qx = Quat.xyza 0, 1, 0, v.x /  rd
-    qy = Quat.xyza 1, 0, 0, v.y / -rd
+    qx = Quat.xyza 0, 1, 0, v.x /  screen.radius
+    qy = Quat.xyza 1, 0, 0, v.y / -screen.radius
     qx.mul qy
 
 move = (e) ->
     
     if drg == 'rot' 
         rq = rotq vec e.movementX, e.movementY
-        for d in dt
+        for d in world.dots
             d.rot rq
             upd = 1
             
@@ -85,8 +82,7 @@ move = (e) ->
                 drg.v = s2u vec e.clientX, e.clientY, drg.v.z
                 upd = 1
         
-    mx = e.clientX
-    my = e.clientY
+    mouse = vec e.clientX, e.clientY
     
 # 0000000     0000000   000   000  000   000  
 # 000   000  000   000  000 0 000  0000  000  
@@ -99,12 +95,12 @@ delTmpl = ->
     tmpl = null
 
 down = (e) ->
-    # rsum = vec()
     delTmpl()
     iq = new Quat
     if drg = e.target.dot
         if drg.c.classList.contains 'linked'
-            return
+            if drg.own != 'bot'
+                return
     drg = 'rot'
 
 # 000   000  00000000   
@@ -176,7 +172,7 @@ class Line
         
         @c.setAttribute 'd', arc @s.v, @e.v
         brightness @
-        @c.style.strokeWidth = ((@depth() + 0.3)/1.5)*rd/50
+        @c.style.strokeWidth = ((@depth() + 0.3)/1.5)*screen.radius/50
         
 # 00000000   00000000   0000000  00000000  000000000  
 # 000   000  000       000       000          000     
@@ -187,23 +183,24 @@ class Line
 reset = ->
     
     svg.innerHTML = ''
-    cr = add 'circle', cx:cx, cy:cy, r:rd, stroke:"#333", 'stroke-width':1
+    cr = add 'circle', cx:screen.center.x, cy:screen.center.y, r:screen.radius, stroke:"#333", 'stroke-width':1
     cr.v = vec()
     
     dbg = add 'line', class:'dbg'
     
-    dt = [new Dot]
-    dt[0].setOwn 'usr'
-    dt[0].startTimer 360
-    dt[0].v = vec 0,0,1
+    world.dots = []
+    d = new Dot
+    d.setOwn 'usr'
+    d.startTimer 360
+    d.v = vec 0,0,1
     for i in [0...parseInt randr(10,50)]
         new Dot
 
-    bdt = new Dot
-    bdt.v = vec 0,0,-1
-    bot = new Bot bdt
+    d = new Dot
+    d.v = vec 0,0,-1
+    bot = new Bot d
         
-    lt = []
+    world.lines = []
     
     upd = 1   
     
@@ -219,7 +216,7 @@ tsum = 0
 anim = (now) ->
 
     ctr cr
-    cr.setAttribute 'r', rd
+    cr.setAttribute 'r', screen.radius
     
     dta = (now-lst)/16
     
@@ -227,7 +224,17 @@ anim = (now) ->
     if tsum > 60
         tsum = 0
         for ow in ['bot', 'usr']
-            dots = dt.filter (d) -> d.own == ow
+            dots = world.dots.filter (d) -> d.own == ow
+            
+            if dots.length == 0
+                if ow == 'bot'
+                    log 'ONLINE!'
+                else
+                    log 'OFFLINE!'
+                reset()
+                win.requestAnimationFrame anim
+                return
+            
             units = dots.reduce ((a,b)->a+b.targetUnits), 0
             cnt[ow].innerHTML = "&#9679; #{dots.length} &#9650; #{units}"
             for d in dots
@@ -242,14 +249,14 @@ anim = (now) ->
         
     if not iq.zero() or upd
         
-        for d in dt
+        for d in world.dots
             d.rot iq
             d.upd()
             
-        for l in lt
+        for l in world.lines
             l.upd()
             
-        for x in (lt.concat dt).sort (a,b) -> a.zdepth()-b.zdepth()
+        for x in (world.lines.concat world.dots).sort (a,b) -> a.zdepth()-b.zdepth()
             x.raise()
             
         upd = 0

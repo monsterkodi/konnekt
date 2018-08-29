@@ -34,19 +34,20 @@ svg
         color       #f00
     &.usr
         color       #fff
-    user-select     none
+    user-select         none
+    -moz-user-select    none
+    -webkit-user-select none
     
 .line
     &.usr
-        stroke          #fff
+        stroke      #fff
     &.bot
-        stroke          #f00
+        stroke      #f00
     pointer-events  none
     stroke-linecap  round
     stroke-linejoin bevel
     
 .dot
-    cursor          pointer
     stroke-width    0.1
     fill            #000
     stroke          #555    
@@ -57,6 +58,7 @@ svg
         stroke      none
         fill        #fff
         &.linked:hover      
+            cursor  pointer
             fill    #88f
         
 .pie

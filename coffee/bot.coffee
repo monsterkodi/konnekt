@@ -21,14 +21,9 @@ class Bot
                     
         if @tsum > @delay
             
-            dots = dt.filter (d) -> d.own == 'bot'
+            dots = world.dots.filter (d) -> d.own == 'bot'
             @tsum = 0
-            
-            if dots.length == 0
-                log 'WON!'
-                reset()
-                return
-                
+                            
             dots.sort (a,b) -> b.units - a.units
             
             d = dots[0]

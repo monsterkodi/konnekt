@@ -17,13 +17,13 @@ class Dot
         @targetUnits = 0
         
         @n = []
-        @i = dt.length
+        @i = world.dots.length
         
         @v = vec(randr(-1,1), randr(-1,1), randr(-1,1)).norm()
         
         while true
             ok = true 
-            for d in dt
+            for d in world.dots
                 if @dist(d) < 0.2
                     @v = vec(randr(-1,1), randr(-1,1), randr(-1,1)).norm()
                     ok = false
@@ -35,7 +35,7 @@ class Dot
         @g = add 'g'
         @c = app @g, 'circle', class:'dot', id:@i, cx:0, cy:0, r:1.3
         @c.dot = @
-        dt.push @
+        world.dots.push @
         
     startTimer: (units) ->
         
@@ -89,7 +89,7 @@ class Dot
     depth:      -> (@v.z+1)/2
     zdepth:     -> @depth()
     raise:      -> @g.parentNode.appendChild @g
-    closest:    -> dt.slice(0).sort((a,b) => @dist(a)-@dist(b)).slice 1
+    closest:    -> world.dots.slice(0).sort((a,b) => @dist(a)-@dist(b)).slice 1
     dist:   (d) -> @v.angle d.v
 
     neutralize: ->
@@ -101,7 +101,7 @@ class Dot
     
     linked: (d) -> (d in @n) or (@ in d.n)
     unlink: () ->
-        lt = lt.filter (l) => 
+        world.lines = world.lines.filter (l) => 
             if l.s == @ or l.e == @
                 l.e.n = l.e.n.filter (n) => n != @
                 l.s.n = l.s.n.filter (n) => n != @
@@ -151,7 +151,7 @@ class Dot
             @n.push d
             d.n.push @
             l = new Line @, d
-            lt.push l
+            world.lines.push l
             upd = 1
             l
         else
@@ -170,10 +170,10 @@ class Dot
     send: (v) -> 
         
         dist = (d) -> v.dist u2s d.v
-        clos = dt.slice(0).sort (a,b) => dist(a)-dist(b)
+        clos = world.dots.slice(0).sort (a,b) => dist(a)-dist(b)
         delTmpl()
         if clos[0] == @
-            slp dbg, [u2s(@v), v]        
+            slp dbg, [v, v]
         else
             slp dbg, [u2s(@v), u2s(@v)]    
             l = add 'path', class:'path', stroke:"#ff0", 'stroke-width':2, 'stroke-linejoin':"round", 'stroke-linecap':"round", style:'pointer-events:none'
@@ -184,6 +184,7 @@ class Dot
     rot: (q) -> @v = q.rotate @v
         
     upd: ->
-        @g.setAttribute 'transform', "translate(#{cx+@v.x*rd},#{cy+@v.y*rd}) scale(#{((@depth() + 0.3)/1.5)*rd/20})"
+        p = u2s @v
+        @g.setAttribute 'transform', "translate(#{p.x},#{p.y}) scale(#{((@depth() + 0.3)/1.5)*screen.radius/20})"
         brightness @
             
