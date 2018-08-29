@@ -117,7 +117,7 @@ up = (e) ->
     else
         iq = new Quat
         if tmpl?
-            drg.line tmpl.dot
+            drg.link tmpl.dot
             
     delTmpl()
         
@@ -152,7 +152,7 @@ arc = (a,b) ->
     d += " L #{s.x} #{s.y}"
     d
     
-brightness = (d) -> d.c.style.opacity = (d.depth() + 0.3)/1.5
+brightness = (d) -> d.c.style.opacity = (d.depth() + 0.3)/1.3
     
 # 000      000  000   000  00000000  
 # 000      000  0000  000  000       
@@ -165,6 +165,7 @@ class Line
     constructor: (@s,@e) ->
         
         @c = add 'path', class:'line'
+        @c.classList.add @s.own
        
     depth: -> (@s.depth()+@e.depth())/2 
     zdepth: -> Math.min(@s.depth(),@e.depth()) - 0.001
@@ -190,11 +191,16 @@ reset = ->
     dbg = add 'line', class:'dbg'
     
     dt = [new Dot]
+    dt[0].setOwn 'usr'
     dt[0].startTimer 360
     dt[0].v = vec 0,0,1
     for i in [0...parseInt randr(10,50)]
         new Dot
 
+    bdt = new Dot
+    bdt.v = vec 0,0,-1
+    bot = new Bot bdt
+        
     lt = []
     
     upd = 1   
@@ -213,6 +219,9 @@ anim = (now) ->
     cr.setAttribute 'r', rd
     
     dta = (now-lst)/16
+    
+    bot.anim dta
+    
     rsum.mul 0.8
     # slp dbg, [u2s(vec()), u2s(rsum.times 1/100)]
     

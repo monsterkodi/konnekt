@@ -25,5 +25,6 @@ dt    = []
 lt    = []
 cr    = null
 dbg   = null
+bot   = null 
 tmpl  = null
 rsum  = vec()

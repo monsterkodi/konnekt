@@ -32,21 +32,27 @@ svg
     user-select     none
     
 .line
-    stroke          #fff
+    &.usr
+        stroke          #fff
+    &.bot
+        stroke          #f00
     pointer-events  none
     stroke-linecap  round
+    stroke-linejoin bevel
     
 .dot
     cursor          pointer
     stroke-width    0.1
-    stroke          none
-    fill            #fff
-    &.linked    
-        &:hover
-            fill    #ff0
-    &.neutral
-        fill        #000
-        stroke      #555
+    fill            #000
+    stroke          #555    
+    &.bot
+        stroke      none
+        fill        #f00
+    &.usr
+        stroke      none
+        fill        #fff
+        &.linked:hover      
+            fill    #88f
         
 .pie
     pointer-events  none
