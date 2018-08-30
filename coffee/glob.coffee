@@ -25,6 +25,7 @@ mouse = vec()
 lst   = 0
 upd   = 1
 drg   = null
+snd   = null
 iq    = new Quat
 rq    = new Quat
 cr    = null

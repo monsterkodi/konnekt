@@ -40,25 +40,33 @@ class Dot
     startTimer: (units) ->
         
         @targetUnits += units
+        clearInterval @timer
         @timer = setInterval @onTimer, 100
         if not @pie
             @pie = app @g, 'path', class:'pie'
         
     onTimer: => 
         
+        snd.play "send #{@own}"
+        
+        log "@units #{@units} #{@targetUnits}"
+        
         if @targetUnits > @units
             @units += 10
             if @units >= @targetUnits
                 @units = @targetUnits
-                clearInterval @timer
-                delete @timer
         else
             @units -= 10
             if @units <= @targetUnits
                 @units = @targetUnits
-                clearInterval @timer
-                delete @timer
-            
+
+        if @units == @targetUnits
+            log 'clear'
+            clearInterval @timer
+            delete @timer
+        else
+            log "..... #{@units} #{@targetUnits}"
+                
         if @units == 0
             @unlink()
             
@@ -101,6 +109,7 @@ class Dot
     
     linked: (d) -> (d in @n) or (@ in d.n)
     unlink: () ->
+        
         world.lines = world.lines.filter (l) => 
             if l.s == @ or l.e == @
                 l.e.n = l.e.n.filter (n) => n != @
@@ -129,7 +138,6 @@ class Dot
             return
         
         if @units < @minUnits
-            # log 'empty!'
             return
             
         uh = ceil @units/2
@@ -138,10 +146,11 @@ class Dot
         if d.own != '' and d.own != @own
             ou = -uh
             if uh == d.targetUnits
-                log 'draw!'                
+                snd.play "draw #{@own}"
             else if uh < d.targetUnits
-                log 'lost!'
+                snd.play "lost #{@own}"
             else 
+                snd.play "won #{@own}"
                 lnk = true
                 ou = uh - d.targetUnits
                 d.unlink() 

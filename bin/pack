@@ -7,7 +7,7 @@ konrad -q
 
 cd coffee
 
-cat vect.coffee quat.coffee glob.coffee dot.coffee bot.coffee line.coffee online.coffee > ../js/min.coffee
+cat vec.coffee quat.coffee snd.coffee glob.coffee dot.coffee bot.coffee line.coffee main.coffee > ../js/min.coffee
 
 cd ../js
 
@@ -15,8 +15,8 @@ mkdir min
 
 coffee --no-header -c min.coffee 
 
-../node_modules/.bin/babel-minify min.js -d . -o min/min.js
-# cp min.js min/min.js
+# ../node_modules/.bin/babel-minify min.js -d . -o min/min.js
+cp min.js min/min.js
 ../node_modules/.bin/minify style.css > min/style.css
 ../node_modules/.bin/minify index.html > min/index.html
 

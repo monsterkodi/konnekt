@@ -190,9 +190,13 @@ reset()
 # 000   000  000  0000  000  000 0 000  
 # 000   000  000   000  000  000   000  
 
+snd = new Snd 
+
 tsum = 0
 anim = (now) ->
-
+    
+    snd.tick()
+    
     ctr cr
     cr.setAttribute 'r', screen.radius
     
