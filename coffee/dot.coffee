@@ -142,13 +142,18 @@ class Dot
         cost = 0.5 * r2d(@dist d) / 180
         if d.own == @own
             cost = 0
-         
+            
         ul = ceil @units * 0.5
         uh = ceil ul * (1-cost)
+        
+        if cost == 0
+            if d.targetUnits + uh > 360
+                tooMuch = d.targetUnits + uh - 360
+                uh -= tooMuch
+                ul -= tooMuch
+            
         ou = uh
                         
-        log "link distance #{r2d @dist d} #{cost} #{ceil @units/2} -> #{uh}"
-        
         if d.own != '' and d.own != @own
             ou = -uh
             if uh == d.targetUnits
