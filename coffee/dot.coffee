@@ -139,9 +139,16 @@ class Dot
         if @units < @minUnits
             return
             
-        uh = ceil @units/2
+        cost = 0.5 * r2d(@dist d) / 180
+        if d.own == @own
+            cost = 0
+         
+        ul = ceil @units * 0.5
+        uh = ceil ul * (1-cost)
         ou = uh
                         
+        log "link distance #{r2d @dist d} #{cost} #{ceil @units/2} -> #{uh}"
+        
         if d.own != '' and d.own != @own
             ou = -uh
             if uh == d.targetUnits
@@ -158,7 +165,7 @@ class Dot
             lnk = true
             d.setOwn @own 
         
-        @startTimer  -uh
+        @startTimer  -ul
         d.startTimer ou
         
         if lnk

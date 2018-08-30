@@ -225,7 +225,10 @@ anim = (now) ->
     if tsum > 60
         tsum = 0
         for ow in ['bot', 'usr']
+            
             dots = world.dots.filter (d) -> d.own == ow
+            units = dots.reduce ((a,b)->a+b.targetUnits), 0
+            dots = dots.filter (d) -> d.units > d.minUnits
             
             if dots.length == 0
                 if ow == 'bot'
@@ -236,7 +239,6 @@ anim = (now) ->
                 win.requestAnimationFrame anim
                 return
             
-            units = dots.reduce ((a,b)->a+b.targetUnits), 0
             cnt[ow].innerHTML = "&#9679; #{dots.length} &#9650; #{units}"
             for d in dots
                 d.addUnit()
