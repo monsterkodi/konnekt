@@ -18,13 +18,13 @@ opt = (e,o) ->
 # 000       000      000       000 0 000  
 # 00000000  0000000  00000000  000   000  
 
-elem = (t,o) ->
+elem = (t,o,p=menu) ->
     e = document.createElement t
     if o.text?
         e.innerText = o.text
     if o.click?
         e.addEventListener 'click', o.click
-    menu.appendChild opt e, o
+    p.appendChild opt e, o
     e
         
 app = (p,t,o) ->
@@ -49,6 +49,24 @@ size = ->
     screen.radius = 0.4 * Math.min screen.size.x, screen.size.y
     upd = 1
 size()
+
+# 000   000   0000000   000   000  00000000  00000000     
+# 000   000  000   000  000   000  000       000   000    
+# 000000000  000   000   000 000   0000000   0000000      
+# 000   000  000   000     000     000       000   000    
+# 000   000   0000000       0      00000000  000   000    
+
+enter = (e) ->
+    if d = e.target.dot
+        if d.c.classList.contains('linked') and d.own == 'usr'
+            d.c.classList.add 'src'
+    
+leave = (e) ->
+    if d = e.target.dot
+        d.c.classList.remove 'src'
+    
+svg.addEventListener 'mouseover', enter
+svg.addEventListener 'mouseout', leave
 
 # 00     00   0000000   000   000  00000000  
 # 000   000  000   000  000   000  000       
@@ -116,6 +134,7 @@ up = (e) ->
         iq = new Quat
         if tmpl?
             drg.link tmpl.dot
+        drg.c.classList.remove 'src'
             
     delTmpl()
         
@@ -262,6 +281,9 @@ elem 'div', class:'button', text:'FULLSCREEN', click: ->
     rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
     rfs.call el
 elem 'div', class:'button', text:'RESET', click:reset
-    
-cnt['bot'] = elem 'div', class:'button bot'
-cnt['usr'] = elem 'div', class:'button usr'
+elem 'div', class:'button', text:'VOL +', click:snd.volUp
+cnt['vol'] = elem 'div', class:'button'
+elem 'div', class:'button', text:'VOL -', click:snd.volDown
+cnt['bot'] = elem 'div', class:'button bot', menu2
+cnt['usr'] = elem 'div', class:'button usr', menu2
+snd.volume 0.03125

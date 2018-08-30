@@ -49,7 +49,7 @@ class Dot
         
         snd.play "send #{@own}"
         
-        log "@units #{@units} #{@targetUnits}"
+        # log "@units #{@units} #{@targetUnits}"
         
         if @targetUnits > @units
             @units += 10
@@ -61,11 +61,10 @@ class Dot
                 @units = @targetUnits
 
         if @units == @targetUnits
-            log 'clear'
             clearInterval @timer
             delete @timer
-        else
-            log "..... #{@units} #{@targetUnits}"
+        # else
+            # log "..... #{@units} #{@targetUnits}"
                 
         if @units == 0
             @unlink()
@@ -187,13 +186,12 @@ class Dot
         dist = (d) -> v.dist u2s d.v
         clos = world.dots.slice(0).sort (a,b) => dist(a)-dist(b)
         delTmpl()
-        if clos[0] == @
-            slp dbg, [v, v]
-        else
-            slp dbg, [u2s(@v), u2s(@v)]    
-            l = add 'path', class:'path', stroke:"#ff0", 'stroke-width':2, 'stroke-linejoin':"round", 'stroke-linecap':"round", style:'pointer-events:none'
+        slp dbg, [v, v]
+        if clos[0] != @ and not @linked clos[0]
+            l = add 'path', class:'tmpl'
             l.setAttribute 'd', arc @v, clos[0].v
             l.dot = clos[0]
+            @c.classList.add 'src'
             tmpl = l
         
     rot: (q) -> @v = q.rotate @v

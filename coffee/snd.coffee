@@ -10,37 +10,42 @@ class Snd
 
     constructor: () ->
 
+        @vol = 0
         @tch = {}
         
         @ctx = new (window.AudioContext || window.webkitAudioContext)()
+        
+        @gain = @ctx.createGain()
+        @gain.connect @ctx.destination
+        @volume @vol   
 
         @osc = [0,0,0,0]
         @osc[0] = @ctx.createOscillator()
         @osc[0].type = 'sine'
-        @osc[0].connect @ctx.destination
+        @osc[0].connect @gain
         @osc[0].start()
         @freq 0
         
         @osc[1] = @ctx.createOscillator()
         @osc[1].type = 'sine'
-        @osc[1].connect @ctx.destination
+        @osc[1].connect @gain
         @osc[1].start()
         @freq 1
         
         @osc[2] = @ctx.createOscillator()
         @osc[2].type = 'sawtooth'
-        @osc[2].connect @ctx.destination
+        @osc[2].connect @gain
         @osc[2].start()
         @freq 2
 
         @osc[3] = @ctx.createOscillator()
         @osc[3].type = 'triangle'
-        @osc[3].connect @ctx.destination
+        @osc[3].connect @gain
         @osc[3].start()
         @freq 3
         
     tick: ->
-        log @tch
+        # log @tch if @tch.length
         for n,d of @tch
             if d <= 0
                 # log "del #{n} #{d}"
@@ -63,7 +68,10 @@ class Snd
                     when 'draw usr'   then @freq 3, randr 1100, 2200
                     when 'lost usr'   then @freq 3, randr 1000, 1100
             @tch[n] = d-1
-        
+     
+    volDown: => if @vol < 0.0625 then @volume 0 else @volume @vol/2
+    volUp: => @volume clamp 0.03125, 1, @vol*2
+    volume: (@vol) -> cnt.vol?.innerHTML = "VOL #{floor(@vol * 100) / 100}"; @gain.gain.value = @vol
     freq: (i,f=0) -> @osc[i].frequency.setValueAtTime f, @ctx.currentTime
     
     touch: (n,d=1) -> @tch[n] = d

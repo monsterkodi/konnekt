@@ -9,6 +9,7 @@
 win  = window
 main = document.getElementById 'main'
 menu = main.children[1]
+menu2 = main.children[2]
 svg  = main.children[0]
 
 screen = 

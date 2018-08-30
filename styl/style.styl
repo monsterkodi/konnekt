@@ -22,6 +22,11 @@ svg
     top             0
     left            0
 
+.menu2
+    position        absolute
+    top             0
+    right           0
+    
 .button
     cursor          pointer
     font-family     sans-serif
@@ -48,6 +53,7 @@ svg
     stroke-linejoin bevel
     
 .dot
+    pointer-events  all
     stroke-width    0.1
     fill            #000
     stroke          #555    
@@ -59,8 +65,9 @@ svg
         fill        #fff
         &.linked:hover      
             cursor  pointer
-            fill    #88f
-        
+            // fill    #88f
+    &.src    
+        fill        #88f
 .pie
     pointer-events  none
     stroke          none
@@ -70,3 +77,9 @@ svg
     stroke          #88f
     stroke-width    1
     
+.tmpl
+    stroke-width    2 
+    stroke          #88f 
+    stroke-linejoin bevel
+    stroke-linecap  round
+    pointer-events  none
