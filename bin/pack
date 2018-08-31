@@ -7,7 +7,7 @@ konrad -q
 
 cd coffee
 
-cat vec.coffee quat.coffee snd.coffee glob.coffee dot.coffee bot.coffee line.coffee main.coffee > ../js/min.coffee
+cat vec.coffee quat.coffee pref.coffee snd.coffee glob.coffee dot.coffee bot.coffee line.coffee main.coffee > ../js/min.coffee
 
 cd ../js
 

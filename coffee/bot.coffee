@@ -14,9 +14,9 @@ class Bot
         dot.startTimer 360
         @delay = 240
         @tsum  = 0
+        log 'bot', @tsum
 
     anim: (dta) ->
-        
         @tsum += dta
                     
         if @tsum > @delay

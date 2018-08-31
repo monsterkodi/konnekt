@@ -178,7 +178,7 @@ class Dot
             d.n.push @
             l = new Line @, d
             world.lines.push l
-            upd = 1
+            world.update = 1
             l
         else
             null
@@ -200,11 +200,11 @@ class Dot
         delTmpl()
         slp dbg, [v, v]
         if clos[0] != @ and not @linked clos[0]
-            l = add 'path', class:'tmpl'
+            l = add 'path', class:'tmpl usr'
             l.setAttribute 'd', arc @v, clos[0].v
             l.dot = clos[0]
             @c.classList.add 'src'
-            tmpl = l
+            world.templine.usr = l
         
     rot: (q) -> @v = q.rotate @v
         

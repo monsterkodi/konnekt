@@ -17,12 +17,12 @@ svg
     stroke          white
     fill            none
   
-.menu
+.menul
     position        absolute
     top             0
     left            0
 
-.menu2
+.menur
     position        absolute
     top             0
     right           0
@@ -34,7 +34,7 @@ svg
     padding-bottom  0
     &:hover 
         color       white
-    color           #222
+    color           #444
     &.bot
         color       #f00
     &.usr
@@ -79,7 +79,10 @@ svg
     
 .tmpl
     stroke-width    2 
-    stroke          #88f 
+    &.usr
+        stroke      #88f 
+    &.bot
+        stroke      #ff0
     stroke-linejoin bevel
     stroke-linecap  round
     pointer-events  none

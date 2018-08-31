@@ -69,10 +69,14 @@ class Snd
                     when 'lost usr'   then @freq 3, randr 1000, 1100
             @tch[n] = d-1
      
+    freq: (i,f=0) -> @osc[i].frequency.setValueAtTime f, @ctx.currentTime
+    
     volDown: => if @vol < 0.0625 then @volume 0 else @volume @vol/2
     volUp: => @volume clamp 0.03125, 1, @vol*2
-    volume: (@vol) -> cnt.vol?.innerHTML = "VOL #{floor(@vol * 100) / 100}"; @gain.gain.value = @vol
-    freq: (i,f=0) -> @osc[i].frequency.setValueAtTime f, @ctx.currentTime
+    volume: (@vol) -> 
+        menu.buttons.vol?.innerHTML = "VOL #{floor(@vol * 100) / 100}"
+        @gain.gain.value = @vol
+        pref.set 'volume', @vol
     
     touch: (n,d=1) -> @tch[n] = d
         

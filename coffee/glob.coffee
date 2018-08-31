@@ -6,32 +6,37 @@
  0000000   0000000   0000000   0000000    
 ###
 
-win  = window
-main = document.getElementById 'main'
-menu = main.children[1]
-menu2 = main.children[2]
-svg  = main.children[0]
+win   = window
+main  = document.getElementById 'main'
+svg   = main.children[0]
+pref  = new Pref
 
 screen = 
     size:    vec()
     center:  vec()
     radius:  0
+    
+menu = 
+    left:    main.children[1]
+    right:   main.children[2]
+    buttons: {}
 
 world =
-    dots:  []
-    lines: []
+    update:   0
+    time:     0
+    dots:     []
+    lines:    []
+    templine: {}
+    userRot:  new Quat
+    inertRot: new Quat
+    circle:   null
+    rotSum:   vec()
     
-mouse = vec()
+mouse = 
+    pos:    vec()
+    drag:   null
+    hover:  null
 
-lst   = 0
-upd   = 1
-drg   = null
-snd   = null
-iq    = new Quat
-rq    = new Quat
-cr    = null
-dbg   = null
 bot   = null 
-tmpl  = null
-rsum  = vec()
-cnt   = {}
+snd   = null
+dbg   = null

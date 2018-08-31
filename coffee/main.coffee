@@ -18,7 +18,7 @@ opt = (e,o) ->
 # 000       000      000       000 0 000  
 # 00000000  0000000  00000000  000   000  
 
-elem = (t,o,p=menu) ->
+elem = (t,o,p=menu.left) ->
     e = document.createElement t
     if o.text?
         e.innerText = o.text
@@ -47,26 +47,8 @@ size = ->
     screen.size   = vec br.width,   br.height
     screen.center = vec br.width/2, br.height/2
     screen.radius = 0.4 * Math.min screen.size.x, screen.size.y
-    upd = 1
+    world.update  = 1
 size()
-
-# 000   000   0000000   000   000  00000000  00000000     
-# 000   000  000   000  000   000  000       000   000    
-# 000000000  000   000   000 000   0000000   0000000      
-# 000   000  000   000     000     000       000   000    
-# 000   000   0000000       0      00000000  000   000    
-
-enter = (e) ->
-    if d = e.target.dot
-        if d.c.classList.contains('linked') and d.own == 'usr'
-            d.c.classList.add 'src'
-    
-leave = (e) ->
-    if d = e.target.dot
-        d.c.classList.remove 'src'
-    
-svg.addEventListener 'mouseover', enter
-svg.addEventListener 'mouseout', leave
 
 # 00     00   0000000   000   000  00000000  
 # 000   000  000   000  000   000  000       
@@ -81,26 +63,25 @@ rotq = (v) ->
 
 move = (e) ->
     
-    if drg == 'rot' 
-        rq = rotq vec e.movementX, e.movementY
+    if mouse.drag == 'rot' 
+        world.userRot = rotq vec e.movementX, e.movementY
         for d in world.dots
-            d.rot rq
-            upd = 1
+            d.rot world.userRot
+            world.update = 1
             
-        rsum.x += e.movementX/10
-        rsum.y += e.movementY/10
+        world.rotSum.add vec e.movementX/10, e.movementY/10
                         
-    else if drg
+    else if mouse.drag
     
         switch e.buttons
             when 1
-                drg.send vec e.clientX, e.clientY
-                upd = 1
+                mouse.drag.send vec e.clientX, e.clientY
+                world.update = 1
             when 2
-                drg.v = s2u vec e.clientX, e.clientY, drg.v.z
-                upd = 1
+                mouse.drag.v = s2u vec e.clientX, e.clientY, mouse.drag.v.z
+                world.update = 1
         
-    mouse = vec e.clientX, e.clientY
+    mouse.pos = vec e.clientX, e.clientY
     
 # 0000000     0000000   000   000  000   000  
 # 000   000  000   000  000 0 000  0000  000  
@@ -109,17 +90,21 @@ move = (e) ->
 # 0000000     0000000   00     00  000   000  
 
 delTmpl = ->
-    tmpl?.remove()
-    tmpl = null
+    
+    world.templine.usr?.remove()
+    delete world.templine.usr
 
 down = (e) ->
+    
     delTmpl()
-    iq = new Quat
-    if drg = e.target.dot
-        if drg.c.classList.contains 'linked'
-            if drg.own != 'bot'
+    world.inertRot = new Quat
+    
+    if mouse.drag = e.target.dot
+        if mouse.drag.c.classList.contains 'linked'
+            if mouse.drag.own != 'bot'
                 return
-    drg = 'rot'
+                
+    mouse.drag = 'rot'
 
 # 000   000  00000000   
 # 000   000  000   000  
@@ -127,21 +112,51 @@ down = (e) ->
 # 000   000  000        
 #  0000000   000        
 
-up = (e) -> 
-    if drg == 'rot'
-        iq = rotq rsum
-    else
-        iq = new Quat
-        if tmpl?
-            drg.link tmpl.dot
-        drg.c.classList.remove 'src'
+up = (e) ->
+    
+    if mouse.drag == 'rot'
+        world.inertRot = rotq world.rotSum
+    else if mouse.drag
+        world.inertRot = new Quat
+        if world.templine.usr?
+            mouse.drag.link world.templine.usr.dot
+        mouse.drag.c.classList.remove 'src'
             
     delTmpl()
         
-    drg = null
-    upd = 1
+    mouse.drag = null
+    world.update = 1
+    
+# 000   000   0000000   000   000  00000000  00000000     
+# 000   000  000   000  000   000  000       000   000    
+# 000000000  000   000   000 000   0000000   0000000      
+# 000   000  000   000     000     000       000   000    
+# 000   000   0000000       0      00000000  000   000    
+
+enter = (e) ->
+    
+    return if mouse.drag
+    
+    if d = e.target.dot
+        
+        if mouse.hover
+            mouse.hover.c.classList.remove 'src'
+            mouse.hover = null
+        
+        if d.c.classList.contains('linked') and d.own == 'usr'
+            mouse.hover = d
+            d.c.classList.add 'src'
+    
+leave = (e) ->
+    if d = e.target.dot
+        if d == mouse.hover
+            if d != mouse.drag
+                d.c.classList.remove 'src'
+            mouse.hover = null
     
 win.addEventListener 'resize',    size
+svg.addEventListener 'mouseover', enter
+svg.addEventListener 'mouseout',  leave
 win.addEventListener 'mousemove', move
 win.addEventListener 'mousedown', down
 win.addEventListener 'mouseup',   up
@@ -180,8 +195,8 @@ brightness = (d) -> d.c.style.opacity = (d.depth() + 0.3)/1.3
 reset = ->
     
     svg.innerHTML = ''
-    cr = add 'circle', cx:screen.center.x, cy:screen.center.y, r:screen.radius, stroke:"#333", 'stroke-width':1
-    cr.v = vec()
+    world.circle = add 'circle', cx:screen.center.x, cy:screen.center.y, r:screen.radius, stroke:"#333", 'stroke-width':1
+    world.circle.v = vec()
     
     dbg = add 'line', class:'dbg'
     
@@ -198,8 +213,7 @@ reset = ->
     bot = new Bot d
         
     world.lines = []
-    
-    upd = 1   
+    world.update = 1   
     
 reset()
         
@@ -216,12 +230,12 @@ anim = (now) ->
     
     snd.tick()
     
-    ctr cr
-    cr.setAttribute 'r', screen.radius
+    ctr world.circle
+    world.circle.setAttribute 'r', screen.radius
     
-    dta = (now-lst)/16
+    world.delta = (now-world.time)/16
     
-    tsum += dta
+    tsum += world.delta
     if tsum > 60
         tsum = 0
         for ow in ['bot', 'usr']
@@ -239,21 +253,21 @@ anim = (now) ->
                 win.requestAnimationFrame anim
                 return
             
-            cnt[ow].innerHTML = "&#9679; #{dots.length} &#9650; #{units}"
+            menu.buttons[ow].innerHTML = "&#9679; #{dots.length} &#9650; #{units}"
             for d in dots
                 d.addUnit()
     
-    bot.anim dta
+    bot.anim world.delta
     
-    rsum.mul 0.8
+    world.rotSum.mul 0.8
     # slp dbg, [u2s(vec()), u2s(rsum.times 1/100)]
     
-    iq.slerp new Quat(), 0.01 * dta
+    world.inertRot.slerp new Quat(), 0.01 * world.delta
         
-    if not iq.zero() or upd
+    if not world.inertRot.zero() or world.update
         
         for d in world.dots
-            d.rot iq
+            d.rot world.inertRot
             d.upd()
             
         for l in world.lines
@@ -262,13 +276,13 @@ anim = (now) ->
         for x in (world.lines.concat world.dots).sort (a,b) -> a.zdepth()-b.zdepth()
             x.raise()
             
-        upd = 0
+        world.update = 0
     
     dbg.parentNode.appendChild dbg
-    tmpl?.parentNode?.appendChild tmpl
+    world.templine.usr?.parentNode?.appendChild world.templine.usr
     
     win.requestAnimationFrame anim
-    lst=now
+    world.time=now
         
 win.requestAnimationFrame anim
 
@@ -282,10 +296,12 @@ elem 'div', class:'button', text:'FULLSCREEN', click: ->
     el = document.documentElement
     rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
     rfs.call el
+    
 elem 'div', class:'button', text:'RESET', click:reset
 elem 'div', class:'button', text:'VOL +', click:snd.volUp
-cnt['vol'] = elem 'div', class:'button'
+menu.buttons['vol'] = elem 'div', class:'button'
 elem 'div', class:'button', text:'VOL -', click:snd.volDown
-cnt['bot'] = elem 'div', class:'button bot', menu2
-cnt['usr'] = elem 'div', class:'button usr', menu2
-snd.volume 0.03125
+
+menu.buttons['bot'] = elem 'div', class:'button bot', menu.right
+menu.buttons['usr'] = elem 'div', class:'button usr', menu.right
+
