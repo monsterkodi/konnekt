@@ -105,6 +105,7 @@ delTmpl = ->
 down = (e) ->
     
     delTmpl()
+    mouse.drag?.c?.classList.remove 'src'
     
     world.inertRot = new Quat
     
@@ -114,7 +115,6 @@ down = (e) ->
                 if mouse.drag.own != 'bot'
                     return
         
-    mouse.drag?.c?.classList.remove 'src'
     mouse.drag = 'rot'
 
 # 000   000  00000000   
@@ -146,6 +146,8 @@ up = (e) ->
 
 enter = (e) ->
     
+    mouse.touch = e.target.dot
+    
     return if mouse.drag
     
     return if world.pause
@@ -162,6 +164,8 @@ enter = (e) ->
     
 leave = (e) ->
     
+    mouse.touch = null
+        
     if d = e.target.dot
         if d == mouse.hover
             if d != mouse.drag
@@ -290,13 +294,13 @@ anim = (now) ->
         world.ticks += 1
         if world.ticks % 60 == 0
             
-            for ow in ['bot', 'usr']
+            for ow in ['usr', 'bot']
                 
                 dots  = world.dots.filter (d) -> d.own == ow
                 world.units[ow] = dots.reduce ((a,b) -> a+b.targetUnits), 0
                 dots  = dots.filter (d) -> d.units > d.minUnits
                 
-                menu.buttons[ow].innerHTML = "&#9679; #{dots.length} &#9650; #{world.units[ow]}"
+                menu.buttons[ow].innerHTML = "&#9679; #{dots.length}"
                     
                 if dots.length == 0
                     if ow == 'bot'
@@ -352,8 +356,8 @@ win.requestAnimationFrame anim
 # 000 0 000  000       000  0000  000   000    
 # 000   000  00000000  000   000   0000000     
 
-menu.buttons['bot'] = elem 'div', class:'button bot', menu.right
 menu.buttons['usr'] = elem 'div', class:'button usr', menu.right
+menu.buttons['bot'] = elem 'div', class:'button bot', menu.right
 
 menu.buttons['pause'] = elem 'div', class:'button', text:'PAUSE', click: -> pause()
 elem 'div', class:'button', text:'FULLSCREEN', click: ->
@@ -373,7 +377,7 @@ choice = (info) ->
                 info.cb c
         menu.buttons[c] = elem 'div', class:'button inline', text:c, click: chose info, c
 
-elem 'div', class:'button', text:'WIN', click: -> pause 'ONLINE!', 'usr'
+# elem 'div', class:'button', text:'WIN', click: -> pause 'ONLINE!', 'usr'
 elem 'div', class:'button', text:'RESET', click:reset
 choice name:'NODES', values:['16', '24', '32', '40'], cb: (c) -> world.nodes = parseInt c
 choice name:'VOL',   values:['-', 'VOL', '+'], cb: (c) -> 

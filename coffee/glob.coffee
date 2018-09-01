@@ -61,6 +61,7 @@ mouse =
     pos:    vec()
     drag:   null
     hover:  null
+    touch:  null
 
 bot  = null 
 snd  = null

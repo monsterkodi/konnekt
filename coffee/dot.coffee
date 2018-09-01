@@ -147,24 +147,31 @@ class Dot
                 tooMuch = d.targetUnits + uh - 360
                 uh -= tooMuch
                 ul -= tooMuch
-            
+                                
         ou = uh
                         
         if d.own != '' and d.own != @own
             ou = -uh
             if uh == d.targetUnits
                 snd.play "draw #{@own}"
+                new Sprk @, uh
+                new Sprk d, uh
             else if uh < d.targetUnits
                 snd.play "lost #{@own}"
+                new Sprk @, uh
+                new Sprk d, uh
             else 
                 snd.play "won #{@own}"
                 lnk = true
                 ou = uh - d.targetUnits
+                new Sprk @, d.targetUnits
+                new Sprk d, d.targetUnits               
                 d.unlink() 
                 d.setOwn @own
         else
             lnk = true
             d.setOwn @own 
+            new Sprk d, floor ul * cost
         
         @startTimer  -ul
         d.startTimer ou
@@ -180,6 +187,7 @@ class Dot
             null
                
     setOwn: (@own) -> 
+        
         @c.classList.toggle 'bot', @own == 'bot'
         @c.classList.toggle 'usr', @own == 'usr'
         
@@ -190,13 +198,18 @@ class Dot
     # 0000000   00000000  000   000  0000000    
     
     send: (v) -> 
-        dist = (d) -> v.angle d.v
-        clos = world.dots.slice(0).sort (a,b) => dist(a)-dist(b)
         
         delTmpl()
+        log 'mouse.touch', mouse.touch
+        if mouse.touch and mouse.touch != @ and not @linked mouse.touch
+            tgt = mouse.touch
+        else
+            dist = (d) -> v.angle d.v
+            clos = world.dots.slice(0).sort (a,b) => dist(a)-dist(b)
+            tgt = clos[0]
         
-        if clos[0] != @ and not @linked clos[0]
-            target = clos[0]
+        if tgt != @ and not @linked tgt
+            target = tgt
         else
             target = 
                 v: v

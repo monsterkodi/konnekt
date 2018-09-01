@@ -9,7 +9,7 @@
 class Grph
 
     constructor: ->
-        @maxSmpl = 200
+        @maxSmpl = 300
         @smpls = 
             bot: []
             usr: []
@@ -36,6 +36,6 @@ class Grph
             
     plot: -> 
         
-        @g.setAttribute 'transform', "translate(#{screen.size.x-120-@smpls.bot.length}, 40)"
+        @g.setAttribute 'transform', "translate(#{screen.size.x-60-@smpls.bot.length}, 40)"
 
 
