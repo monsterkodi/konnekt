@@ -22,8 +22,11 @@ menu =
     buttons: {}
 
 world =
+    pause:    0
     update:   0
     time:     0
+    delta:    0
+    ticks:    0
     dots:     []
     lines:    []
     templine: {}
@@ -37,6 +40,6 @@ mouse =
     drag:   null
     hover:  null
 
-bot   = null 
-snd   = null
-dbg   = null
+bot = null 
+snd = null
+dbg = null

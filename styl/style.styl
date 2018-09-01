@@ -1,5 +1,7 @@
 
 #main
+    font-family     sans-serif
+    color           #222
     background      black
     position        absolute 
     left            0
@@ -9,6 +11,9 @@
     padding         0
     margin          0
     overflow        hidden
+    user-select         none
+    -moz-user-select    none
+    -webkit-user-select none
     
 svg
     width           100%
@@ -27,27 +32,36 @@ svg
     top             0
     right           0
     
+.choice
+.inline
+    display         inline-block
+    
+.choice
 .button
-    cursor          pointer
-    font-family     sans-serif
     padding         1em
     padding-bottom  0
+    
+.button
+    display         inline-block
+    cursor          pointer
     &:hover 
         color       white
     color           #444
+    &.highlight
     &.bot
         color       #f00
     &.usr
         color       #fff
-    user-select         none
-    -moz-user-select    none
-    -webkit-user-select none
     
 .line
     &.usr
         stroke      #fff
+        &.tmp
+            stroke  #88f
     &.bot
         stroke      #f00
+        &.tmp
+            stroke  #ff0
     pointer-events  none
     stroke-linecap  round
     stroke-linejoin bevel
@@ -65,7 +79,6 @@ svg
         fill        #fff
         &.linked:hover      
             cursor  pointer
-            // fill    #88f
     &.src    
         fill        #88f
 .pie
@@ -77,12 +90,3 @@ svg
     stroke          #88f
     stroke-width    1
     
-.tmpl
-    stroke-width    2 
-    &.usr
-        stroke      #88f 
-    &.bot
-        stroke      #ff0
-    stroke-linejoin bevel
-    stroke-linecap  round
-    pointer-events  none

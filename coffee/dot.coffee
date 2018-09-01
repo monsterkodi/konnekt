@@ -8,7 +8,7 @@
 
 class Dot
     
-    constructor: ->
+    constructor: (@v) ->
         
         @minUnits = 12 # minimum number of units to allow linking other dots 
         
@@ -18,25 +18,19 @@ class Dot
         
         @n = []
         @i = world.dots.length
-        
-        @v = vec(randr(-1,1), randr(-1,1), randr(-1,1)).norm()
-        
-        while true
-            ok = true 
-            for d in world.dots
-                if @dist(d) < 0.2
-                    @v = vec(randr(-1,1), randr(-1,1), randr(-1,1)).norm()
-                    ok = false
-                    break
-            if ok 
-                break
-            
+                            
         @v.norm()
         @g = add 'g'
         @c = app @g, 'circle', class:'dot', id:@i, cx:0, cy:0, r:1.3
         @c.dot = @
         world.dots.push @
         
+    # 000000000  000  00     00  00000000  00000000   
+    #    000     000  000   000  000       000   000  
+    #    000     000  000000000  0000000   0000000    
+    #    000     000  000 0 000  000       000   000  
+    #    000     000  000   000  00000000  000   000  
+    
     startTimer: (units) ->
         
         @targetUnits += units
@@ -46,6 +40,8 @@ class Dot
             @pie = app @g, 'path', class:'pie'
         
     onTimer: => 
+        
+        return if world.pause
         
         snd.play "send #{@own}"
         
@@ -194,15 +190,13 @@ class Dot
     # 0000000   00000000  000   000  0000000    
     
     send: (v) -> 
-        
-        dist = (d) -> v.dist u2s d.v
+        dist = (d) -> v.angle d.v
         clos = world.dots.slice(0).sort (a,b) => dist(a)-dist(b)
+        
         delTmpl()
-        slp dbg, [v, v]
         if clos[0] != @ and not @linked clos[0]
-            l = add 'path', class:'tmpl usr'
-            l.setAttribute 'd', arc @v, clos[0].v
-            l.dot = clos[0]
+            l =  new Line @, clos[0]
+            l.c.classList.add 'tmp'
             @c.classList.add 'src'
             world.templine.usr = l
         

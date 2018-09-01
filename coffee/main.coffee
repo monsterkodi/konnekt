@@ -34,8 +34,14 @@ app = (p,t,o) ->
     
 add = (t,o) -> app svg, t, o
   
-s2u = (v) -> vec((v.x/screen.size.x-0.5)/(screen.radius/screen.size.x), (v.y/screen.size.y-0.5)/(screen.radius/screen.size.y), v.z).norm()
 u2s = (v) -> vec screen.center.x+v.x*screen.radius, screen.center.y+v.y*screen.radius
+
+m2u = (m) ->
+    sp = m.minus(screen.center).times 1/screen.radius
+    if sp.length() > 1
+        sp.norm()
+    else
+        vec sp.x, sp.y, sqrt 1 - sp.x*sp.x - sp.y*sp.y
 
 ctr = (s) ->
     p = u2s s.v
@@ -63,7 +69,10 @@ rotq = (v) ->
 
 move = (e) ->
     
-    if mouse.drag == 'rot' 
+    mouse.pos = vec e.clientX, e.clientY
+    
+    if mouse.drag == 'rot'
+        
         world.userRot = rotq vec e.movementX, e.movementY
         for d in world.dots
             d.rot world.userRot
@@ -75,13 +84,12 @@ move = (e) ->
     
         switch e.buttons
             when 1
-                mouse.drag.send vec e.clientX, e.clientY
+                mouse.drag.send m2u mouse.pos
                 world.update = 1
             when 2
-                mouse.drag.v = s2u vec e.clientX, e.clientY, mouse.drag.v.z
+                mouse.drag.v = m2u mouse.pos
                 world.update = 1
         
-    mouse.pos = vec e.clientX, e.clientY
     
 # 0000000     0000000   000   000  000   000  
 # 000   000  000   000  000 0 000  0000  000  
@@ -91,19 +99,22 @@ move = (e) ->
 
 delTmpl = ->
     
-    world.templine.usr?.remove()
+    world.templine.usr?.c.remove()
     delete world.templine.usr
 
 down = (e) ->
     
     delTmpl()
+    
     world.inertRot = new Quat
     
     if mouse.drag = e.target.dot
-        if mouse.drag.c.classList.contains 'linked'
-            if mouse.drag.own != 'bot'
-                return
-                
+        if not world.pause
+            if mouse.drag.c.classList.contains 'linked'
+                if mouse.drag.own != 'bot'
+                    return
+        
+    mouse.drag?.c?.classList.remove 'src'
     mouse.drag = 'rot'
 
 # 000   000  00000000   
@@ -119,7 +130,7 @@ up = (e) ->
     else if mouse.drag
         world.inertRot = new Quat
         if world.templine.usr?
-            mouse.drag.link world.templine.usr.dot
+            mouse.drag.link world.templine.usr.e
         mouse.drag.c.classList.remove 'src'
             
     delTmpl()
@@ -137,6 +148,8 @@ enter = (e) ->
     
     return if mouse.drag
     
+    return if world.pause
+    
     if d = e.target.dot
         
         if mouse.hover
@@ -148,6 +161,7 @@ enter = (e) ->
             d.c.classList.add 'src'
     
 leave = (e) ->
+    
     if d = e.target.dot
         if d == mouse.hover
             if d != mouse.drag
@@ -184,7 +198,7 @@ arc = (a,b) ->
     d += " L #{s.x} #{s.y}"
     d
     
-brightness = (d) -> d.c.style.opacity = (d.depth() + 0.3)/1.3
+brightness = (d) -> d.c.style.opacity = (d.depth() + 0.4)/1.4
             
 # 00000000   00000000   0000000  00000000  000000000  
 # 000   000  000       000       000          000     
@@ -192,7 +206,15 @@ brightness = (d) -> d.c.style.opacity = (d.depth() + 0.3)/1.3
 # 000   000  000            000  000          000     
 # 000   000  00000000  0000000   00000000     000     
 
+pause = -> 
+    world.pause = not world.pause
+    menu.buttons['pause'].classList.toggle 'highlight', world.pause
+
 reset = ->
+    
+    p = world.pause
+    world.pause = true
+    world.ticks = 0
     
     svg.innerHTML = ''
     world.circle = add 'circle', cx:screen.center.x, cy:screen.center.y, r:screen.radius, stroke:"#333", 'stroke-width':1
@@ -201,19 +223,36 @@ reset = ->
     dbg = add 'line', class:'dbg'
     
     world.dots = []
-    d = new Dot
+    d = new Dot vec 0,0,1
     d.setOwn 'usr'
-    d.startTimer 360
-    d.v = vec 0,0,1
-    for i in [0...parseInt randr(10,50)]
-        new Dot
-
-    d = new Dot
-    d.v = vec 0,0,-1
-    bot = new Bot d
+    
+    nodes = world.nodes ? 2 * parseInt randr 8, 20
+    for i in [1...nodes/2]
+        v = vec randr(-1,1), randr(-1,1), randr(0,1)
+        v.norm()
         
-    world.lines = []
+        while true
+            ok = true 
+            for ed in world.dots
+                if v.angle(ed.v) < 0.2
+                    v = vec randr(-1,1), randr(-1,1), randr(0,1) 
+                    v.norm()
+                    ok = false
+                    break
+            if ok 
+                break
+        
+        new Dot v
+        
+    for i in [nodes/2-1..0]
+        new Dot world.dots[i].v.times(-1).add vec 0.01
+    
+    bot = new Bot world.dots[world.dots.length-1]
+        
+    world.lines  = []
     world.update = 1   
+    world.pause  = p
+    d.startTimer 360
     
 reset()
         
@@ -225,7 +264,6 @@ reset()
 
 snd = new Snd 
 
-tsum = 0
 anim = (now) ->
     
     snd.tick()
@@ -235,29 +273,31 @@ anim = (now) ->
     
     world.delta = (now-world.time)/16
     
-    tsum += world.delta
-    if tsum > 60
-        tsum = 0
-        for ow in ['bot', 'usr']
-            
-            dots = world.dots.filter (d) -> d.own == ow
-            units = dots.reduce ((a,b)->a+b.targetUnits), 0
-            dots = dots.filter (d) -> d.units > d.minUnits
-            
-            if dots.length == 0
-                if ow == 'bot'
-                    log 'ONLINE!'
-                else
-                    log 'OFFLINE!'
-                reset()
-                win.requestAnimationFrame anim
-                return
-            
-            menu.buttons[ow].innerHTML = "&#9679; #{dots.length} &#9650; #{units}"
-            for d in dots
-                d.addUnit()
+    if not world.pause
     
-    bot.anim world.delta
+        world.ticks += 1
+        if world.ticks % 60 == 0
+            
+            for ow in ['bot', 'usr']
+                
+                dots = world.dots.filter (d) -> d.own == ow
+                units = dots.reduce ((a,b)->a+b.targetUnits), 0
+                dots = dots.filter (d) -> d.units > d.minUnits
+                
+                if dots.length == 0
+                    if ow == 'bot'
+                        log 'ONLINE!'
+                    else
+                        log 'OFFLINE!'
+                    reset()
+                    win.requestAnimationFrame anim
+                    return
+                
+                menu.buttons[ow].innerHTML = "&#9679; #{dots.length} &#9650; #{units}"
+                for d in dots
+                    d.addUnit()
+    
+        bot.anim world.delta
     
     world.rotSum.mul 0.8
     # slp dbg, [u2s(vec()), u2s(rsum.times 1/100)]
@@ -273,13 +313,18 @@ anim = (now) ->
         for l in world.lines
             l.upd()
             
-        for x in (world.lines.concat world.dots).sort (a,b) -> a.zdepth()-b.zdepth()
+        world.templine.usr?.upd()
+        world.templine.bot?.upd()
+            
+        items = world.lines.concat world.dots
+        items.push world.templine.usr if world.templine.usr?
+        items.push world.templine.bot if world.templine.bot?
+        for x in items.sort (a,b) -> a.zdepth()-b.zdepth()
             x.raise()
             
         world.update = 0
     
     dbg.parentNode.appendChild dbg
-    world.templine.usr?.parentNode?.appendChild world.templine.usr
     
     win.requestAnimationFrame anim
     world.time=now
@@ -292,16 +337,30 @@ win.requestAnimationFrame anim
 # 000 0 000  000       000  0000  000   000    
 # 000   000  00000000  000   000   0000000     
 
+menu.buttons['bot'] = elem 'div', class:'button bot', menu.right
+menu.buttons['usr'] = elem 'div', class:'button usr', menu.right
+
+menu.buttons['pause'] = elem 'div', class:'button', text:'PAUSE', click:pause
 elem 'div', class:'button', text:'FULLSCREEN', click: ->
     el = document.documentElement
     rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
     rfs.call el
     
+choice = (info) ->
+    elem 'div', class:'choice label', text:info.name
+    for c in info.values
+        chose = (info,c) -> (e) -> 
+            for value in info.values
+                menu.buttons[value].classList.remove 'highlight'
+            if c not in ['+', '-', 'VOL']
+                e.target.classList.add 'highlight'
+            if c not in ['VOL']
+                info.cb c
+        menu.buttons[c] = elem 'div', class:'button inline', text:c, click: chose info, c
+
 elem 'div', class:'button', text:'RESET', click:reset
-elem 'div', class:'button', text:'VOL +', click:snd.volUp
-menu.buttons['vol'] = elem 'div', class:'button'
-elem 'div', class:'button', text:'VOL -', click:snd.volDown
-
-menu.buttons['bot'] = elem 'div', class:'button bot', menu.right
-menu.buttons['usr'] = elem 'div', class:'button usr', menu.right
-
+choice name:'NODES', values:['16', '24', '32', '40'], cb: (c) -> world.nodes = parseInt c
+choice name:'VOL',   values:['-', 'VOL', '+'], cb: (c) -> 
+    switch c
+        when '+' then snd.volUp()
+        when '-' then snd.volDown()
