@@ -1,6 +1,8 @@
 
 usrColor = #88f
+usrHighl = #fff
 botColor = #f00
+botHighl = #ff0
 
 #main
     font-family     sans-serif
@@ -54,20 +56,20 @@ svg
     &.bot
         color       botColor
     &.usr
-        color       #fff
+        color       usrColor
     
 .menur .button
     display         block
         
 .line
     &.usr
-        stroke      #fff
+        stroke      usrColor
         &.tmp
-            stroke  usrColor
+            stroke  usrHighl
     &.bot
         stroke      botColor
         &.tmp
-            stroke  #ff0
+            stroke  botHighl
     pointer-events  none
     stroke-linecap  round
     stroke-linejoin bevel
@@ -76,7 +78,7 @@ svg
     stroke-width    1
     fill            none
     &.usr
-        stroke      #fff
+        stroke      usrColor
     &.bot
         stroke      botColor
     
@@ -89,14 +91,14 @@ svg
         stroke      none
         fill        botColor
         &.src    
-            fill    #ff0
+            fill    botHighl
     &.usr
         stroke      none
-        fill        #fff
+        fill        usrColor
         &.linked:hover      
             cursor  pointer
         &.src    
-            fill    usrColor
+            fill    usrHighl
 .pie
     pointer-events  none
     stroke          none
@@ -127,7 +129,7 @@ svg
 .spark
     stroke          none
     &.usr
-        fill        #fff
+        fill        usrColor
     &.bot
         fill        botColor
     
