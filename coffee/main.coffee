@@ -21,6 +21,10 @@ elem = (t,o,p=menu.left) ->
     p.appendChild opt e, o
     e
           
+msg = (t) ->
+    
+    elem 'div', class:'msg', text:t, main
+    
 u2s = (v) -> vec screen.center.x+v.x*screen.radius, screen.center.y+v.y*screen.radius
 
 m2u = (m) ->
@@ -283,9 +287,9 @@ anim = (now) ->
                 
                 if dots.length == 0
                     if ow == 'bot'
-                        log 'ONLINE!'
+                        msg 'ONLINE!'
                     else
-                        log 'OFFLINE!'
+                        msg 'OFFLINE!'
                     reset()
                     win.requestAnimationFrame anim
                     return
