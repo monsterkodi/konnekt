@@ -233,7 +233,7 @@ reset = ->
     
     grph = new Grph
     
-    world.circle = add 'circle', cx:screen.center.x, cy:screen.center.y, r:screen.radius, stroke:"#333", 'stroke-width':1
+    world.circle = add 'circle', class:'world', cx:screen.center.x, cy:screen.center.y, r:screen.radius
     world.circle.v = vec()
     
     dbg = add 'line', class:'dbg'
