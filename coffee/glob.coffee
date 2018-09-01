@@ -49,6 +49,7 @@ world =
     delta:    0
     ticks:    0
     dots:     []
+    sparks:   []
     lines:    []
     tmpline:  {}
     units:    {}

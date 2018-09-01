@@ -200,7 +200,7 @@ class Dot
     send: (v) -> 
         
         delTmpl()
-        log 'mouse.touch', mouse.touch
+
         if mouse.touch and mouse.touch != @ and not @linked mouse.touch
             tgt = mouse.touch
         else

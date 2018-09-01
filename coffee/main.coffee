@@ -99,7 +99,7 @@ move = (e) ->
 
 delTmpl = ->
     
-    world.tmpline.usr?.c.remove()
+    world.tmpline.usr?.del()
     delete world.tmpline.usr
 
 down = (e) ->
@@ -202,7 +202,7 @@ arc = (a,b) ->
     d += " L #{s.x} #{s.y}"
     d
     
-brightness = (d) -> d.c.style.opacity = (d.depth() + 0.4)/1.4
+brightness = (d) -> d.c.style.opacity = (d.depth() + 0.3)/1.3
 
 # 00000000    0000000   000   000   0000000  00000000  
 # 000   000  000   000  000   000  000       000       
@@ -344,6 +344,9 @@ anim = (now) ->
         world.update = 0
     
     dbg.parentNode.appendChild dbg
+    
+    for spark in world.sparks.slice 0
+        spark.upd()
     
     win.requestAnimationFrame anim
     world.time=now

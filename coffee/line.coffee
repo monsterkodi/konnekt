@@ -13,9 +13,10 @@ class Line
         @c = add 'path', class:'line'
         @c.classList.add @s.own
        
+    del: -> @c.remove()
     depth: -> (@s.depth()+@e.depth())/2 
     zdepth: -> Math.min(@s.depth(),@e.depth()) - 0.001
-    raise: -> @c.parentNode.appendChild @c
+    raise: -> @c.parentNode?.appendChild @c
     upd: ->
         
         @c.setAttribute 'd', arc @s.v, @e.v
