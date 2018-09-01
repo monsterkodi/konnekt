@@ -5,12 +5,6 @@
 000 0 000  000   000  000  000  0000    
 000   000  000   000  000  000   000    
 ###
-
-opt = (e,o) ->
-    if o?
-        for k in Object.keys o
-            e.setAttribute k, o[k]
-    e
     
 # 00000000  000      00000000  00     00  
 # 000       000      000       000   000  
@@ -26,14 +20,7 @@ elem = (t,o,p=menu.left) ->
         e.addEventListener 'click', o.click
     p.appendChild opt e, o
     e
-        
-app = (p,t,o) ->
-    e = document.createElementNS "http://www.w3.org/2000/svg", t
-    p.appendChild opt e, o
-    e
-    
-add = (t,o) -> app svg, t, o
-  
+          
 u2s = (v) -> vec screen.center.x+v.x*screen.radius, screen.center.y+v.y*screen.radius
 
 m2u = (m) ->
@@ -48,12 +35,19 @@ ctr = (s) ->
     s.setAttribute 'cx', p.x
     s.setAttribute 'cy', p.y
 
+#  0000000  000  0000000  00000000  
+# 000       000     000   000       
+# 0000000   000    000    0000000   
+#      000  000   000     000       
+# 0000000   000  0000000  00000000  
+
 size = -> 
     br = svg.getBoundingClientRect()
     screen.size   = vec br.width,   br.height
     screen.center = vec br.width/2, br.height/2
     screen.radius = 0.4 * Math.min screen.size.x, screen.size.y
     world.update  = 1
+    grph?.plot()
 size()
 
 # 00     00   0000000   000   000  00000000  
@@ -217,6 +211,9 @@ reset = ->
     world.ticks = 0
     
     svg.innerHTML = ''
+    
+    grph = new Grph
+    
     world.circle = add 'circle', cx:screen.center.x, cy:screen.center.y, r:screen.radius, stroke:"#333", 'stroke-width':1
     world.circle.v = vec()
     
@@ -280,9 +277,9 @@ anim = (now) ->
             
             for ow in ['bot', 'usr']
                 
-                dots = world.dots.filter (d) -> d.own == ow
-                units = dots.reduce ((a,b)->a+b.targetUnits), 0
-                dots = dots.filter (d) -> d.units > d.minUnits
+                dots  = world.dots.filter (d) -> d.own == ow
+                world.units[ow] = dots.reduce ((a,b) -> a+b.targetUnits), 0
+                dots  = dots.filter (d) -> d.units > d.minUnits
                 
                 if dots.length == 0
                     if ow == 'bot'
@@ -293,9 +290,12 @@ anim = (now) ->
                     win.requestAnimationFrame anim
                     return
                 
-                menu.buttons[ow].innerHTML = "&#9679; #{dots.length} &#9650; #{units}"
+                menu.buttons[ow].innerHTML = "&#9679; #{dots.length} &#9650; #{world.units[ow]}"
                 for d in dots
                     d.addUnit()
+            
+            grph.sample()
+            grph.plot()
     
         bot.anim world.delta
     

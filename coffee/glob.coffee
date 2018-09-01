@@ -8,7 +8,28 @@
 
 win   = window
 main  = document.getElementById 'main'
+
+#  0000000  000   000   0000000   
+# 000       000   000  000        
+# 0000000    000 000   000  0000  
+#      000     000     000   000  
+# 0000000       0       0000000   
+
 svg   = main.children[0]
+
+opt = (e,o) ->
+    if o?
+        for k in Object.keys o
+            e.setAttribute k, o[k]
+    e
+    
+app = (p,t,o) ->
+    e = document.createElementNS "http://www.w3.org/2000/svg", t
+    p.appendChild opt e, o
+    e
+    
+add = (t,o) -> app svg, t, o
+
 pref  = new Pref
 
 screen = 
@@ -29,7 +50,8 @@ world =
     ticks:    0
     dots:     []
     lines:    []
-    tmpline: {}
+    tmpline:  {}
+    units:    {}
     userRot:  new Quat
     inertRot: new Quat
     circle:   null
@@ -40,6 +62,7 @@ mouse =
     drag:   null
     hover:  null
 
-bot = null 
-snd = null
-dbg = null
+bot  = null 
+snd  = null
+dbg  = null
+grph = null
