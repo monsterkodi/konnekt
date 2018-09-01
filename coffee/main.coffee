@@ -21,9 +21,11 @@ elem = (t,o,p=menu.left) ->
     p.appendChild opt e, o
     e
           
-msg = (t) ->
+msg = (t,cls='') ->
     
-    elem 'div', class:'msg', text:t, main
+    screen.msg?.remove()
+    if t != ''
+        screen.msg = elem 'div', class:"msg #{cls}", text:t, main
     
 u2s = (v) -> vec screen.center.x+v.x*screen.radius, screen.center.y+v.y*screen.radius
 
@@ -197,16 +199,25 @@ arc = (a,b) ->
     d
     
 brightness = (d) -> d.c.style.opacity = (d.depth() + 0.4)/1.4
-            
+
+# 00000000    0000000   000   000   0000000  00000000  
+# 000   000  000   000  000   000  000       000       
+# 00000000   000000000  000   000  0000000   0000000   
+# 000        000   000  000   000       000  000       
+# 000        000   000   0000000   0000000   00000000  
+
+pause = (m='PAUSED', cls) ->
+    if world.pause and screen.msg.innerHTML != 'PAUSED'
+        reset()
+    world.pause = not world.pause
+    menu.buttons['pause'].classList.toggle 'highlight', world.pause
+    msg (world.pause and m or ''), cls
+
 # 00000000   00000000   0000000  00000000  000000000  
 # 000   000  000       000       000          000     
 # 0000000    0000000   0000000   0000000      000     
 # 000   000  000            000  000          000     
 # 000   000  00000000  0000000   00000000     000     
-
-pause = -> 
-    world.pause = not world.pause
-    menu.buttons['pause'].classList.toggle 'highlight', world.pause
 
 reset = ->
     
@@ -285,16 +296,16 @@ anim = (now) ->
                 world.units[ow] = dots.reduce ((a,b) -> a+b.targetUnits), 0
                 dots  = dots.filter (d) -> d.units > d.minUnits
                 
+                menu.buttons[ow].innerHTML = "&#9679; #{dots.length} &#9650; #{world.units[ow]}"
+                    
                 if dots.length == 0
                     if ow == 'bot'
-                        msg 'ONLINE!'
+                        pause 'ONLINE!', 'usr'
                     else
-                        msg 'OFFLINE!'
-                    reset()
+                        pause 'OFFLINE!', 'bot'
                     win.requestAnimationFrame anim
                     return
-                
-                menu.buttons[ow].innerHTML = "&#9679; #{dots.length} &#9650; #{world.units[ow]}"
+                    
                 for d in dots
                     d.addUnit()
             
@@ -344,7 +355,7 @@ win.requestAnimationFrame anim
 menu.buttons['bot'] = elem 'div', class:'button bot', menu.right
 menu.buttons['usr'] = elem 'div', class:'button usr', menu.right
 
-menu.buttons['pause'] = elem 'div', class:'button', text:'PAUSE', click:pause
+menu.buttons['pause'] = elem 'div', class:'button', text:'PAUSE', click: -> pause()
 elem 'div', class:'button', text:'FULLSCREEN', click: ->
     el = document.documentElement
     rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
@@ -362,6 +373,7 @@ choice = (info) ->
                 info.cb c
         menu.buttons[c] = elem 'div', class:'button inline', text:c, click: chose info, c
 
+elem 'div', class:'button', text:'WIN', click: -> pause 'ONLINE!', 'usr'
 elem 'div', class:'button', text:'RESET', click:reset
 choice name:'NODES', values:['16', '24', '32', '40'], cb: (c) -> world.nodes = parseInt c
 choice name:'VOL',   values:['-', 'VOL', '+'], cb: (c) -> 

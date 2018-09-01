@@ -9,7 +9,7 @@
 class Grph
 
     constructor: ->
-        @maxSmpl = 300
+        @maxSmpl = 200
         @smpls = 
             bot: []
             usr: []

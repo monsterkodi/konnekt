@@ -1,4 +1,7 @@
 
+usrColor = #88f
+botColor = #f00
+
 #main
     font-family     sans-serif
     color           #222
@@ -49,7 +52,7 @@ svg
     color           #444
     &.highlight
     &.bot
-        color       #f00
+        color       botColor
     &.usr
         color       #fff
     
@@ -60,9 +63,9 @@ svg
     &.usr
         stroke      #fff
         &.tmp
-            stroke  #88f
+            stroke  usrColor
     &.bot
-        stroke      #f00
+        stroke      botColor
         &.tmp
             stroke  #ff0
     pointer-events  none
@@ -75,7 +78,7 @@ svg
     &.usr
         stroke      #fff
     &.bot
-        stroke      #f00
+        stroke      botColor
     
 .dot
     pointer-events  all
@@ -84,25 +87,38 @@ svg
     stroke          #555    
     &.bot
         stroke      none
-        fill        #f00
+        fill        botColor
     &.usr
         stroke      none
         fill        #fff
         &.linked:hover      
             cursor  pointer
     &.src    
-        fill        #88f
+        fill        usrColor
 .pie
     pointer-events  none
     stroke          none
     fill            #000
     
 .dbg
-    stroke          #88f
+    stroke          usrColor
     stroke-width    1
     
 .msg
+    padding         1em
+    border-radius   1em
+    position        absolute
+    top             50%
+    left            50%
+    transform       translate(-50%, -50%)
     font-size       50px
     opacity         0.5
-    color           #fff
+    color           #aaa
+    background      rgba(0,0,0,0.8)
+    &.bot
+        color       botColor
+        opacity     1
+    &.usr
+        color       usrColor
+        opacity     1
     

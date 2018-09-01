@@ -1,7 +1,5 @@
-name            online
-version         0.0.2
+name            konnekt
 description     svg experiment
-main            online.js
 author          monsterkodi
 license         Unlicense
 devDependencies
