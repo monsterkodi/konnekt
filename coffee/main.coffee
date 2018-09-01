@@ -99,8 +99,8 @@ move = (e) ->
 
 delTmpl = ->
     
-    world.templine.usr?.c.remove()
-    delete world.templine.usr
+    world.tmpline.usr?.c.remove()
+    delete world.tmpline.usr
 
 down = (e) ->
     
@@ -129,8 +129,8 @@ up = (e) ->
         world.inertRot = rotq world.rotSum
     else if mouse.drag
         world.inertRot = new Quat
-        if world.templine.usr?
-            mouse.drag.link world.templine.usr.e
+        if world.tmpline.usr? and world.tmpline.usr.e.c
+            mouse.drag.link world.tmpline.usr.e
         mouse.drag.c.classList.remove 'src'
             
     delTmpl()
@@ -313,12 +313,12 @@ anim = (now) ->
         for l in world.lines
             l.upd()
             
-        world.templine.usr?.upd()
-        world.templine.bot?.upd()
+        world.tmpline.usr?.upd()
+        world.tmpline.bot?.upd()
             
         items = world.lines.concat world.dots
-        items.push world.templine.usr if world.templine.usr?
-        items.push world.templine.bot if world.templine.bot?
+        items.push world.tmpline.usr if world.tmpline.usr?
+        items.push world.tmpline.bot if world.tmpline.bot?
         for x in items.sort (a,b) -> a.zdepth()-b.zdepth()
             x.raise()
             

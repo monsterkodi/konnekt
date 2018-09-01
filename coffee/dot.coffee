@@ -194,11 +194,18 @@ class Dot
         clos = world.dots.slice(0).sort (a,b) => dist(a)-dist(b)
         
         delTmpl()
+        
         if clos[0] != @ and not @linked clos[0]
-            l =  new Line @, clos[0]
-            l.c.classList.add 'tmp'
-            @c.classList.add 'src'
-            world.templine.usr = l
+            target = clos[0]
+        else
+            target = 
+                v: v
+                depth: -> (v.z+1)/2
+                
+        l = new Line @, target
+        l.c.classList.add 'tmp'
+        @c.classList.add 'src'
+        world.tmpline.usr = l
         
     rot: (q) -> @v = q.rotate @v
         

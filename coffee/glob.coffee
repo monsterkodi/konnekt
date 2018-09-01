@@ -29,7 +29,7 @@ world =
     ticks:    0
     dots:     []
     lines:    []
-    templine: {}
+    tmpline: {}
     userRot:  new Quat
     inertRot: new Quat
     circle:   null
