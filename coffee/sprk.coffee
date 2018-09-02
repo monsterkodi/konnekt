@@ -12,8 +12,6 @@ class Sprk
         
         @units = ceil units/3
         
-        log "Sprk #{units} #{@units}"
-        
         @ticks = 0
         @sparks = []
         @g = add 'g'

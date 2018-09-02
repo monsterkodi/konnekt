@@ -8,9 +8,8 @@
 
 class Bot
 
-    constructor: (dot) ->
+    constructor: () ->
         
-        dot.setOwn 'bot' 
         @speed = 4
         @tsum  = 0
 

@@ -144,7 +144,7 @@ class Dot
         ul = ceil @targetUnits * 0.5
         uh = ceil ul * (1-cost)
 
-        log "ul #{ul} uh #{uh} #{cost}"
+        # log "ul #{ul} uh #{uh} #{cost}"
         
         if cost == 0
             if d.targetUnits + uh > 360

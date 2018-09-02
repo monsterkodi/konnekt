@@ -1,17 +1,45 @@
 ###
-000      000   000  000       0000000
-000      000   000  000      000     
-000       000 000   000      0000000 
-000         000     000           000
-0000000      0      0000000  0000000 
+000      00000000  000   000  00000000  000       0000000
+000      000       000   000  000       000      000     
+000      0000000    000 000   0000000   000      0000000 
+000      000          000     000       000           000
+0000000  00000000      0      00000000  0000000  0000000 
 ###
 
 levels = 
     
+    menu:
+        
+        addUnit:0
+        msg:  "WELCOME TO\nKONNEKT"
+        dots: [
+            v: [0,0,1]
+            l: 'level1'
+        ,
+            v: [0,-0.3,0.8]
+            l: 'level2'
+        ,
+            v: [0,-0.4,0.6]
+            l: 'level3'
+        ,
+            v: [0,-0.6,0.4]
+            l: 'level4'
+        ,
+            v: [0,-0.8,0.8]
+            l: 'level5'
+        ,
+            v: [0,-1,0]
+            l: 'level6'
+        ,
+            v: [0,1,0]
+            l: 'random'
+        ]
+        
+    
     level1:
         
         addUnit: 0
-        hint: "Attack the red node by dragging from the blue node.\n\nEach time you attack, half of the available processes will be send."
+        hint: "Attack the red node by dragging from the blue node.\n\nEach time you attack, half of the available processes will be sent."
         dots: [
             v: [-0.5,0,1]
             o: 'usr'
@@ -98,7 +126,7 @@ levels =
     level5:
         
         addUnit: 3
-        hint: "New processes are spawned in active nodes.\n\nAlways make sure you have more active nodes than the opponent."
+        hint: "New processes are regularily spawned in active nodes.\n\nAlways make sure you have more active nodes than the opponent."
         dots: [
             v: [0,0,1]
             o: 'usr'
