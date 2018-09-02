@@ -684,7 +684,6 @@ choice = (info) ->
                 info.cb c
         menu.buttons[c] = elem 'div', class:'button inline', text:c, click: chose info, c
 
-# elem 'div', class:'button', text:'WIN', click: -> pause 'ONLINE!', 'usr'
 elem 'div', class:'button', text:'RANDOM', click: -> loadLevel 'random'
 elem 'div', class:'button', text:'LEVEL1', click: -> loadLevel 'level1'
 elem 'div', class:'button', text:'LEVEL2', click: -> loadLevel 'level2'
