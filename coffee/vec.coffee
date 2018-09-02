@@ -19,9 +19,11 @@ rand  = Math.random
 PI    = Math.PI
 ceil  = Math.ceil
 floor = Math.floor
+round = Math.round
 EPS   = Number.EPSILON
 
 randr = (a,b) -> a+(b-a)*rand()
+randi = (a,b) -> round a+(b-a)*rand()
 clamp = (a,b,v) -> max a, min b, v
 zero  = (v) -> abs(v) < EPS
 

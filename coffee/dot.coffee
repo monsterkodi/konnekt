@@ -36,14 +36,12 @@ class Dot
         @targetUnits += units
         clearInterval @timer
         @timer = setInterval @onTimer, 100
-        if not @pie
-            @pie = app @g, 'path', class:'pie'
         
     onTimer: => 
         
         return if world.pause
         
-        snd.play "send #{@own}"
+        # snd.play "send #{@own}"
         
         if @targetUnits > @units
             @units += 10
@@ -63,15 +61,24 @@ class Dot
             
         @drawPie()
         
-    addUnit: ->
-        if @targetUnits < 360 and @units > @minUnits
-            @targetUnits += 1
-            @units += 1
+    setUnits: (@units) -> 
+        
+        @targetUnits = @units
+        @drawPie()
+        
+    addUnit: (num=1) ->
+
+        if num != 0
+            @targetUnits = clamp 0, 360, @targetUnits + num
+            @units       = clamp 0, 360, @units + num
             @drawPie()
         
     drawPie: ->
+        
+        if not @pie then @pie = app @g, 'path', class:'pie'
+        
         #A rx ry x-axis-rotation large-arc-flag sweep-flag x y
-        if @units <= @minUnits
+        if @units < @minUnits
             @c.classList.remove 'linked'
             s =  0
             c = -1
@@ -127,15 +134,17 @@ class Dot
             log 'linked?'
             return
         
-        if @units < @minUnits
+        if @targetUnits < @minUnits
             return
             
         cost = 0.5 * r2d(@dist d) / 180
         if d.own == @own
             cost = 0
             
-        ul = ceil @units * 0.5
+        ul = ceil @targetUnits * 0.5
         uh = ceil ul * (1-cost)
+
+        log "ul #{ul} uh #{uh} #{cost}"
         
         if cost == 0
             if d.targetUnits + uh > 360
@@ -149,17 +158,17 @@ class Dot
             ou = -uh
             if uh == d.targetUnits
                 snd.play "draw #{@own}"
-                new Sprk @, uh
+                new Sprk @, ul
                 new Sprk d, uh
             else if uh < d.targetUnits
                 snd.play "lost #{@own}"
-                new Sprk @, uh
+                new Sprk @, ul
                 new Sprk d, uh
             else 
                 snd.play "won #{@own}"
                 lnk = true
                 ou = uh - d.targetUnits
-                new Sprk @, d.targetUnits
+                new Sprk @, ul
                 new Sprk d, d.targetUnits               
                 d.unlink() 
                 d.setOwn @own

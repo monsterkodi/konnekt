@@ -8,7 +8,11 @@
 
 class Sprk
 
-    constructor: (@dot, @units) ->
+    constructor: (@dot, units) ->
+        
+        @units = ceil units/3
+        
+        log "Sprk #{units} #{@units}"
         
         @ticks = 0
         @sparks = []
@@ -28,7 +32,7 @@ class Sprk
         if not world.pause
             @ticks += 1
             
-        mu = max 10*@units, 120
+        mu = max 5*@units, 120
         if @ticks > mu
             for s in @sparks
                 s.remove()
@@ -39,7 +43,7 @@ class Sprk
             for s in @sparks
                 angle += 2 * PI / @sparks.length
                 v = vec cos(angle), sin(angle)
-                v.mul @dot.radius() + mu * f * z * screen.radius / 600
+                v.mul @dot.radius() + mu * f * z * screen.radius / 500
                 s.setAttribute 'r', (0.5+0.5*f) * z * screen.radius / 60
                 s.setAttribute 'opacity', cos f * PI
                 s.setAttribute 'cx', v.x

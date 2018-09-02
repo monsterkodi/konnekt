@@ -10,9 +10,8 @@ class Bot
 
     constructor: (dot) ->
         
-        dot.setOwn 'bot'
-        dot.startTimer 360
-        @delay = 240
+        dot.setOwn 'bot' 
+        @speed = 4
         @tsum  = 0
 
     tmpl: (d,c) ->
@@ -29,7 +28,7 @@ class Bot
         
         @tsum += dta
                     
-        if @tsum > @delay
+        if @tsum > @speed * 60
             
             dots = world.dots.filter (d) -> d.own == 'bot'
             @tsum = 0
@@ -41,10 +40,7 @@ class Bot
             
             for c in cls
                 if not d.linked c
-                    if d.link c
-                        @delay = 300
-                    else
-                        @delay = 120
+                    d.link c
                     @tmpl d, c
                     break
             

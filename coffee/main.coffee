@@ -26,6 +26,14 @@ msg = (t,cls='') ->
     screen.msg?.remove()
     if t != ''
         screen.msg = elem 'div', class:"msg #{cls}", text:t, main
+        screen.msg.style.fontSize = "#{parseInt screen.radius/10}px"
+        
+hint = (t) ->
+    screen.hint?.remove()
+    if t != ''
+        screen.hint = elem 'div', class:"hint", text:t, main
+        screen.hint.style.fontSize = "#{parseInt screen.radius/20}px"
+        screen.hint.addEventListener 'click', -> screen.hint.remove()
     
 u2s = (v) -> vec screen.center.x+v.x*screen.radius, screen.center.y+v.y*screen.radius
 
@@ -53,6 +61,10 @@ size = ->
     screen.center = vec br.width/2, br.height/2
     screen.radius = 0.4 * Math.min screen.size.x, screen.size.y
     world.update  = 1
+    screen.hint?.style.fontSize = "#{parseInt screen.radius/20}px"
+    screen.msg?.style.fontSize = "#{parseInt screen.radius/10}px"
+    menu.left.style.fontSize  = "#{max 12, parseInt screen.radius/30}px"
+    menu.right.style.fontSize = "#{max 12, parseInt screen.radius/30}px"
     grph?.plot()
 size()
 
@@ -126,11 +138,16 @@ down = (e) ->
 up = (e) ->
     
     if mouse.drag == 'rot'
+        
         world.inertRot = rotq world.rotSum
+        
     else if mouse.drag
+        
         world.inertRot = new Quat
+        
         if world.tmpline.usr? and world.tmpline.usr.e.c
             mouse.drag.link world.tmpline.usr.e
+            
         mouse.drag.c.classList.remove 'src'
             
     delTmpl()
@@ -153,14 +170,17 @@ enter = (e) ->
     return if world.pause
     
     if d = e.target.dot
-        
-        if mouse.hover
+                
+        if d.c.classList.contains('linked') and d.own == 'usr'
+            
+            if d != mouse.hover
+                mouse.hover = d
+                d.c.classList.add 'src'
+            
+        else if mouse.hover
+            
             mouse.hover.c.classList.remove 'src'
             mouse.hover = null
-        
-        if d.c.classList.contains('linked') and d.own == 'usr'
-            mouse.hover = d
-            d.c.classList.add 'src'
     
 leave = (e) ->
     
@@ -182,8 +202,40 @@ keydown = (e) ->
     
     switch e.keyCode
         when 32 then pause() # space
-        else 
-            log 'keydown', e
+        # else 
+            # log 'keydown', e
+            
+    # switch e.key
+        # when '1' then snd.note 1
+        # when '2' then snd.note 2
+        # when '3' then snd.note 3
+        # when '4' then snd.note 4
+        # when '5' then snd.note 5
+        # when '6' then snd.note 6
+        # when '7' then snd.note 7
+        # when '8' then snd.note 8
+        # when '9' then snd.note 9
+        # when '0' then snd.note 10
+        # when 'q' then snd.note 11
+        # when 'w' then snd.note 12
+        # when 'e' then snd.note 13
+        # when 'r' then snd.note 14
+        # when 't' then snd.note 15
+        # when 'y' then snd.note 16
+        # when 'u' then snd.note 17
+        # when 'i' then snd.note 18
+        # when 'o' then snd.note 19
+        # when 'p' then snd.note 20
+        # when 'a' then snd.note 21
+        # when 's' then snd.note 22
+        # when 'd' then snd.note 23
+        # when 'f' then snd.note 24
+        # when 'g' then snd.note 25
+        # when 'h' then snd.note 26
+        # when 'j' then snd.note 27
+        # when 'k' then snd.note 28
+        # when 'l' then snd.note 29
+        # when ';' then snd.note 30
             
 win.addEventListener 'resize',    size
 svg.addEventListener 'mouseover', enter
@@ -225,8 +277,7 @@ brightness = (d) -> d.c.style.opacity = (d.depth() + 0.3)/1.3
 # 000        000   000   0000000   0000000   00000000  
 
 pause = (m='PAUSED', cls) ->
-    if world.pause and screen.msg.innerHTML != 'PAUSED'
-        reset()
+    
     world.pause = not world.pause
     menu.buttons['pause'].classList.toggle 'highlight', world.pause
     msg (world.pause and m or ''), cls
@@ -241,28 +292,248 @@ pause = (m='PAUSED', cls) ->
     else
         menu.buttons['pause'].innerHTML = 'PAUSE'
 
-# 00000000   00000000   0000000  00000000  000000000  
-# 000   000  000       000       000          000     
-# 0000000    0000000   0000000   0000000      000     
-# 000   000  000            000  000          000     
-# 000   000  00000000  0000000   00000000     000     
+# 000       0000000    0000000   0000000    
+# 000      000   000  000   000  000   000  
+# 000      000   000  000000000  000   000  
+# 000      000   000  000   000  000   000  
+# 0000000   0000000   000   000  0000000    
 
-reset = ->
-    
-    p = world.pause
-    world.pause = true
-    world.ticks = 0
+loadLevel = (level='random') ->
     
     svg.innerHTML = ''
-    
-    grph = new Grph
     
     world.circle = add 'circle', class:'world', cx:screen.center.x, cy:screen.center.y, r:screen.radius
     world.circle.v = vec()
     
     dbg = add 'line', class:'dbg'
     
-    world.dots = []
+    world.ticks  = 0
+    world.dots   = []        
+    world.lines  = []
+    world.update = 1
+    world.level  = level
+    
+    bot = null
+    
+    hint()
+    
+    switch level
+        when 'random' then randomLevel()
+        else
+            initLevel level
+    
+    if world.pause
+        pause()
+        
+# 000      00000000  000   000  00000000  000    
+# 000      000       000   000  000       000    
+# 000      0000000    000 000   0000000   000    
+# 000      000          000     000       000    
+# 0000000  00000000      0      00000000  0000000
+
+initLevel = (name) ->
+    log 'initLevel', name
+    levels = 
+        level1:
+            addUnit: 0
+            hint: "Attack the red node by dragging from the blue node.\n\nEach time you attack, half of the available processes will be send."
+            dots: [
+                v: [-0.5,0,1]
+                o: 'usr'
+                u: 360
+            ,
+                v: [0.5,0,1]
+                o: 'bot'
+                u: 270
+            ]
+        level2:
+            addUnit: 0
+            hint: "To win, you need to deactivate all red nodes.\n\nIt is OK to leave inactive red nodes!\n\nDrag anywhere to rotate the sphere."
+            dots: [
+                v: [0.0,0.0,1]
+                o: 'usr'
+                u: 90
+            ,
+                v: [-0.2,0,1]
+                o: 'bot'
+                u: 11
+            ,
+                v: [0.2,0,1]
+                o: 'bot'
+                u: 11
+            ,
+                v: [0,0.2,1]
+                o: 'bot'
+                u: 11
+            ,
+                v: [0,-0.2,1]
+                o: 'bot'
+                u: 11
+            ,
+                v: [0,0.01,-1]
+                o: 'bot'
+                u: 45
+            ]            
+        level3:
+            addUnit: 0
+            hint: "Sending to nodes that you don't own isn't free.\n\nThe farther away the target node, the higher the cost."
+            dots: [
+                v: [-0.9,-0.2,0.1]
+                o: 'usr'
+                u: 150
+            ,
+                v: [-0.9,0.2,0.1]
+                o: 'usr'
+                u: 100
+            ,
+                v: [-0.9,0,0.1]
+                o: 'bot'
+                u: 90
+            ,
+                v: [0.9,0,0.1]
+                o: 'bot'
+                u: 90
+            ]
+        level4:
+            addUnit: 0
+            hint: "Sending processes to owned nodes doesn't cost anything.\n\nBut you can't send processes between connected nodes!"
+            dots: [
+                v: [-0.7,0.1,0.3]
+                o: 'usr'
+                u: 360
+            ,
+                v: [-0.7,-0.1,0.3]
+                o: 'usr'
+                u: 12
+            ,
+                v: [0.7,-0.1,0.3]
+                u: 10
+            ,
+                v: [0.7,0.1,0.3]
+                o: 'bot'
+                u: 270
+            ]
+        level5:
+            addUnit: 3
+            hint: "New processes are spawned in active nodes.\n\nAlways make sure you have more active nodes than the opponent."
+            dots: [
+                v: [0,0,1]
+                o: 'usr'
+                u: 60
+            ,
+                v: [-0.5,-0.5,1]
+            ,
+                v: [ 0.5,-0.5,1]
+            ,
+                v: [-0.5, 0.5,1]
+            ,
+                v: [ 0.5, 0.5,1]
+            ,
+                v: [-1, 0,1]
+            ,
+                v: [ 1, 0,1]
+            ,
+                v: [ 0,-1,1]
+            ,           
+                v: [ 0, 1,1]
+            ,
+                v: [-1,-1,-1]
+                o: 'bot'
+                u: 12
+            ,
+                v: [ 1,-1,-1]
+                o: 'bot'
+                u: 12
+            ,
+                v: [-1, 1,-1]
+                o: 'bot'
+                u: 12
+            ,
+                v: [ 1, 1,-1]
+                o: 'bot'
+                u: 12
+            ,
+                v: [0,0,-1]
+                o: 'bot'
+                u: 12
+            ]
+        level6:
+            addUnit: 2            
+            hint: "Be prepared, the red nodes are fighting back!"
+            dots: [
+                v: [0,0,1]
+                o: 'usr'
+                u: 60
+            ,
+                v: [-0.5,-0.5,1]
+            ,
+                v: [ 0.5,-0.5,1]
+            ,
+                v: [-0.5, 0.5,1]
+            ,
+                v: [ 0.5, 0.5,1]
+            ,
+                v: [-1, 0,1]
+            ,
+                v: [ 1, 0,1]
+            ,
+                v: [ 0,-1,1]
+            ,           
+                v: [ 0, 1,1]
+            ,
+                v: [-1,-1,-1]
+            ,
+                v: [ 1,-1,-1]
+            ,
+                v: [-1, 1,-1]
+            ,
+                v: [ 1, 1,-1]
+            ,
+                v: [0,0,-1]
+                o: 'bot'
+                u: 60
+            ]
+            bot:
+                speed: 8
+                i:    -1
+            
+    level = levels[name]
+        
+    for d in level.dots
+        dot = new Dot vec d.v[0], d.v[1], d.v[2]
+        if d.o
+            dot.setOwn d.o 
+            dot.setUnits d.u if d.u
+            
+    if level.bot
+        if level.bot.i < 0
+            i = world.dots.length + level.bot.i
+        else
+            i = level.bot.i
+        bot = new Bot world.dots[i]
+        if level.bot.speed
+            bot.speed = level.bot.speed
+        
+    if level.hint
+        hint level.hint
+        
+    world.addUnit = level.addUnit
+    
+    if world.addUnit
+        grph = new Grph
+    
+# 00000000    0000000   000   000  0000000     0000000   00     00  
+# 000   000  000   000  0000  000  000   000  000   000  000   000  
+# 0000000    000000000  000 0 000  000   000  000   000  000000000  
+# 000   000  000   000  000  0000  000   000  000   000  000 0 000  
+# 000   000  000   000  000   000  0000000     0000000   000   000  
+
+randomLevel = ->
+    
+    grph = new Grph
+    
+    world.addUnit = 1
+    
     d = new Dot vec 0,0,1
     d.setOwn 'usr'
     
@@ -287,14 +558,13 @@ reset = ->
     for i in [nodes/2-1..0]
         new Dot world.dots[i].v.times(-1).add vec 0.01
     
-    bot = new Bot world.dots[world.dots.length-1]
-        
-    world.lines  = []
-    world.update = 1   
-    world.pause  = p
+    b = world.dots[world.dots.length-1]
+    bot = new Bot b
+    
+    b.startTimer 360
     d.startTimer 360
     
-reset()
+loadLevel 'random'
         
 #  0000000   000   000  000  00     00  
 # 000   000  0000  000  000  000   000  
@@ -316,31 +586,34 @@ anim = (now) ->
     if not world.pause
     
         world.ticks += 1
+        
         if world.ticks % 60 == 0
             
             for ow in ['usr', 'bot']
                 
                 dots  = world.dots.filter (d) -> d.own == ow
                 world.units[ow] = dots.reduce ((a,b) -> a+b.targetUnits), 0
-                dots  = dots.filter (d) -> d.units > d.minUnits
+                dots  = dots.filter (d) -> d.units >= d.minUnits
                 
                 menu.buttons[ow].innerHTML = "&#9679; #{dots.length}"
                     
                 if dots.length == 0
                     if ow == 'bot'
-                        pause 'ONLINE!', 'usr'
+                        pause 'ONLINE!\n\nYOU WON!', 'usr'
                     else
-                        pause 'OFFLINE!', 'bot'
+                        pause 'OFFLINE!\n\nYOU LOST!', 'bot'
                     win.requestAnimationFrame anim
+                    screen.hint?.remove()
+                    world.update = 1
                     return
-                    
+
                 for d in dots
-                    d.addUnit()
+                    d.addUnit world.addUnit
             
             grph.sample()
             grph.plot()
     
-        bot.anim world.delta
+        bot?.anim world.delta
     
     world.rotSum.mul 0.8
     # slp dbg, [u2s(vec()), u2s(rsum.times 1/100)]
@@ -412,7 +685,14 @@ choice = (info) ->
         menu.buttons[c] = elem 'div', class:'button inline', text:c, click: chose info, c
 
 # elem 'div', class:'button', text:'WIN', click: -> pause 'ONLINE!', 'usr'
-elem 'div', class:'button', text:'RESET', click:reset
+elem 'div', class:'button', text:'RANDOM', click: -> loadLevel 'random'
+elem 'div', class:'button', text:'LEVEL1', click: -> loadLevel 'level1'
+elem 'div', class:'button', text:'LEVEL2', click: -> loadLevel 'level2'
+elem 'div', class:'button', text:'LEVEL3', click: -> loadLevel 'level3'
+elem 'div', class:'button', text:'LEVEL4', click: -> loadLevel 'level4'
+elem 'div', class:'button', text:'LEVEL5', click: -> loadLevel 'level5'
+elem 'div', class:'button', text:'LEVEL6', click: -> loadLevel 'level6'
+elem 'div', class:'button', text:'RESET',  click: -> loadLevel world.level
 # choice name:'NODES', values:['16', '24', '32', '40'], cb: (c) -> world.nodes = parseInt c
 choice name:'VOLUME',   values:['-', 'VOL', '+'], cb: (c) -> 
     switch c
