@@ -311,6 +311,9 @@ loadLevel = (level='random') ->
     
     svg.innerHTML = ''
     
+    menu.buttons.bot.innerHTML = ''
+    menu.buttons.usr.innerHTML = ''
+    
     world.circle = add 'circle', class:'world', cx:screen.center.x, cy:screen.center.y, r:screen.radius
     world.circle.v = vec()
     
