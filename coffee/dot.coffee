@@ -45,8 +45,6 @@ class Dot
         
         snd.play "send #{@own}"
         
-        # log "@units #{@units} #{@targetUnits}"
-        
         if @targetUnits > @units
             @units += 10
             if @units >= @targetUnits
@@ -59,8 +57,6 @@ class Dot
         if @units == @targetUnits
             clearInterval @timer
             delete @timer
-        # else
-            # log "..... #{@units} #{@targetUnits}"
                 
         if @units == 0
             @unlink()
@@ -87,10 +83,9 @@ class Dot
             f = @units <= 180 and '1,0' or '0,0'
             @pie.setAttribute 'd', "M0,0 L0,-1 A1,1 0 #{f} #{s},#{c} z"
             
-        # log "onTimer own:'#{@own}' class:'#{@c.getAttribute'class'}'"
-        
     depth:      -> (@v.z+1)/2
     zdepth:     -> @depth()
+    radius:     -> ((@depth() + 0.3)/1.5) * screen.radius/20
     raise:      -> @g.parentNode.appendChild @g
     closest:    -> world.dots.slice(0).sort((a,b) => @dist(a)-@dist(b)).slice 1
     dist:   (d) -> @v.angle d.v
@@ -224,6 +219,6 @@ class Dot
         
     upd: ->
         p = u2s @v
-        @g.setAttribute 'transform', "translate(#{p.x},#{p.y}) scale(#{((@depth() + 0.3)/1.5)*screen.radius/20})"
+        @g.setAttribute 'transform', "translate(#{p.x},#{p.y}) scale(#{@radius()})"
         brightness @
             

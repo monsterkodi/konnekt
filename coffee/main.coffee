@@ -171,13 +171,27 @@ leave = (e) ->
             if d != mouse.drag
                 d.c.classList.remove 'src'
             mouse.hover = null
+  
+# 000   000  00000000  000   000  
+# 000  000   000        000 000   
+# 0000000    0000000     00000    
+# 000  000   000          000     
+# 000   000  00000000     000     
+
+keydown = (e) ->
     
+    switch e.keyCode
+        when 32 then pause() # space
+        else 
+            log 'keydown', e
+            
 win.addEventListener 'resize',    size
 svg.addEventListener 'mouseover', enter
 svg.addEventListener 'mouseout',  leave
 win.addEventListener 'mousemove', move
 win.addEventListener 'mousedown', down
 win.addEventListener 'mouseup',   up
+win.addEventListener 'keydown',   keydown
 win.addEventListener 'contextmenu', (e) -> e.preventDefault()
         
 slp = (l,p) ->
@@ -216,6 +230,16 @@ pause = (m='PAUSED', cls) ->
     world.pause = not world.pause
     menu.buttons['pause'].classList.toggle 'highlight', world.pause
     msg (world.pause and m or ''), cls
+    
+    next = menu.buttons['pause'].nextSibling
+    while next
+        next.style.display = world.pause and 'initial' or 'none'
+        next = next.nextSibling
+        
+    if world.pause
+        menu.buttons['pause'].innerHTML = 'PLAY'
+    else
+        menu.buttons['pause'].innerHTML = 'PAUSE'
 
 # 00000000   00000000   0000000  00000000  000000000  
 # 000   000  000       000       000          000     
@@ -363,10 +387,17 @@ menu.buttons['usr'] = elem 'div', class:'button usr', menu.right
 menu.buttons['bot'] = elem 'div', class:'button bot', menu.right
 
 menu.buttons['pause'] = elem 'div', class:'button', text:'PAUSE', click: -> pause()
-elem 'div', class:'button', text:'FULLSCREEN', click: ->
-    el = document.documentElement
-    rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
-    rfs.call el
+menu.buttons['fullscreen'] = elem 'div', class:'button', text:'FULLSCREEN', click: ->
+    fs = document.fullscreenElement or document.webkitFullscreenElement or document.mozFullScreenElement
+    if fs
+        menu.buttons['fullscreen'].innerHTML = 'FULLSCREEN'
+        efs = document.exitFullscreen or document.webkitExitFullscreen or document.mozCancelFullScreen
+        efs.call document
+    else
+        menu.buttons['fullscreen'].innerHTML = 'WINDOWED'
+        el = document.documentElement
+        rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
+        rfs.call el
     
 choice = (info) ->
     elem 'div', class:'choice label', text:info.name
@@ -382,8 +413,10 @@ choice = (info) ->
 
 # elem 'div', class:'button', text:'WIN', click: -> pause 'ONLINE!', 'usr'
 elem 'div', class:'button', text:'RESET', click:reset
-choice name:'NODES', values:['16', '24', '32', '40'], cb: (c) -> world.nodes = parseInt c
-choice name:'VOL',   values:['-', 'VOL', '+'], cb: (c) -> 
+# choice name:'NODES', values:['16', '24', '32', '40'], cb: (c) -> world.nodes = parseInt c
+choice name:'VOLUME',   values:['-', 'VOL', '+'], cb: (c) -> 
     switch c
         when '+' then snd.volUp()
         when '-' then snd.volDown()
+
+pause()

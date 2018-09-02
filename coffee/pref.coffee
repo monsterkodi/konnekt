@@ -10,19 +10,22 @@ class Pref
 
     constructor: () ->
         @cache = prefs:'prefs', volume:0.03125
-        @req = window.indexedDB.open 'online', 2
-        @req.onerror = (e) => log 'db error!', e.target.errorCode
-        @req.onsuccess = (e) =>
-            # log 'onsuccess'
-            @db = e.target.result
-            @read()
-        @req.onupgradeneeded = (e) =>
-            log 'onupgradeneeded'
-            db = e.target.result
-            store = db.createObjectStore "prefs", keyPath: 'prefs'
-            req = store.put @cache
-            # req.onerror = (e) -> log 'db init error!', e.target
-            # req.onsuccess = (e) => log 'onsuccess upgrade'
+        try
+            @req = window.indexedDB.open 'online', 2
+            # @req.onerror = (e) => log 'db error!', e.target.errorCode
+            @req.onsuccess = (e) =>
+                # log 'onsuccess'
+                @db = e.target.result
+                @read()
+            @req.onupgradeneeded = (e) =>
+                # log 'onupgradeneeded'
+                db = e.target.result
+                store = db.createObjectStore "prefs", keyPath: 'prefs'
+                req = store.put @cache
+                # req.onerror = (e) -> log 'db init error!', e.target
+                # req.onsuccess = (e) => log 'onsuccess upgrade'
+        catch err
+            true
             
     read: ->
         trans = @db.transaction ["prefs"], 'readonly'
@@ -39,8 +42,8 @@ class Pref
         trans = @db.transaction ["prefs"], 'readwrite'
         store = trans.objectStore 'prefs'
         req = store.put @cache
-        req.onerror = (e) -> log 'db write error!', e.target
-        req.onsuccess = (e) -> 
+        # req.onerror = (e) -> log 'db write error!', e.target
+        # req.onsuccess = (e) -> 
             
     set: (key, value) -> 
         @cache[key] = value
