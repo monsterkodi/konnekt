@@ -5,7 +5,7 @@
 # 000      000   000  000   000  000   000      000      000          000     000       000        
 # 0000000   0000000   000   000  0000000        0000000  00000000      0      00000000  0000000    
 
-loadLevel = (level='random') ->
+loadLevel = (level) ->
     
     svg.innerHTML = ''
     
@@ -26,9 +26,10 @@ loadLevel = (level='random') ->
     bot = null
     
     hint()
+    popup()
     
     switch level
-        when 'random' then randomLevel()
+        when 'RANDOM' then randomLevel()
         else
             initLevel level
     
@@ -42,7 +43,7 @@ loadLevel = (level='random') ->
 # 000  000   000  000     000           0000000  00000000      0      00000000  0000000
 
 initLevel = (name) ->
-    
+    log "initLevel #{name}"
     level = levels[name]
     level.name = name
         

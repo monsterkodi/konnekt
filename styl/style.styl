@@ -92,6 +92,9 @@ svg
     stroke-width    0.1
     fill            #000
     stroke          #555    
+    &.src 
+        fill        #444
+        
     &.bot
         stroke      none
         fill        botColor
@@ -121,8 +124,7 @@ svg
     top             50%
     left            50%
     transform       translate(-50%, -50%)
-    opacity         0.5
-    color           #aaa
+    color           #fff
     background      rgba(0,0,0,0.8)
     &.bot
         color       botColor
@@ -133,15 +135,20 @@ svg
         
 .hint1
 .hint2
+.popup
     text-align      center
     padding         1em
     border-radius   1em
     position        absolute
     left            50%
     transform       translate(-50%, -50%)
-    opacity         0.5
     color           #aaa
-    background      rgba(0,0,0,0.9)
+    background      rgba(0,0,0,0.8)
+    
+.popup
+    pointer-events  none
+    top             0
+    left            0
     
 .hint1
     top             30%

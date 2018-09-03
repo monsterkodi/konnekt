@@ -152,11 +152,17 @@ enter = (e) ->
     
     if d = e.target.dot
                 
-        if d.c.classList.contains('linked') and d.own == 'usr'
+        if d.c.classList.contains('linked') and d.own == 'usr' or world.level.name == 'menu'
             
             if d != mouse.hover
+                mouse.hover?.c.classList.remove 'src'
                 mouse.hover = d
                 d.c.classList.add 'src'
+                
+                if world.level.name == 'menu'
+                    msg()
+                    hint()
+                    popup d.v, d.level
             
         else if mouse.hover
             
@@ -172,6 +178,8 @@ leave = (e) ->
             if d != mouse.drag
                 d.c.classList.remove 'src'
             mouse.hover = null
+            if world.level.name == 'menu'
+                popup()
   
 # 000   000  00000000  000   000  
 # 000  000   000        000 000   
@@ -193,20 +201,15 @@ keydown = (e) ->
 
 pause = (m='PAUSED', cls='', status='pause') ->
     
-    world.pause = not world.pause
-    menu.buttons['pause'].classList.toggle 'highlight', world.pause
-    msg (world.pause and m or ''), cls
+    return if world.level?.name == 'menu'
     
-    next = menu.buttons['pause'].nextSibling
-    while next
-        next.style.display = world.pause and 'initial' or 'none'
-        next = next.nextSibling
-        
+    world.pause = not world.pause
+    msg (world.pause and m or ''), cls
+            
     if world.pause
         snd.stop()
-        menu.buttons['pause'].innerHTML = 'PLAY'
-    else
-        menu.buttons['pause'].innerHTML = 'PAUSE'
+        
+    menuPause()
 
 visibility = -> if document.hidden and not world.pause then pause()
 
@@ -238,11 +241,11 @@ anim = (now) ->
                     
                 if dots.length == 0
                     if ow == 'bot'
-                        pause 'ONLINE!\n\nYOU WON!', 'usr'
+                        pause 'ONLINE!', 'usr'
                         world.winner = 'usr'
                         pref.set world.level.name, true
                     else
-                        pause 'OFFLINE!\n\nYOU LOST!', 'bot'
+                        pause 'OFFLINE!', 'bot'
                         world.winner = 'bot'
                     win.requestAnimationFrame anim
                     screen.hint?.remove()
@@ -302,4 +305,6 @@ win.addEventListener 'contextmenu', (e) -> e.preventDefault()
 document.addEventListener 'visibilitychange', visibility, false
 
 loadLevel 'menu'
+showMenu  'menu'
+
 win.requestAnimationFrame anim
