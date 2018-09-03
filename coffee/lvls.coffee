@@ -11,7 +11,7 @@ levels =
     menu:
         addUnit:0
         msg:  "KONNEKT"
-        hint: ["WELCOME TO", "A JS13K 2018 ENTRY\n\nBY MONSTERKODI"]
+        hint: ["WELCOME TO", "A JS13K 2018 ENTRY\nBY MONSTERKODI"]
         dots: [
             v: [0,0,1]
             l: 'TUTORIAL 1'
@@ -121,7 +121,7 @@ levels =
         
         addUnit: 0
         next: 'TUTORIAL 5'
-        hint: ["Sending processes to nodes you own doesn't cost anything.\n\nIt is efficient to occupy far away neutral nodes with small groups and send larger groups later.", "Contrary to common believe,\nyou can't send processes between already connected nodes."]
+        hint: ["Sending processes to nodes you own cost nothing.\n\nIt is efficient to occupy far away neutral nodes with few processes first and send larger groups later.", "Contrary to common believe,\nyou can't send processes between already connected nodes."]
         dots: [
             v: [-0.7,0.1,0.3]
             o: 'usr'
@@ -144,7 +144,7 @@ levels =
         
         addUnit: 3
         next: 'EASY AI'
-        hint: ["New processes are regularily spawned in active nodes.\n\nAlways make sure you have more active nodes than the opponent.", "You can see the number of active nodes in the top right corner.\n\nThe graph shows you the relative strength."]
+        hint: ["New processes are spawned regularily in active nodes.\n\nAlways make sure you have more active nodes than the opponent.", "You can see the number of active nodes in the top right corner.\n\nThe graph plots the relative amount of available processes."]
         dots: [
             v: [0,0,1]
             o: 'usr'

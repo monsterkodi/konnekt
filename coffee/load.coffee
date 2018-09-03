@@ -9,7 +9,7 @@ loadNext = ->
     if world.winner == 'usr'
         loadLevel world.level.next ? 'menu'
     else
-        loadLevel world.level.name
+        forceLevel world.level.name
 
 forceLevel = (level) -> world.level = null; loadLevel level
         
@@ -32,6 +32,11 @@ loadLevel = (level) ->
     world.winner = null
     
     bot = null
+    
+    mouse.drag = null
+    
+    delTmpl 'usr'
+    delTmpl 'bot'
     
     hint()
     popup()

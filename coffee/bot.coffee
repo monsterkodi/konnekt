@@ -15,8 +15,7 @@ class Bot
 
     tmpl: (d,c) ->
 
-        world.tmpline.bot?.s.c.classList.remove 'src'
-        world.tmpline.bot?.del()
+        delTmpl 'bot'
         d.c.classList.add 'src'
         world.tmpline.bot = new Line d, c, true
         world.update = 1

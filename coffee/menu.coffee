@@ -35,6 +35,9 @@ menus =
             values: ['-', 'VOL', '+']
             cb:     onVol
     ,
+        ABOUT:
+            click: -> menuAbout()
+    ,
         'RESET PROGRESS':
             click: -> pref.clear(); forceLevel 'menu'
     ]
@@ -64,7 +67,7 @@ menus =
             click: -> loadLevel 'menu'
     ,
         RESET:
-            click: -> loadLevel world.level.name
+            click: -> forceLevel world.level.name
     ]
 
 #  0000000  000   000   0000000   000   000  
@@ -123,6 +126,8 @@ elem = (t,o,p) ->
     e = document.createElement t
     if o.text?
         e.innerText = o.text
+    if o.html?
+        e.innerHTML = o.html
     if o.click?
         e.addEventListener 'click', o.click
     p.appendChild opt e, o
@@ -139,7 +144,7 @@ msg = (t,cls='') ->
     screen.msg?.remove()
     if t
         screen.msg = elem 'div', class:"msg #{cls}", text:t, main
-        screen.msg.style.fontSize = "#{parseInt screen.radius/10}px"
+        fontSize 'msg', screen.msg
         
 # 000   000  000  000   000  000000000  
 # 000   000  000  0000  000     000     
@@ -154,10 +159,10 @@ hint = (t1,t2) ->
     
     if t1
         screen.hint1 = elem 'div', class:"hint1", text:t1, main
-        screen.hint1.style.fontSize = "#{parseInt screen.radius/20}px"
+        fontSize 'hint', screen.hint1
     if t2
         screen.hint2 = elem 'div', class:"hint2", text:t2, main
-        screen.hint2.style.fontSize = "#{parseInt screen.radius/20}px"
+        fontSize 'hint', screen.hint2
         
 # 00000000    0000000   00000000   000   000  00000000   
 # 000   000  000   000  000   000  000   000  000   000  
@@ -173,7 +178,7 @@ popup = (p,t) ->
         screen.popup = elem 'div', class:"popup", text:t, main
         screen.popup.style.left = "#{s.x}px"
         screen.popup.style.top  = "#{s.y - screen.radius/7}px"
-        screen.popup.style.fontSize = "#{parseInt screen.radius/20}px"
+        fontSize 'hint', screen.popup
         
 #  0000000  000   000   0000000   000   0000000  00000000  
 # 000       000   000  000   000  000  000       000       
@@ -201,28 +206,23 @@ choice = (info) ->
         if c == 'VOL'
             menuVolume snd.vol
 
-# 00000000    0000000   000   000   0000000  00000000  
-# 000   000  000   000  000   000  000       000       
-# 00000000   000000000  000   000  0000000   0000000   
-# 000        000   000  000   000       000  000       
-# 000        000   000   0000000   0000000   00000000  
+#  0000000   0000000     0000000   000   000  000000000  
+# 000   000  000   000  000   000  000   000     000     
+# 000000000  0000000    000   000  000   000     000     
+# 000   000  000   000  000   000  000   000     000     
+# 000   000  0000000     0000000    0000000      000     
 
-menuPause = ->
+menuAbout = ->
     
-    return if not menu.buttons['PAUSE']
+    closeAbout = (e) -> menu.buttons.about.remove(); delete menu.buttons.about
+    t = ''
+    t += "KONNEKT is my entry for the <a href='https://js13kgames.com/' target='_blank'>js13kgames</a> 2018 competition.<br>"
+    t += "Thanks to the organizers!<p>"
+    t += "The game is written in CoffeeScript.<br>The sources are available at "
+    t += "<a href='https://github.com/monsterkodi/konnekt' target='_blank'>github</a>.<p>"
+    t += "I hope you had some fun playing the game."
+    menu.buttons.about = elem 'div', class:'about', html:t, click:closeAbout, main
     
-    menu.buttons['PAUSE'].classList.toggle 'highlight', world.pause
-    
-    next = menu.buttons['PAUSE'].nextSibling
-    while next
-        next.style.display = world.pause and 'initial' or 'none'
-        next = next.nextSibling
-    
-    if world.pause
-        menu.buttons['PAUSE'].innerHTML = 'PLAY'
-    else
-        menu.buttons['PAUSE'].innerHTML = 'PAUSE'
-        
-menu.buttons['usr'] = elem 'div', class:'button usr', menu.right
-menu.buttons['bot'] = elem 'div', class:'button bot', menu.right
+menu.buttons.usr = elem 'div', class:'button usr', menu.right
+menu.buttons.bot = elem 'div', class:'button bot', menu.right
    

@@ -10,6 +10,7 @@ class Pref
 
     constructor: ->
         
+    load: ->
         @cache = prefs:'prefs', volume:0.03125
         try
             @req = window.indexedDB.open 'online', 2
@@ -27,7 +28,7 @@ class Pref
     loadMenu: (from) ->
         
         # log "loadMenu from:#{from} level:#{world.level?.name}"
-        if not world.level or world.level.name == 'menu'
+        if world?.level == undefined or world.level?.name == 'menu'
             loadLevel 'menu'
             
     read: ->

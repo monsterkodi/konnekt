@@ -12,6 +12,14 @@
 #      000  000   000     000       
 # 0000000   000  0000000  00000000  
 
+fontSize = (name, e) -> 
+    return if not e
+    s = switch name
+        when 'msg'  then screen.radius/6
+        when 'hint' then screen.radius/20
+        when 'menu' then max 12, screen.radius/30
+    e.style.fontSize = "#{parseInt s}px"
+
 size = -> 
     
     br = svg.getBoundingClientRect()
@@ -26,12 +34,10 @@ size = ->
         world.circle.setAttribute 'cy', screen.center.y
         world.circle.setAttribute 'r',  screen.radius
     
-    screen.hint1?.style.fontSize = "#{parseInt screen.radius/20}px"
-    screen.hint2?.style.fontSize = "#{parseInt screen.radius/20}px"
-    screen.msg?.style.fontSize = "#{parseInt screen.radius/10}px"
-    
-    menu.left.style.fontSize  = "#{max 12, parseInt screen.radius/30}px"
-    menu.right.style.fontSize = "#{max 12, parseInt screen.radius/30}px"
+    fontSize 'hint', screen.hint1 
+    fontSize 'hint', screen.hint2 
+    fontSize 'msg',  screen.msg
+    fontSize 'menu', menu.left
     
     grph?.plot()
     
@@ -72,14 +78,14 @@ move = (e) ->
 # 000   000  000   000  000   000  000  0000  
 # 0000000     0000000   00     00  000   000  
 
-delTmpl = ->
+delTmpl = (o) ->
     
-    world.tmpline.usr?.del()
-    delete world.tmpline.usr
+    world.tmpline[o]?.del()
+    delete world.tmpline[o]
 
 down = (e) ->
     
-    delTmpl()
+    delTmpl 'usr'
     mouse.drag?.c?.classList.remove 'src'
     
     world.inertRot = quat()
@@ -126,7 +132,7 @@ up = (e) ->
             
         mouse.drag.c.classList.remove 'src'
             
-    delTmpl()
+    delTmpl 'usr'
         
     mouse.drag = null
     world.update = 1
@@ -205,8 +211,6 @@ pause = (m='PAUSED', cls='', status='pause') ->
     if world.pause
         snd.stop()
         
-    menuPause()
-
 visibility = -> if document.hidden and not world.pause then pause()
 
 #  0000000   000   000  000  00     00  
@@ -303,6 +307,6 @@ win.addEventListener 'contextmenu', (e) -> e.preventDefault()
     
 document.addEventListener 'visibilitychange', visibility, false
 
-# loadLevel 'menu'
+pref.load()
 
 win.requestAnimationFrame anim
