@@ -124,7 +124,8 @@ down = (e) ->
     hint()
     if world.level.name == 'menu'
         msg()
-    else if world.winner and e.buttons == 1
+    else if world.winner and e.buttons == 1 and not e.target.classList.contains 'button'
+        log e
         if world.winner == 'usr'
             loadLevel world.level.next ? 'menu'
         else
@@ -552,8 +553,8 @@ menu.buttons['usr'] = elem 'div', class:'button usr', menu.right
 menu.buttons['bot'] = elem 'div', class:'button bot', menu.right
 
 menu.buttons['pause'] = elem 'div', class:'button', text:'PAUSE', click: -> pause()
-elem 'div', class:'button', text:'MENU',   click: -> loadLevel 'menu'
-elem 'div', class:'button', text:'RESET',  click: -> loadLevel world.level.name
+elem 'div', class:'button', text:'MENU',  click: -> loadLevel 'menu'
+elem 'div', class:'button', text:'RESET', click: -> loadLevel world.level.name
 menu.buttons['fullscreen'] = elem 'div', class:'button', text:'FULLSCREEN', click: ->
     fs = document.fullscreenElement or document.webkitFullscreenElement or document.mozFullScreenElement
     if fs
@@ -565,7 +566,7 @@ menu.buttons['fullscreen'] = elem 'div', class:'button', text:'FULLSCREEN', clic
         el = document.documentElement
         rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
         rfs.call el
-    
+menu.buttons['clear'] = elem 'div', class:'button', text:'CLEAR', click: -> pref.clear()
 choice name:'VOLUME',   values:['-', 'VOL', '+'], cb: (c) -> 
     switch c
         when '+' then snd.volUp()

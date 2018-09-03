@@ -45,7 +45,13 @@ class Pref
         store = trans.objectStore 'prefs'
         req = store.put @cache
         # req.onerror = (e) -> log 'db write error!', e.target
-        # req.onsuccess = (e) -> 
+        req.onsuccess = (e) -> 
+            if world.level.name == 'menu'
+                loadLevel 'menu'
+        
+    clear: ->
+        @cache = prefs:'prefs', volume:@cache.volume ? 0.03125
+        @write()
             
     set: (key, value) -> 
         @cache[key] = value

@@ -125,9 +125,7 @@ class Snd
         @gain.gain.value = @vol
         pref.set 'volume', @vol
     
-    touch: (n,d=1) -> 
-        log "touch #{n} #{d}"
-        @tch[n] = d
+    touch: (n,d=1) -> @tch[n] = d
         
     play: (n) ->
         

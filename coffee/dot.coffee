@@ -177,6 +177,8 @@ class Dot
             d.setOwn @own 
             new Sprk d, floor ul * cost
         
+        log "-ul #{-ul} ou #{ou}"
+            
         @startTimer  -ul
         d.startTimer ou
         

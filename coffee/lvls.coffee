@@ -15,6 +15,7 @@ levels =
         dots: [
             v: [0,0,1]
             l: 'level1'
+            o: 'bot'
         ,
             v: [0,-0.3,0.8]
             l: 'level2'
@@ -116,11 +117,11 @@ levels =
         
         addUnit: 0
         next: 'level5'
-        hint: "Sending processes to owned nodes doesn't cost anything.\n\nBut you can't send processes between connected nodes!"
+        hint: "Sending processes to owned nodes doesn't cost anything.\n\nContrary to common believe,\nyou can't send processes between already connected nodes."
         dots: [
             v: [-0.7,0.1,0.3]
             o: 'usr'
-            u: 360
+            u: 180
         ,
             v: [-0.7,-0.1,0.3]
             o: 'usr'
@@ -131,7 +132,7 @@ levels =
         ,
             v: [0.7,0.1,0.3]
             o: 'bot'
-            u: 270
+            u: 135
         ]
         
     level5:
