@@ -48,7 +48,7 @@ levels =
         
         addUnit: 0
         next: 'level2'
-        hint: "Attack the red node by dragging from the blue node.\n\nEach time you attack, half of the available processes will be sent."
+        hint: ["You control the blue nodes, your task is to fight the red nodes.\n\nNodes contain processes, the more processes, the stronger the node.", "Attack the red node by dragging from your node.\n\nEach time you attack, half of the available processes will be sent."]
         dots: [
             v: [-0.5,0,1]
             o: 'usr'
@@ -63,7 +63,7 @@ levels =
         
         addUnit: 0
         next: 'level3'
-        hint: "To win, you need to deactivate all red nodes.\n\nIt is OK to leave inactive red nodes!\n\nDrag anywhere to rotate the sphere."
+        hint: ["To win, you need to deactivate all red nodes.\n\nIt is OK to leave inactive red nodes!", "This level contains 4 inactive and 1 active red node.\n\nDrag anywhere to rotate the sphere."]
         dots: [
             v: [0.0,0.0,1]
             o: 'usr'
@@ -94,30 +94,30 @@ levels =
         
         addUnit: 0
         next: 'level4'
-        hint: "Sending to nodes that you don't own isn't free.\n\nThe farther away the target node, the higher the cost."
+        hint: ["Sending to nodes that you don't own isn't free.\n\nThe farther away the target node, the higher the cost.", "The cost is a fraction of the number of processes sent.\n\nNotice that you need more attacks to deactivate the far node."]
         dots: [
             v: [-0.9,-0.2,0.1]
             o: 'usr'
-            u: 150
+            u: 360
         ,
             v: [-0.9,0.2,0.1]
             o: 'usr'
-            u: 100
+            u: 360
         ,
             v: [-0.9,0,0.1]
             o: 'bot'
-            u: 90
+            u: 180
         ,
             v: [0.9,0,0.1]
             o: 'bot'
-            u: 90
+            u: 180
         ]
         
     level4:
         
         addUnit: 0
         next: 'level5'
-        hint: "Sending processes to owned nodes doesn't cost anything.\n\nContrary to common believe,\nyou can't send processes between already connected nodes."
+        hint: ["Sending processes to nodes you own doesn't cost anything.\n\nIt is efficient to occupy far away neutral nodes with small groups and send larger groups later.", "Contrary to common believe,\nyou can't send processes between already connected nodes."]
         dots: [
             v: [-0.7,0.1,0.3]
             o: 'usr'
@@ -134,12 +134,13 @@ levels =
             o: 'bot'
             u: 135
         ]
+        lines: [ [0,1] ]
         
     level5:
         
         addUnit: 3
         next: 'level6'
-        hint: "New processes are regularily spawned in active nodes.\n\nAlways make sure you have more active nodes than the opponent."
+        hint: ["New processes are regularily spawned in active nodes.\n\nAlways make sure you have more active nodes than the opponent.", "You can see the number of active nodes in the top right corner.\n\nThe graph shows you the relative strength."]
         dots: [
             v: [0,0,1]
             o: 'usr'
@@ -186,7 +187,7 @@ levels =
         
         addUnit: 2 
         next: 'menu'
-        hint: "Be prepared, the red nodes are fighting back!"
+        hint: ["Be prepared, the red nodes are fighting back!", "You learned the basics, let's see if you can beat this slow and simple AI."]
         dots: [
             v: [0,0,1]
             o: 'usr'

@@ -17,10 +17,8 @@ class Bot
 
         world.tmpline.bot?.s.c.classList.remove 'src'
         world.tmpline.bot?.del()
-        l = new Line d, c
-        l.c.classList.add 'tmp'
         d.c.classList.add 'src'
-        world.tmpline.bot = l
+        world.tmpline.bot = new Line d, c, true
         world.update = 1
         
     anim: (dta) ->

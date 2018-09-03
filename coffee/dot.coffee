@@ -41,7 +41,7 @@ class Dot
         
         return if world.pause
         
-        # snd.play "send #{@own}"
+        snd.play "send #{@own}"
         
         if @targetUnits > @units
             @units += 10
@@ -177,18 +177,12 @@ class Dot
             d.setOwn @own 
             new Sprk d, floor ul * cost
         
-        log "-ul #{-ul} ou #{ou}"
-            
         @startTimer  -ul
         d.startTimer ou
         
         if lnk
-            @n.push d
-            d.n.push @
-            l = new Line @, d
-            world.lines.push l
             world.update = 1
-            l
+            new Line @, d
         else
             null
                
@@ -221,10 +215,8 @@ class Dot
                 v: v
                 depth: -> (v.z+1)/2
                 
-        l = new Line @, target
-        l.c.classList.add 'tmp'
+        world.tmpline.usr = new Line @, target, true
         @c.classList.add 'src'
-        world.tmpline.usr = l
         
     rot: (q) -> @v = q.rotate @v
         

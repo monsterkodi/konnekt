@@ -8,10 +8,17 @@
 
 class Line
     
-    constructor: (@s,@e) ->
-        
+    constructor: (@s,@e,tmp) ->
+                
         @c = add 'path', class:'line'
         @c.classList.add @s.own if @s.own
+        
+        if tmp
+            @c.classList.add 'tmp'
+        else
+            @s.n?.push @e
+            @e.n?.push @s
+            world.lines.push @
        
     del: -> @c.remove()
     depth: -> (@s.depth()+@e.depth())/2 

@@ -10,10 +10,10 @@ class Sprk
 
     constructor: (@dot, units) ->
         
-        @units = ceil units/3
-        
-        @ticks = 0
+        @units  = ceil units/3
         @sparks = []
+        @ticks  = 0
+        
         @g = add 'g'
         for i in [0...@units]
             @sparks.push app @g, 'circle', class:"spark #{@dot.own}", r:screen.radius/60
