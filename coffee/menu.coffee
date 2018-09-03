@@ -26,13 +26,35 @@ menus =
             class: 'button'
             click: -> toggleFullscreen()
     ,
+        VOLUME:
+            class:  'choice'
+            values: ['-', 'VOL', '+'] 
+            cb:    onVol
+    ,
         'RESET PROGRESS':
             class: 'button'
             click: -> pref.clear()
     ]
     pause: [
+        UNPAUSE:
+            class: 'button'
+            click: -> pause()
+    ,
+        FULLSCREEN:
+            class: 'button'
+            click: -> toggleFullscreen()
+    ,
+        VOLUME:
+            class:  'choice'
+            values: ['-', 'VOL', '+'] 
+            cb:    onVol
     ]
 
+onVol = (choice) ->
+    switch choice
+        when '+' then snd.volUp()
+        when '-' then snd.volDown()
+    
 # 00000000  000   000  000      000       0000000   0000000  00000000   00000000  00000000  000   000  
 # 000       000   000  000      000      000       000       000   000  000       000       0000  000  
 # 000000    000   000  000      000      0000000   000       0000000    0000000   0000000   000 0 000  
@@ -123,7 +145,7 @@ popup = (p,t) ->
 #  0000000  000   000   0000000   000   0000000  00000000  
 
 choice = (info) ->
-    elem 'div', class:'choice label', text:info.name
+    elem 'div', info, menu.left
     for c in info.values
         chose = (info,c) -> (e) -> 
             for value in info.values
@@ -132,8 +154,8 @@ choice = (info) ->
                 e.target.classList.add 'highlight'
             if c not in ['VOL']
                 info.cb c
-        menu.buttons[c] = elem 'div', class:'button inline', text:c, click: chose info, c
-        
+        menu.buttons[c] = elem 'div', class:'button inline', text:c, click: chose(info, c), menu.left
+
 #  0000000  000   000   0000000   000   000  
 # 000       000   000  000   000  000 0 000  
 # 0000000   000000000  000   000  000000000  
@@ -152,7 +174,10 @@ showMenu = (m) ->
         name = Object.keys(item)[0]
         info = item[name]
         info.text ?= name
-        menu.buttons[name] = elem 'div', info, menu.left
+        if info.class == 'choice'
+            choice info
+        else
+            menu.buttons[name] = elem 'div', info, menu.left
 
 # 00000000    0000000   000   000   0000000  00000000  
 # 000   000  000   000  000   000  000       000       

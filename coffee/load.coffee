@@ -28,6 +28,11 @@ loadLevel = (level) ->
     hint()
     popup()
     
+    if level == 'menu'
+        showMenu 'menu'
+    else
+        showMenu 'game'
+    
     switch level
         when 'RANDOM' then randomLevel()
         else

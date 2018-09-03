@@ -203,6 +203,8 @@ pause = (m='PAUSED', cls='', status='pause') ->
     
     return if world.level?.name == 'menu'
     
+    showMenu 'pause'
+    
     world.pause = not world.pause
     msg (world.pause and m or ''), cls
             
@@ -305,6 +307,5 @@ win.addEventListener 'contextmenu', (e) -> e.preventDefault()
 document.addEventListener 'visibilitychange', visibility, false
 
 loadLevel 'menu'
-showMenu  'menu'
 
 win.requestAnimationFrame anim
