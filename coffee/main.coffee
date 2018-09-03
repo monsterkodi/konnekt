@@ -100,8 +100,8 @@ move = (e) ->
                 world.update = 1
             when 2
                 mouse.drag.v = m2u mouse.pos
+                log mouse.drag.v
                 world.update = 1
-        
     
 # 0000000     0000000   000   000  000   000  
 # 000   000  000   000  000 0 000  0000  000  
@@ -122,14 +122,21 @@ down = (e) ->
     world.inertRot = new Quat
     
     hint()
-    if world.level == 'menu'
+    if world.level.name == 'menu'
         msg()
+    else if world.winner and e.buttons == 1
+        if world.winner == 'usr'
+            loadLevel world.level.next ? 'menu'
+        else
+            loadLevel world.level.name
+        return
     
     if mouse.drag = e.target.dot
         
-        if world.level == 'menu'
-            log mouse.drag.level
-            loadLevel mouse.drag.level
+        if world.level.name == 'menu' 
+            if e.buttons == 1
+                loadLevel mouse.drag.level
+            return
         
         if not world.pause
             if mouse.drag.c.classList.contains 'linked'
@@ -285,7 +292,7 @@ brightness = (d) -> d.c.style.opacity = (d.depth() + 0.3)/1.3
 # 000        000   000  000   000       000  000       
 # 000        000   000   0000000   0000000   00000000  
 
-pause = (m='PAUSED', cls) ->
+pause = (m='PAUSED', cls='', status='pause') ->
     
     world.pause = not world.pause
     menu.buttons['pause'].classList.toggle 'highlight', world.pause
@@ -323,7 +330,7 @@ loadLevel = (level='random') ->
     world.dots   = []        
     world.lines  = []
     world.update = 1
-    world.level  = level
+    world.winner = null
     
     bot = null
     
@@ -345,16 +352,22 @@ loadLevel = (level='random') ->
 
 initLevel = (name) ->
     
-    log 'initLevel', name
-            
     level = levels[name]
+    level.name = name
         
     for d in level.dots
         dot = new Dot vec d.v[0], d.v[1], d.v[2]
         if d.o
-            dot.setOwn d.o 
+            dot.setOwn d.o
             dot.setUnits d.u if d.u
-        dot.level = d.l if d.l
+        if d.l
+            dot.level = d.l
+            if pref.get d.l
+                dot.setOwn 'usr'
+        
+    for l in level.lines ? []
+        line = new Line world.dots[l[0]], world.dots[l[1]]
+        world.lines.push line
             
     if level.bot
         if level.bot.i < 0
@@ -373,6 +386,7 @@ initLevel = (name) ->
     if level.hint
         hint level.hint
         
+    world.level   = level
     world.addUnit = level.addUnit
     
     if world.addUnit
@@ -389,6 +403,8 @@ randomLevel = ->
     grph = new Grph
     
     world.addUnit = 1
+    world.level = 
+        name: 'random'
     
     d = new Dot vec 0,0,1
     d.setOwn 'usr'
@@ -438,7 +454,7 @@ anim = (now) ->
     
     world.delta = (now-world.time)/16
     
-    if not world.pause and world.level != 'menu'
+    if not world.pause and world.level.name != 'menu'
     
         world.ticks += 1
         
@@ -455,8 +471,11 @@ anim = (now) ->
                 if dots.length == 0
                     if ow == 'bot'
                         pause 'ONLINE!\n\nYOU WON!', 'usr'
+                        world.winner = 'usr'
+                        pref.set world.level.name, true
                     else
                         pause 'OFFLINE!\n\nYOU LOST!', 'bot'
+                        world.winner = 'bot'
                     win.requestAnimationFrame anim
                     screen.hint?.remove()
                     world.update = 1
@@ -505,6 +524,24 @@ anim = (now) ->
         
 win.requestAnimationFrame anim
 
+#  0000000  000   000   0000000   000   0000000  00000000  
+# 000       000   000  000   000  000  000       000       
+# 000       000000000  000   000  000  000       0000000   
+# 000       000   000  000   000  000  000       000       
+#  0000000  000   000   0000000   000   0000000  00000000  
+
+choice = (info) ->
+    elem 'div', class:'choice label', text:info.name
+    for c in info.values
+        chose = (info,c) -> (e) -> 
+            for value in info.values
+                menu.buttons[value].classList.remove 'highlight'
+            if c not in ['+', '-', 'VOL']
+                e.target.classList.add 'highlight'
+            if c not in ['VOL']
+                info.cb c
+        menu.buttons[c] = elem 'div', class:'button inline', text:c, click: chose info, c
+        
 # 00     00  00000000  000   000  000   000    
 # 000   000  000       0000  000  000   000    
 # 000000000  0000000   000 0 000  000   000    
@@ -515,6 +552,8 @@ menu.buttons['usr'] = elem 'div', class:'button usr', menu.right
 menu.buttons['bot'] = elem 'div', class:'button bot', menu.right
 
 menu.buttons['pause'] = elem 'div', class:'button', text:'PAUSE', click: -> pause()
+elem 'div', class:'button', text:'MENU',   click: -> loadLevel 'menu'
+elem 'div', class:'button', text:'RESET',  click: -> loadLevel world.level.name
 menu.buttons['fullscreen'] = elem 'div', class:'button', text:'FULLSCREEN', click: ->
     fs = document.fullscreenElement or document.webkitFullscreenElement or document.mozFullScreenElement
     if fs
@@ -527,28 +566,6 @@ menu.buttons['fullscreen'] = elem 'div', class:'button', text:'FULLSCREEN', clic
         rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
         rfs.call el
     
-choice = (info) ->
-    elem 'div', class:'choice label', text:info.name
-    for c in info.values
-        chose = (info,c) -> (e) -> 
-            for value in info.values
-                menu.buttons[value].classList.remove 'highlight'
-            if c not in ['+', '-', 'VOL']
-                e.target.classList.add 'highlight'
-            if c not in ['VOL']
-                info.cb c
-        menu.buttons[c] = elem 'div', class:'button inline', text:c, click: chose info, c
-
-elem 'div', class:'button', text:'MENU',   click: -> loadLevel 'menu'
-elem 'div', class:'button', text:'RANDOM', click: -> loadLevel 'random'
-elem 'div', class:'button', text:'LEVEL1', click: -> loadLevel 'level1'
-elem 'div', class:'button', text:'LEVEL2', click: -> loadLevel 'level2'
-elem 'div', class:'button', text:'LEVEL3', click: -> loadLevel 'level3'
-elem 'div', class:'button', text:'LEVEL4', click: -> loadLevel 'level4'
-elem 'div', class:'button', text:'LEVEL5', click: -> loadLevel 'level5'
-elem 'div', class:'button', text:'LEVEL6', click: -> loadLevel 'level6'
-elem 'div', class:'button', text:'RESET',  click: -> loadLevel world.level
-# choice name:'NODES', values:['16', '24', '32', '40'], cb: (c) -> world.nodes = parseInt c
 choice name:'VOLUME',   values:['-', 'VOL', '+'], cb: (c) -> 
     switch c
         when '+' then snd.volUp()

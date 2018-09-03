@@ -11,7 +11,7 @@ class Line
     constructor: (@s,@e) ->
         
         @c = add 'path', class:'line'
-        @c.classList.add @s.own
+        @c.classList.add @s.own if @s.own
        
     del: -> @c.remove()
     depth: -> (@s.depth()+@e.depth())/2 

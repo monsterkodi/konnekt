@@ -37,6 +37,8 @@ class Pref
             else
                 @cache = req.result
                 snd.volume @cache.volume
+                if world.level.name == 'menu'
+                    loadLevel 'menu'
             
     write: ->
         trans = @db.transaction ["prefs"], 'readwrite'
