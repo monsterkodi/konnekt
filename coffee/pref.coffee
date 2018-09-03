@@ -8,52 +8,56 @@
 
 class Pref
 
-    constructor: () ->
+    constructor: ->
+        
         @cache = prefs:'prefs', volume:0.03125
         try
             @req = window.indexedDB.open 'online', 2
-            # @req.onerror = (e) => log 'db error!', e.target.errorCode
+            @req.onerror = (e) => @loadMenu 'open error'
             @req.onsuccess = (e) =>
-                # log 'onsuccess'
                 @db = e.target.result
                 @read()
             @req.onupgradeneeded = (e) =>
-                # log 'onupgradeneeded'
-                db = e.target.result
+                db    = e.target.result
                 store = db.createObjectStore "prefs", keyPath: 'prefs'
-                req = store.put @cache
-                # req.onerror = (e) -> log 'db init error!', e.target
-                # req.onsuccess = (e) => log 'onsuccess upgrade'
+                req   = store.put @cache
         catch err
-            true
+            @loadMenu 'prefs catch'
+          
+    loadMenu: (from) ->
+        
+        # log "loadMenu from:#{from} level:#{world.level?.name}"
+        if not world.level or world.level.name == 'menu'
+            loadLevel 'menu'
             
     read: ->
+        
         trans = @db.transaction ["prefs"], 'readonly'
         store = trans.objectStore "prefs"
         req = store.get 'prefs'
+        req.onerror = (e) => @loadMenu 'read error'
         req.onsuccess = (e) =>
             if not req.result
                 @write()
+                @loadMenu 'empty'
             else
                 @cache = req.result
                 snd.volume @cache.volume
-                if world.level.name == 'menu'
-                    loadLevel 'menu'
+                @loadMenu 'read'
             
     write: ->
+        
         trans = @db.transaction ["prefs"], 'readwrite'
         store = trans.objectStore 'prefs'
         req = store.put @cache
-        # req.onerror = (e) -> log 'db write error!', e.target
-        req.onsuccess = (e) -> 
-            if world.level.name == 'menu'
-                loadLevel 'menu'
         
     clear: ->
+        
         @cache = prefs:'prefs', volume:@cache.volume ? 0.03125
         @write()
             
-    set: (key, value) -> 
+    set: (key, value) ->
+        
         @cache[key] = value
         if @db then @write()
         

@@ -64,7 +64,6 @@ move = (e) ->
                 world.update = 1
             when 2
                 mouse.drag.v = s2u mouse.pos
-                log mouse.drag.v
                 world.update = 1
     
 # 0000000     0000000   000   000  000   000  
@@ -89,11 +88,7 @@ down = (e) ->
     if world.level.name == 'menu'
         msg()
     else if world.winner and e.buttons == 1 and not e.target.classList.contains 'button'
-        log e
-        if world.winner == 'usr'
-            loadLevel world.level.next ? 'menu'
-        else
-            loadLevel world.level.name
+        loadNext()
         return
     
     if mouse.drag = e.target.dot
@@ -148,11 +143,9 @@ enter = (e) ->
     
     return if mouse.drag
     
-    return if world.pause
-    
     if d = e.target.dot
                 
-        if d.c.classList.contains('linked') and d.own == 'usr' or world.level.name == 'menu'
+        if not world.pause and d.c.classList.contains('linked') and d.own == 'usr' or world.level.name == 'menu'
             
             if d != mouse.hover
                 mouse.hover?.c.classList.remove 'src'
@@ -203,9 +196,10 @@ pause = (m='PAUSED', cls='', status='pause') ->
     
     return if world.level?.name == 'menu'
     
-    showMenu 'pause'
-    
     world.pause = not world.pause
+    
+    showMenu world.winner and 'next' or world.pause and 'pause' or 'game'
+    
     msg (world.pause and m or ''), cls
             
     if world.pause
@@ -223,9 +217,14 @@ visibility = -> if document.hidden and not world.pause then pause()
 
 anim = (now) ->
     
+    nextTick = -> win.requestAnimationFrame anim; now
+    
     snd.tick()
         
     world.delta = (now-world.time)/16
+    world.time  = now
+    
+    return nextTick() if not world.level
     
     if not world.pause and world.level.name != 'menu'
     
@@ -243,16 +242,15 @@ anim = (now) ->
                     
                 if dots.length == 0
                     if ow == 'bot'
-                        pause 'ONLINE!', 'usr'
                         world.winner = 'usr'
+                        pause 'ONLINE!', 'usr'
                         pref.set world.level.name, true
                     else
-                        pause 'OFFLINE!', 'bot'
                         world.winner = 'bot'
-                    win.requestAnimationFrame anim
+                        pause 'OFFLINE!', 'bot'
                     screen.hint?.remove()
                     world.update = 1
-                    return
+                    return nextTick()
 
                 for d in dots
                     d.addUnit world.addUnit
@@ -292,8 +290,7 @@ anim = (now) ->
     for spark in world.sparks.slice 0
         spark.upd()
     
-    win.requestAnimationFrame anim
-    world.time=now
+    nextTick()
 
 win.addEventListener 'resize',    size
 svg.addEventListener 'mouseover', enter
@@ -306,6 +303,6 @@ win.addEventListener 'contextmenu', (e) -> e.preventDefault()
     
 document.addEventListener 'visibilitychange', visibility, false
 
-loadLevel 'menu'
+# loadLevel 'menu'
 
 win.requestAnimationFrame anim

@@ -5,6 +5,14 @@
 # 000      000   000  000   000  000   000      000      000          000     000       000        
 # 0000000   0000000   000   000  0000000        0000000  00000000      0      00000000  0000000    
 
+loadNext = ->
+    if world.winner == 'usr'
+        loadLevel world.level.next ? 'menu'
+    else
+        loadLevel world.level.name
+
+forceLevel = (level) -> world.level = null; loadLevel level
+        
 loadLevel = (level) ->
     
     svg.innerHTML = ''
@@ -48,8 +56,13 @@ loadLevel = (level) ->
 # 000  000   000  000     000           0000000  00000000      0      00000000  0000000
 
 initLevel = (name) ->
+
     log "initLevel #{name}"
+    
+    return if world.level?.name == name
+    
     level = levels[name]
+    
     level.name = name
         
     for d in level.dots
@@ -71,16 +84,21 @@ initLevel = (name) ->
         bot = new Bot world.dots[i]
         if level.bot.speed
             bot.speed = level.bot.speed
-        
+          
     if level.msg
-        if not world.pause
-            pause() # hack to hide menu items
-            pause()
         msg level.msg
+    else
+        msg()
         
     if level.hint
         hint level.hint[0], level.hint[1]
-        
+    else
+        hint()
+
+    if name == 'menu'
+        delete level.msg
+        delete level.hint
+  
     world.level   = level
     world.addUnit = level.addUnit
     
@@ -98,8 +116,7 @@ randomLevel = ->
     grph = new Grph
     
     world.addUnit = 1
-    world.level = 
-        name: 'random'
+    world.level = name: 'RANDOM'
     
     d = new Dot vec 0,0,1
     d.setOwn 'usr'

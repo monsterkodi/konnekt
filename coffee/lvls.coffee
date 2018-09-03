@@ -63,7 +63,7 @@ levels =
         
         addUnit: 0
         next: 'TUTORIAL 3'
-        hint: ["To win, you need to deactivate all red nodes.\n\nIt is OK to leave inactive red nodes!", "This level contains 4 inactive and 1 active red node.\n\nDrag anywhere to rotate the sphere."]
+        hint: ["To win, you need to deactivate all red nodes.\n\nIt is OK to leave inactive red nodes!", "This level contains 4 inactive and 2 active red nodes.\n\nDrag anywhere to rotate the sphere."]
         dots: [
             v: [0.0,0.0,1]
             o: 'usr'
@@ -85,16 +85,20 @@ levels =
             o: 'bot'
             u: 11
         ,
-            v: [0,0.01,-1]
+            v: [-0.1,0.1,-1]
             o: 'bot'
-            u: 45
+            u: 15
+        ,
+            v: [0.1,0.1,-1]
+            o: 'bot'
+            u: 15
         ]    
         
     'TUTORIAL 3':
         
         addUnit: 0
         next: 'TUTORIAL 4'
-        hint: ["Sending to nodes that you don't own isn't free.\n\nThe farther away the target node, the higher the cost.", "The cost is a fraction of the number of processes sent.\n\nNotice that you need more attacks and loose more processes when defeating the far node."]
+        hint: ["Sending to nodes that you don't own isn't free.\n\nThe farther away the target node, the higher the cost.", "The cost factor is multiplied by the number of processes sent. The more you send, the more you loose.\n\nNotice that you need more attacks -- and loose more processes -- when defeating the far node."]
         dots: [
             v: [-0.9,-0.2,0.1]
             o: 'usr'

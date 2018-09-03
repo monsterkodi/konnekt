@@ -6,54 +6,91 @@
 000   000  00000000  000   000   0000000     
 ###
 
+onVol = (chce) ->
+    switch chce
+        when '+' then snd.volUp()
+        when '-' then snd.volDown()
+        
+menuVolume = (vol) ->
+    menu.buttons.VOL?.innerHTML = "#{floor(vol * 100) / 100}"
+
 menus = 
     menu: [
         OPTIONS:
-            class: 'button'
             click: -> showMenu 'options'
     ]
     game: [
         PAUSE:
-            class: 'button'
             click: -> pause()
     ]
     options: [
         OPTIONS:
-            class: 'button'
             click: -> showMenu 'menu'
     ,
         FULLSCREEN:
-            class: 'button'
             click: -> toggleFullscreen()
     ,
         VOLUME:
             class:  'choice'
-            values: ['-', 'VOL', '+'] 
-            cb:    onVol
+            values: ['-', 'VOL', '+']
+            cb:     onVol
     ,
         'RESET PROGRESS':
-            class: 'button'
-            click: -> pref.clear()
+            click: -> pref.clear(); forceLevel 'menu'
     ]
     pause: [
         UNPAUSE:
-            class: 'button'
             click: -> pause()
     ,
+        MENU:
+            click: -> loadLevel 'menu'
+    ,
+        RESET:
+            click: -> forceLevel world.level.name
+    ,
         FULLSCREEN:
-            class: 'button'
             click: -> toggleFullscreen()
     ,
         VOLUME:
             class:  'choice'
             values: ['-', 'VOL', '+'] 
-            cb:    onVol
+            cb:     onVol
+    ]
+    next: [
+        NEXT:
+            click: -> loadNext()
+    ,
+        MENU:
+            click: -> loadLevel 'menu'
+    ,
+        RESET:
+            click: -> loadLevel world.level.name
     ]
 
-onVol = (choice) ->
-    switch choice
-        when '+' then snd.volUp()
-        when '-' then snd.volDown()
+#  0000000  000   000   0000000   000   000  
+# 000       000   000  000   000  000 0 000  
+# 0000000   000000000  000   000  000000000  
+#      000  000   000  000   000  000   000  
+# 0000000   000   000   0000000   00     00  
+
+showMenu = (m) ->
+    
+    for k,v of menu.buttons
+        if k[0] not in 'ub' # 'usr', 'bot'
+            v.remove()
+            delete menu.buttons[k]
+    
+    mnu = menus[m]
+    for item in mnu
+        name = Object.keys(item)[0]
+        info = item[name]
+        info.class ?= 'button'
+        info.text ?= name
+                
+        if info.class == 'choice'
+            choice info
+        else
+            menu.buttons[name] = elem 'div', info, menu.left
     
 # 00000000  000   000  000      000       0000000   0000000  00000000   00000000  00000000  000   000  
 # 000       000   000  000      000      000       000       000   000  000       000       0000  000  
@@ -82,7 +119,7 @@ toggleFullscreen = ->
 # 00000000  0000000  00000000  000   000  
 
 elem = (t,o,p) ->
-    log "#{t} #{p}", o
+    # log "#{t} #{p}", o
     e = document.createElement t
     if o.text?
         e.innerText = o.text
@@ -145,39 +182,24 @@ popup = (p,t) ->
 #  0000000  000   000   0000000   000   0000000  00000000  
 
 choice = (info) ->
-    elem 'div', info, menu.left
+    
+    menu.buttons[info.text] = elem 'div', info, menu.left
+    
     for c in info.values
         chose = (info,c) -> (e) -> 
             for value in info.values
                 menu.buttons[value].classList.remove 'highlight'
             if c not in ['+', '-', 'VOL']
                 e.target.classList.add 'highlight'
+                                
             if c not in ['VOL']
                 info.cb c
-        menu.buttons[c] = elem 'div', class:'button inline', text:c, click: chose(info, c), menu.left
-
-#  0000000  000   000   0000000   000   000  
-# 000       000   000  000   000  000 0 000  
-# 0000000   000000000  000   000  000000000  
-#      000  000   000  000   000  000   000  
-# 0000000   000   000   0000000   00     00  
-
-showMenu = (m) ->
-    
-    for k,v of menu.buttons
-        if k[0] not in 'ub' # 'usr', 'bot'
-            v.remove()
-            delete menu.buttons[k]
-    
-    mnu = menus[m]
-    for item in mnu
-        name = Object.keys(item)[0]
-        info = item[name]
-        info.text ?= name
-        if info.class == 'choice'
-            choice info
-        else
-            menu.buttons[name] = elem 'div', info, menu.left
+            e.stopPropagation()
+            
+        menu.buttons[c] = elem 'div', class:'button', text:c, click:chose(info, c), menu.left
+        
+        if c == 'VOL'
+            menuVolume snd.vol
 
 # 00000000    0000000   000   000   0000000  00000000  
 # 000   000  000   000  000   000  000       000       
@@ -203,13 +225,4 @@ menuPause = ->
         
 menu.buttons['usr'] = elem 'div', class:'button usr', menu.right
 menu.buttons['bot'] = elem 'div', class:'button bot', menu.right
-# menu.buttons['pause'] = elem 'div', class:'button', text:'PAUSE', click: -> pause()
-# elem 'div', class:'button', text:'MENU',  click: -> loadLevel 'menu'
-# elem 'div', class:'button', text:'RESET', click: -> loadLevel world.level.name
-# menu.buttons['fullscreen'] = elem 'div', class:'button', text:'FULLSCREEN', click: toggleFullscreen
-# menu.buttons['clear'] = elem 'div', class:'button', text:'CLEAR', click: -> pref.clear()
-# choice name:'VOLUME',   values:['-', 'VOL', '+'], cb: (c) -> 
-    # switch c
-        # when '+' then snd.volUp()
-        # when '-' then snd.volDown()
    

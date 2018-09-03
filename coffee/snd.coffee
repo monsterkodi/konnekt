@@ -59,7 +59,7 @@ class Snd
     volDown: => if @vol < 0.0625 then @volume 0 else @volume @vol/2
     volUp: => @volume clamp 0.03125, 1, @vol*2
     volume: (@vol) -> 
-        menu.buttons.VOL?.innerHTML = "#{floor(@vol * 100) / 100}"
+        menuVolume @vol
         @gain.gain.value = @vol
         pref.set 'volume', @vol
     
