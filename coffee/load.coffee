@@ -17,13 +17,13 @@ loadLevel = (level) ->
     
     svg.innerHTML = ''
     
-    menu.buttons.bot.innerHTML = ''
-    menu.buttons.usr.innerHTML = ''
+    menu.bot.innerHTML = ''
+    menu.usr.innerHTML = ''
     
     world.circle = add 'circle', class:'world', cx:screen.center.x, cy:screen.center.y, r:screen.radius
     world.circle.v = vec()
     
-    dbg = add 'line', class:'dbg'
+    # dbg = add 'line', class:'dbg'
     
     world.ticks  = 0
     world.dots   = []        

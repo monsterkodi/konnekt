@@ -18,4 +18,5 @@ cp min.js min/min.js
 ../node_modules/.bin/minify style.css > min/style.css
 ../node_modules/.bin/minify index.html > min/index.html
 
-open min/index.html
+# open min/index.html
+start min/index.html

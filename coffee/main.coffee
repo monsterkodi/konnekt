@@ -242,7 +242,7 @@ anim = (now) ->
                 world.units[ow] = dots.reduce ((a,b) -> a+b.targetUnits), 0
                 dots  = dots.filter (d) -> d.units >= d.minUnits
                 
-                menu.buttons[ow].innerHTML = "&#9679; #{dots.length}"
+                menu[ow].innerHTML = "&#9679; #{dots.length}"
                     
                 if dots.length == 0
                     if ow == 'bot'
@@ -289,7 +289,7 @@ anim = (now) ->
             
         world.update = 0
     
-    dbg.parentNode.appendChild dbg
+    # dbg.parentNode.appendChild dbg
     
     for spark in world.sparks.slice 0
         spark.upd()

@@ -127,5 +127,5 @@ mouse =
 
 bot  = null 
 snd  = new Snd 
-dbg  = null
+# dbg  = null
 grph = null

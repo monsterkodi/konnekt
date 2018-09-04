@@ -12,24 +12,18 @@ cos   = Math.cos
 acos  = Math.acos
 sin   = Math.sin
 sqrt  = Math.sqrt
-atan2 = Math.atan2
 max   = Math.max
 min   = Math.min
-rand  = Math.random
-PI    = Math.PI
 ceil  = Math.ceil
-floor = Math.floor
-round = Math.round
-EPS   = Number.EPSILON
 
-randr = (a,b) -> a+(b-a)*rand()
-randi = (a,b) -> round a+(b-a)*rand()
+randr = (a,b) -> a+(b-a)*Math.random()
+# randi = (a,b) -> Math.round a+(b-a)*Math.random()
 clamp = (a,b,v) -> max a, min b, v
-zero  = (v) -> abs(v) < EPS
+zero  = (v) -> abs(v) < Number.EPSILON
 
 log = console.log 
-r2d = (r) -> 180 * r / PI
-d2r = (d) -> PI * d / 180
+r2d = (r) -> 180 * r / Math.PI
+d2r = (d) -> Math.PI * d / 180
 
 class Vec
 

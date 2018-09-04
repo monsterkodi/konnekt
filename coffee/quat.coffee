@@ -117,7 +117,7 @@ class Quat
             return @norm()
             
         sht = sqrt ssht
-        ht = atan2 sht, cht
+        ht = Math.atan2 sht, cht
         ra = sin((1 - t) * ht) / sht
         rb = sin(t * ht) / sht
         @w = w * ra + @w * rb

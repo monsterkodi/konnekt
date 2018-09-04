@@ -7,7 +7,7 @@ konrad -q
 
 cd coffee
 
-cat vec.coffee quat.coffee snd.coffee grph.coffee glob.coffee pref.coffee lvls.coffee sprk.coffee dot.coffee bot.coffee line.coffee load.coffee menu.coffee main.coffee > ../js/min.coffee
+cat vec.coffee quat.coffee pref.coffee snd.coffee grph.coffee glob.coffee lvls.coffee sprk.coffee dot.coffee bot.coffee line.coffee load.coffee menu.coffee main.coffee > ../js/min.coffee
 
 cd ../js
 
@@ -20,7 +20,8 @@ coffee --no-header -c min.coffee
 ../node_modules/.bin/minify index.html > min/index.html
 
 cd min
-zip -q ../online.zip *
+../../bin/advzip -apq4 ../konnekt.zip *
+# zip -q ../konnekt.zip *
 cd ..
 
-~/s/colorls/bin/color-ls -lp online.zip
+~/s/colorls/bin/color-ls -lp konnekt.zip

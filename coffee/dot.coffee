@@ -175,7 +175,7 @@ class Dot
         else
             lnk = true
             d.setOwn @own 
-            new Sprk d, floor ul * cost
+            new Sprk d, Math.floor ul * cost
         
         @startTimer  -ul
         d.startTimer ou

@@ -6,13 +6,8 @@
 000   000  00000000  000   000   0000000     
 ###
 
-onVol = (chce) ->
-    switch chce
-        when '+' then snd.volUp()
-        when '-' then snd.volDown()
-        
 menuVolume = (vol) ->
-    menu.buttons.VOL?.innerHTML = "#{floor(vol * 100) / 100}"
+    menu.buttons.VOL?.innerHTML = "#{Math.floor(vol * 100) / 100}"
 
 menus = 
     menu: [
@@ -27,47 +22,38 @@ menus =
         OPTIONS:
             click: -> showMenu 'menu'
     ,
-        FULLSCREEN:
-            click: -> toggleFullscreen()
+        FULLSCREEN: click: -> toggleFullscreen()
     ,
         VOLUME:
             class:  'choice'
             values: ['-', 'VOL', '+']
-            cb:     onVol
+            cb: (c) -> if c == '+' then snd.volUp() else if c == '-' then snd.volDown()
     ,
-        ABOUT:
-            click: -> menuAbout()
+        ABOUT: click: -> menuAbout()
     ,
         'RESET PROGRESS':
             click: -> pref.clear(); forceLevel 'menu'
     ]
     pause: [
-        UNPAUSE:
-            click: -> pause()
+        UNPAUSE: click: -> pause()
     ,
-        MENU:
-            click: -> loadLevel 'menu'
+        MENU: click: -> loadLevel 'menu'
     ,
-        RESET:
-            click: -> forceLevel world.level.name
+        RESET: click: -> forceLevel world.level.name
     ,
-        FULLSCREEN:
-            click: -> toggleFullscreen()
+        FULLSCREEN: click: -> toggleFullscreen()
     ,
         VOLUME:
             class:  'choice'
-            values: ['-', 'VOL', '+'] 
-            cb:     onVol
+            values: ['-', 'VOL', '+']
+            cb: (c) -> if c == '+' then snd.volUp() else if c == '-' then snd.volDown()
     ]
     next: [
-        NEXT:
-            click: -> loadNext()
+        NEXT: click: -> loadNext()
     ,
-        MENU:
-            click: -> loadLevel 'menu'
+        MENU: click: -> loadLevel 'menu'
     ,
-        RESET:
-            click: -> forceLevel world.level.name
+        RESET: click: -> forceLevel world.level.name
     ]
 
 #  0000000  000   000   0000000   000   000  
@@ -79,9 +65,8 @@ menus =
 showMenu = (m) ->
     
     for k,v of menu.buttons
-        if k[0] not in 'ub' # 'usr', 'bot'
-            v.remove()
-            delete menu.buttons[k]
+        v.remove()
+        delete menu.buttons[k]
     
     mnu = menus[m]
     for item in mnu
@@ -106,11 +91,11 @@ isFullscreen = -> document.fullscreenElement or document.webkitFullscreenElement
 toggleFullscreen = ->
     
     if isFullscreen()
-        menu.buttons['FULLSCREEN'].innerHTML = 'FULLSCREEN'
+        menu.buttons.FULLSCREEN.innerHTML = 'FULLSCREEN'
         efs = document.exitFullscreen or document.webkitExitFullscreen or document.mozCancelFullScreen
         efs.call document
     else
-        menu.buttons['FULLSCREEN'].innerHTML = 'WINDOWED'
+        menu.buttons.FULLSCREEN.innerHTML = 'WINDOWED'
         el = document.documentElement
         rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
         rfs.call el
@@ -214,15 +199,15 @@ choice = (info) ->
 
 menuAbout = ->
     
-    closeAbout = (e) -> menu.buttons.about.remove(); delete menu.buttons.about
+    closeAbout = (e) -> menu.about.remove(); delete menu.about
     t = ''
     t += "KONNEKT is my entry for the <a href='https://js13kgames.com/' target='_blank'>js13kgames</a> 2018 competition.<br>"
     t += "Thanks to the organizers!<p>"
     t += "The game is written in CoffeeScript.<br>The sources are available at "
     t += "<a href='https://github.com/monsterkodi/konnekt' target='_blank'>github</a>.<p>"
     t += "I hope you had some fun playing the game."
-    menu.buttons.about = elem 'div', class:'about', html:t, click:closeAbout, main
+    menu.about = elem 'div', class:'about', html:t, click:closeAbout, main
     
-menu.buttons.usr = elem 'div', class:'button usr', menu.right
-menu.buttons.bot = elem 'div', class:'button bot', menu.right
+menu.usr = elem 'div', class:'button usr', menu.right
+menu.bot = elem 'div', class:'button bot', menu.right
    
