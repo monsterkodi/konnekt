@@ -30,10 +30,9 @@ loadLevel = (level) ->
     world.lines  = []
     world.update = 1
     world.winner = null
+    mouse.drag = null
     
     bot = null
-    
-    mouse.drag = null
     
     delTmpl 'usr'
     delTmpl 'bot'
@@ -62,8 +61,6 @@ loadLevel = (level) ->
 
 initLevel = (name) ->
 
-    log "initLevel #{name}"
-    
     return if world.level?.name == name
     
     level = levels[name]
@@ -132,7 +129,7 @@ randomLevel = ->
         v.norm()
         
         while true
-            ok = true 
+            ok = true
             for ed in world.dots
                 if v.angle(ed.v) < 0.2
                     v = vec randr(-1,1), randr(-1,1), randr(0,1) 

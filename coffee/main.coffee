@@ -12,13 +12,13 @@
 #      000  000   000     000       
 # 0000000   000  0000000  00000000  
 
-fontSize = (name, e) -> 
-    return if not e
-    s = switch name
-        when 'msg'  then screen.radius/6
-        when 'hint' then screen.radius/20
-        when 'menu' then max 12, screen.radius/30
-    e.style.fontSize = "#{parseInt s}px"
+fontSize = (name, e) ->
+    if e
+        s = switch name
+            when 'msg'  then screen.radius/6
+            when 'hint' then screen.radius/20
+            when 'menu' then Math.max 12, screen.radius/30
+        e.style.fontSize = "#{parseInt s}px"
 
 size = -> 
     
@@ -49,7 +49,7 @@ size()
 # 000 0 000  000   000     000     000       
 # 000   000   0000000       0      00000000  
 
-move = (e) ->
+win.addEventListener 'mousemove', (e) ->
     
     mouse.pos = vec e.clientX, e.clientY
     
@@ -83,12 +83,12 @@ delTmpl = (o) ->
     world.tmpline[o]?.del()
     delete world.tmpline[o]
 
-down = (e) ->
+win.addEventListener 'mousedown', (e) ->
     
     delTmpl 'usr'
     mouse.drag?.c?.classList.remove 'src'
     
-    world.inertRot = quat()
+    world.inertRot = new Quat
     
     hint()
     if world.level.name == 'menu'
@@ -117,7 +117,7 @@ down = (e) ->
 # 000   000  000        
 #  0000000   000        
 
-up = (e) ->
+win.addEventListener 'mouseup', (e) ->
     
     if mouse.drag == 'rot'
         
@@ -125,9 +125,9 @@ up = (e) ->
         
     else if mouse.drag
         
-        world.inertRot = quat()
+        world.inertRot = new Quat
         
-        if world.tmpline.usr? and world.tmpline.usr.e.c
+        if world.tmpline.usr and world.tmpline.usr.e.c
             mouse.drag.link world.tmpline.usr.e
             
         mouse.drag.c.classList.remove 'src'
@@ -143,7 +143,7 @@ up = (e) ->
 # 000   000  000   000     000     000       000   000    
 # 000   000   0000000       0      00000000  000   000    
 
-enter = (e) ->
+svg.addEventListener 'mouseover', (e) ->
     
     mouse.touch = e.target.dot
     
@@ -154,8 +154,7 @@ enter = (e) ->
         if not world.pause and d.c.classList.contains('linked') and d.own == 'usr' or world.level.name == 'menu'
             
             if d != mouse.hover
-                mouse.hover?.c.classList.remove 'src'
-                mouse.hover = d
+                setHover d
                 d.c.classList.add 'src'
                 
                 if world.level.name == 'menu'
@@ -164,19 +163,20 @@ enter = (e) ->
                     popup d.v, d.level
             
         else if mouse.hover
+            setHover()
             
-            mouse.hover.c.classList.remove 'src'
-            mouse.hover = null
+setHover = (a,r=1) ->
     
-leave = (e) ->
+    if r then mouse.hover?.c.classList.remove 'src'
+    mouse.hover = a
+    
+svg.addEventListener 'mouseout', (e) ->
     
     mouse.touch = null
         
     if d = e.target.dot
         if d == mouse.hover
-            if d != mouse.drag
-                d.c.classList.remove 'src'
-            mouse.hover = null
+            setHover null, d != mouse.drag
             if world.level.name == 'menu'
                 popup()
   
@@ -186,7 +186,7 @@ leave = (e) ->
 # 000  000   000          000     
 # 000   000  00000000     000     
 
-keydown = (e) ->
+win.addEventListener 'keydown', (e) ->
     
     switch e.keyCode
         when 32, 27 then pause() # space, esc
@@ -267,7 +267,7 @@ anim = (now) ->
     world.rotSum.mul 0.8
     # slp dbg, [u2s(vec()), u2s(rsum.times 1/100)]
     
-    world.inertRot.slerp quat(), 0.01 * world.delta
+    world.inertRot.slerp new Quat(), 0.01 * world.delta
         
     if not world.inertRot.zero() or world.update
         
@@ -296,13 +296,7 @@ anim = (now) ->
     
     nextTick()
 
-win.addEventListener 'resize',    size
-svg.addEventListener 'mouseover', enter
-svg.addEventListener 'mouseout',  leave
-win.addEventListener 'mousemove', move
-win.addEventListener 'mousedown', down
-win.addEventListener 'mouseup',   up
-win.addEventListener 'keydown',   keydown
+win.addEventListener 'resize', size
 win.addEventListener 'contextmenu', (e) -> e.preventDefault()
     
 document.addEventListener 'visibilitychange', visibility, false

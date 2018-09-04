@@ -7,47 +7,38 @@
     0      00000000   0000000
 ###
 
-abs   = Math.abs
-cos   = Math.cos
-acos  = Math.acos
-sin   = Math.sin
-sqrt  = Math.sqrt
-max   = Math.max
-min   = Math.min
-ceil  = Math.ceil
-
 randr = (a,b) -> a+(b-a)*Math.random()
-# randi = (a,b) -> Math.round a+(b-a)*Math.random()
-clamp = (a,b,v) -> max a, min b, v
-zero  = (v) -> abs(v) < Number.EPSILON
+clamp = (a,b,v) -> Math.max a, Math.min b, v
+zero  = (a) -> Math.abs(a) < Number.EPSILON
 
 log = console.log 
-r2d = (r) -> 180 * r / Math.PI
-d2r = (d) -> Math.PI * d / 180
+r2d = (a) -> 180 * a / Math.PI
+d2r = (a) -> Math.PI * a / 180
 
 class Vec
 
     constructor: (@x=0,@y=0,@z=0) ->
     cpy: -> vec @x, @y, @z
 
-    add: (v) -> 
-        @x+=v.x 
-        @y+=v.y 
-        @z+=v.z
+    add: (a) -> 
+        @x+=a.x 
+        @y+=a.y 
+        @z+=a.z
         @
         
-    mul: (f) ->
-        @x*=f
-        @y*=f
-        @z*=f
+    mul: (b) ->
+        @x*=b
+        @y*=b
+        @z*=b
         @
+        
     times: (f) -> @cpy().mul f
-    minus: (v) -> vec @x-v.x,@y-v.y,@z-v.z
-    to:    (v) -> v.minus @
-    dist:  (v) -> @minus(v).length()
-    dot:   (v) -> @x * v.x + @y * v.y + @z * v.z
-    cross: (v) -> vec @y * v.z - @z * v.y, @z * v.x - @x * v.z, @x * v.y - @y * v.x
-    length:    -> sqrt @x*@x + @y*@y + @z*@z
+    minus: (a) -> vec @x-a.x,@y-a.y,@z-a.z
+    to:    (a) -> a.minus @
+    dist:  (a) -> @minus(a).length()
+    dot:   (a) -> @x*a.x+@y*a.y+@z*a.z
+    cross: (a) -> vec @y*a.z-@z*a.y,@z*a.x-@x*a.z,@x*a.y-@y*a.x
+    length:    -> Math.sqrt @x*@x+@y*@y+@z*@z
 
     norm: ->
         l = @length()
@@ -62,7 +53,7 @@ class Vec
             @z *= l
         @
         
-    angle: (v) -> acos clamp -1, 1, @dot(v) / sqrt( @length() * v.length() )
+    angle: (a) -> Math.acos clamp -1, 1, @dot(a) / Math.sqrt( @length() * a.length() )
         
 vec = (x,y,z) -> new Vec x,y,z        
             

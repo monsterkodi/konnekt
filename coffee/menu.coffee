@@ -203,7 +203,7 @@ menuAbout = ->
     t = ''
     t += "KONNEKT is my entry for the <a href='https://js13kgames.com/' target='_blank'>js13kgames</a> 2018 competition.<br>"
     t += "Thanks to the organizers!<p>"
-    t += "The game is written in CoffeeScript.<br>The sources are available at "
+    t += "The sources are available at "
     t += "<a href='https://github.com/monsterkodi/konnekt' target='_blank'>github</a>.<p>"
     t += "I hope you had some fun playing the game."
     menu.about = elem 'div', class:'about', html:t, click:closeAbout, main

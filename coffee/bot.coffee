@@ -38,5 +38,5 @@ class Bot
                 if not d.linked c
                     d.link c
                     @tmpl d, c
-                    break
+                    return
             

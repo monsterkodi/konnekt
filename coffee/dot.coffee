@@ -85,8 +85,8 @@ class Dot
             @pie.setAttribute 'd', "M0,-1 A1,1 0 1,0 0,1 A1,1 0 0,0 0,-1 z"
         else
             @c.classList.add 'linked'
-            s =   sin d2r @units
-            c = - cos d2r @units
+            s =   Math.sin d2r @units
+            c = - Math.cos d2r @units
             f = @units <= 180 and '1,0' or '0,0'
             @pie.setAttribute 'd', "M0,0 L0,-1 A1,1 0 #{f} #{s},#{c} z"
             
@@ -94,7 +94,7 @@ class Dot
     zdepth:     -> @depth()
     radius:     -> ((@depth() + 0.3)/1.5) * screen.radius/20
     raise:      -> @g.parentNode.appendChild @g
-    closest:    -> world.dots.slice(0).sort((a,b) => @dist(a)-@dist(b)).slice 1
+    closest:    -> world.dots.slice(0).sort((a,d) => @dist(a)-@dist(d)).slice 1
     dist:   (d) -> @v.angle d.v
 
     neutralize: ->
@@ -126,23 +126,15 @@ class Dot
     
     link: (d) ->
         
-        if d == @
-            log 'self?'
-            return
-            
-        if @linked d
-            log 'linked?'
-            return
-        
-        if @targetUnits < @minUnits
+        if d == @ or @targetUnits < @minUnits or @linked d
             return
             
         cost = 0.5 * r2d(@dist d) / 180
         if d.own == @own
             cost = 0
             
-        ul = ceil @targetUnits * 0.5
-        uh = ceil ul * (1-cost)
+        ul = Math.ceil @targetUnits * 0.5
+        uh = Math.ceil ul * (1-cost)
 
         # log "ul #{ul} uh #{uh} #{cost}"
         
@@ -156,24 +148,22 @@ class Dot
                         
         if d.own != '' and d.own != @own
             ou = -uh
+            new Sprk @, ul
             if uh == d.targetUnits
                 snd.play "draw #{@own}"
-                new Sprk @, ul
                 new Sprk d, uh
             else if uh < d.targetUnits
                 snd.play "lost #{@own}"
-                new Sprk @, ul
                 new Sprk d, uh
             else 
                 snd.play "won #{@own}"
-                lnk = true
+                lnk = 1
                 ou = uh - d.targetUnits
-                new Sprk @, ul
                 new Sprk d, d.targetUnits               
                 d.unlink() 
                 d.setOwn @own
         else
-            lnk = true
+            lnk = 1
             d.setOwn @own 
             new Sprk d, Math.floor ul * cost
         

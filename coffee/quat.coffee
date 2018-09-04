@@ -14,19 +14,19 @@ class Quat
         @z = z or 0
         @w = w ? 1
 
-    copy: (q) ->
-        @x = q.x
-        @y = q.y
-        @z = q.z
-        @w = q.w
+    copy: (a) ->
+        @x = a.x
+        @y = a.y
+        @z = a.z
+        @w = a.w
         @
         
     @axis: (v,a) -> @xyza v.x, v.y, v.z, a
         
     @xyza: (x,y,z,a=0) ->
         h = a / 2
-        s = sin h
-        quat x*s, y*s, z*s, cos h
+        s = Math.sin h
+        new Quat x*s, y*s, z*s, Math.cos h
         
     rotate: (v) ->
 
@@ -48,7 +48,7 @@ class Quat
     # angle: (q) -> 2 * acos abs clamp -1, 1, @dot q
     # dot: (v) -> @x * v.x + @y * v.y + @z * v.z + @w * v.w
     
-    length: -> sqrt @x * @x + @y * @y + @z * @z + @w * @w
+    length: -> Math.sqrt @x * @x + @y * @y + @z * @z + @w * @w
     zero: -> zero(@x) and zero(@y) and zero(@z)
 
     norm: ->
@@ -66,39 +66,40 @@ class Quat
             @w = @w * l
         @
 
-    mul: (q) ->
+    mul: (a) ->
+        
         ax = @x
         ay = @y
         az = @z
         aw = @w
-        @x = ax * q.w +  aw * q.x  +  ay * q.z  - (az * q.y)
-        @y = ay * q.w +  aw * q.y  +  az * q.x  - (ax * q.z)
-        @z = az * q.w +  aw * q.z  +  ax * q.y  - (ay * q.x)
-        @w = aw * q.w - (ax * q.x) - (ay * q.y) - (az * q.z)
+        @x = ax * a.w +  aw * a.x  +  ay * a.z  - (az * a.y)
+        @y = ay * a.w +  aw * a.y  +  az * a.x  - (ax * a.z)
+        @z = az * a.w +  aw * a.z  +  ax * a.y  - (ay * a.x)
+        @w = aw * a.w - (ax * a.x) - (ay * a.y) - (az * a.z)
         @
 
-    slerp: (b, t) ->
+    slerp: (a, t) ->
         
         if t == 0
             return @
         if t == 1
-            return @copy b
+            return @copy a
             
         x = @x
         y = @y
         z = @z
         w = @w
         
-        cht = w * b.w + x * b.x + y * b.y + z * b.z
+        cht = w * a.w + x * a.x + y * a.y + z * a.z
         
         if cht < 0
-            @w = -b.w
-            @x = -b.x
-            @y = -b.y
-            @z = -b.z
+            @w = -a.w
+            @x = -a.x
+            @y = -a.y
+            @z = -a.z
             cht = -cht
         else
-            @copy b
+            @copy a
             
         if cht >= 1.0
             @w = w
@@ -116,14 +117,12 @@ class Quat
             @z = s * z + t * @z
             return @norm()
             
-        sht = sqrt ssht
+        sht = Math.sqrt ssht
         ht = Math.atan2 sht, cht
-        ra = sin((1 - t) * ht) / sht
-        rb = sin(t * ht) / sht
+        ra = Math.sin((1 - t) * ht) / sht
+        rb = Math.sin(t * ht) / sht
         @w = w * ra + @w * rb
         @x = x * ra + @x * rb
         @y = y * ra + @y * rb
         @z = z * ra + @z * rb
         @
-
-quat = (x,y,z,w) -> new Quat x,y,z,w

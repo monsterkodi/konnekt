@@ -66,19 +66,15 @@ screen =
     center:  vec()
     radius:  0
     
-u2s = (v) -> vec screen.center.x+v.x*screen.radius, screen.center.y+v.y*screen.radius
-s2u = (s) ->
-    s = s.minus(screen.center).times 1/screen.radius
-    if s.length() > 1
-        s.norm()
+u2s = (a) -> vec screen.center.x+a.x*screen.radius,screen.center.y+a.y*screen.radius
+s2u = (a) ->
+    a = a.minus(screen.center).times 1/screen.radius
+    if a.length() > 1
+        a.norm()
     else
-        vec s.x, s.y, sqrt 1 - s.x*s.x - s.y*s.y
+        vec a.x, a.y, Math.sqrt 1-a.x*a.x-a.y*a.y
     
-rotq = (v) ->
-    
-    qx = Quat.xyza 0, 1, 0, v.x /  screen.radius
-    qy = Quat.xyza 1, 0, 0, v.y / -screen.radius
-    qx.mul qy
+rotq = (a) -> Quat.xyza(0,1,0,a.x/screen.radius).mul Quat.xyza(1,0,0,a.y/-screen.radius)
         
 # 00     00  00000000  000   000  000   000  
 # 000   000  000       0000  000  000   000  
@@ -108,8 +104,8 @@ world =
     lines:    []
     tmpline:  {}
     units:    {}
-    userRot:  quat()
-    inertRot: quat()
+    userRot:  new Quat
+    inertRot: new Quat
     circle:   null
     rotSum:   vec()
     

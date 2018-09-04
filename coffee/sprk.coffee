@@ -10,7 +10,7 @@ class Sprk
 
     constructor: (@dot, units) ->
         
-        @units  = ceil units/3
+        @units  = Math.ceil units/3
         @sparks = []
         @ticks  = 0
         
@@ -30,7 +30,7 @@ class Sprk
         if not world.pause
             @ticks += 1
             
-        mu = max 5*@units, 120
+        mu = Math.max 5*@units, 120
         if @ticks > mu
             for s in @sparks
                 s.remove()
@@ -40,10 +40,10 @@ class Sprk
             f = @ticks/mu            
             for s in @sparks
                 angle += 2 * Math.PI / @sparks.length
-                v = vec cos(angle), sin(angle)
+                v = vec Math.cos(angle), Math.sin(angle)
                 v.mul @dot.radius() + mu * f * z * screen.radius / 500
                 s.setAttribute 'r', (0.5+0.5*f) * z * screen.radius / 60
-                s.setAttribute 'opacity', cos f * Math.PI
+                s.setAttribute 'opacity', Math.cos f * Math.PI
                 s.setAttribute 'cx', v.x
                 s.setAttribute 'cy', v.y
     
