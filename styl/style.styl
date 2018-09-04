@@ -43,32 +43,30 @@ svg
     top             0
     right           0
     
-.choice
-.inline
-    display         inline-block
-    
-.choice
-.button
-    padding         1em
-    padding-bottom  0
-    
 .red
     color           botColor
 .blue
     color           usrColor
-    
+        
+.choice
 .button
+    padding         1em
     display         inline-block
     cursor          pointer
+    
+.button
+    color           #444
     &:hover 
         color       white
-    color           #444
     &.highlight
     &.bot
         color       botColor
     &.usr
         color       usrColor
     
+.choice
+    color           #222
+        
 .menur .button
     display         block
     
@@ -122,10 +120,6 @@ svg
     pointer-events  none
     stroke          none
     fill            #000
-    
-// .dbg
-    // stroke          usrColor
-    // stroke-width    1
     
 .msg
     text-align      center

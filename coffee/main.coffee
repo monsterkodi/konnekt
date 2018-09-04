@@ -53,6 +53,7 @@ win.addEventListener 'mousemove', (e) ->
     
     mouse.pos = vec e.clientX, e.clientY
     
+    
     if mouse.drag == 'rot'
         
         world.userRot = rotq vec e.movementX, e.movementY
@@ -267,7 +268,6 @@ anim = (now) ->
         bot?.anim world.delta
     
     world.rotSum.mul 0.8
-    # slp dbg, [u2s(vec()), u2s(rsum.times 1/100)]
     
     world.inertRot.slerp new Quat(), 0.01 * world.delta
         
@@ -290,8 +290,6 @@ anim = (now) ->
             x.raise()
             
         world.update = 0
-    
-    # dbg.parentNode.appendChild dbg
     
     for spark in world.sparks.slice 0
         spark.upd()

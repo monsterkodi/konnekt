@@ -23,8 +23,6 @@ loadLevel = (level) ->
     world.circle = add 'circle', class:'world', cx:screen.center.x, cy:screen.center.y, r:screen.radius
     world.circle.v = vec()
     
-    # dbg = add 'line', class:'dbg'
-    
     world.ticks  = 0
     world.dots   = []        
     world.lines  = []
@@ -68,6 +66,18 @@ initLevel = (name) ->
     level.name = name
         
     for d in level.dots
+        
+        if d.c
+            for i in [0...d.c[0]]
+                q = Quat.axis(vec(0,1,0),d2r(d.c[2])).mul Quat.axis(vec(1,0,0),d2r(d.c[3]))
+                v = vec 0,0,1 
+                v = Quat.axis(vec(1,0,0),d2r(d.c[1])).rotate v
+                a = d.c[4] ? 360/d.c[0]
+                v = Quat.axis(vec(0,0,1),d2r(i*a)).rotate v
+                v = q.rotate v
+                dot = new Dot v
+            continue
+        
         dot = new Dot vec d.v[0], d.v[1], d.v[2]
         if d.u
             dot.setOwn 'usr'
@@ -75,7 +85,7 @@ initLevel = (name) ->
         if d.b
             dot.setOwn 'bot'
             dot.setUnits d.b 
-        if d.l
+        if name == 'menu'
             dot.level = d.l
             if pref.get d.l
                 dot.setOwn 'usr'

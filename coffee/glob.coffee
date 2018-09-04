@@ -31,11 +31,6 @@ app = (p,t,o) ->
     
 add = (t,o) -> app svg, t, o
 
-slp = (l,p) ->
-    for i in [1,2]
-        for a in ['x','y']
-            l.setAttribute "#{a}#{i}", p[i-1][a]
-
 arc = (a,b) ->
     r = a.angle b
     n = parseInt r/0.087
@@ -74,7 +69,7 @@ s2u = (a) ->
     else
         vec a.x, a.y, Math.sqrt 1-a.x*a.x-a.y*a.y
     
-rotq = (a) -> Quat.xyza(0,1,0,a.x/screen.radius).mul Quat.xyza(1,0,0,a.y/-screen.radius)
+rotq = (a) -> Quat.axis(vec(0,1,0),a.x/screen.radius).mul Quat.axis(vec(1,0,0),a.y/-screen.radius)
         
 # 00     00  00000000  000   000  000   000  
 # 000   000  000       0000  000  000   000  
@@ -123,5 +118,4 @@ mouse =
 
 bot  = null 
 snd  = new Snd 
-# dbg  = null
 grph = null

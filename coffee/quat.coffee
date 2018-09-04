@@ -9,24 +9,25 @@
 class Quat
 
     constructor: (x, y, z, w) ->
+        
         @x = x or 0
         @y = y or 0
         @z = z or 0
         @w = w ? 1
 
     copy: (a) ->
+        
         @x = a.x
         @y = a.y
         @z = a.z
         @w = a.w
         @
         
-    @axis: (v,a) -> @xyza v.x, v.y, v.z, a
+    @axis: (v,a=0) -> 
         
-    @xyza: (x,y,z,a=0) ->
         h = a / 2
         s = Math.sin h
-        new Quat x*s, y*s, z*s, Math.cos h
+        new Quat v.x*s, v.y*s, v.z*s, Math.cos h
         
     rotate: (v) ->
 
@@ -45,9 +46,6 @@ class Quat
         
         vec x,y,z
 
-    # angle: (q) -> 2 * acos abs clamp -1, 1, @dot q
-    # dot: (v) -> @x * v.x + @y * v.y + @z * v.z + @w * v.w
-    
     length: -> Math.sqrt @x * @x + @y * @y + @z * @z + @w * @w
     zero: -> zero(@x) and zero(@y) and zero(@z)
 
