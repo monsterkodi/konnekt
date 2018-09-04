@@ -62,14 +62,7 @@ class Snd
         menuVolume @vol
         @gain.gain.value = @vol
         pref.set 'volume', @vol
-    
-    touch: (n,d=1) -> @tch[n] = d
-    
-    stop: -> 
-        @tch = {}
-        for i in [0...@osc.length]
-            @freq i
-    
+        
     play: (n) ->
         
         d = switch n
@@ -80,5 +73,5 @@ class Snd
             else
                 1
         
-        @touch n, d
+        @tch[n] = d
         

@@ -41,8 +41,8 @@ class Sprk
             for s in @sparks
                 angle += 2 * Math.PI / @sparks.length
                 v = vec Math.cos(angle), Math.sin(angle)
-                v.mul @dot.radius() + mu * f * z * screen.radius / 500
-                s.setAttribute 'r', (0.5+0.5*f) * z * screen.radius / 60
+                v.mul @dot.radius() + mu * f * z * screen.radius/500
+                s.setAttribute 'r', (0.5+0.5*f) * z * screen.radius/60
                 s.setAttribute 'opacity', Math.cos f * Math.PI
                 s.setAttribute 'cx', v.x
                 s.setAttribute 'cy', v.y

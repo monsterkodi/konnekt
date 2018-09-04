@@ -209,7 +209,9 @@ pause = (m='PAUSED', cls='', status='pause') ->
     msg (world.pause and m or ''), cls
             
     if world.pause
-        snd.stop()
+        snd.tch = {}
+        for i in [0...snd.osc.length]
+            snd.freq i
         
 visibility = -> if document.hidden and not world.pause then pause()
 

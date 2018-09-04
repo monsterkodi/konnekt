@@ -11,7 +11,9 @@ class Pref
     constructor: ->
         
     load: ->
+        
         @cache = prefs:'prefs', volume:0.03125
+        
         try
             @req = window.indexedDB.open 'online', 2
             @req.onerror = (e) => @loadMenu 'open error'
@@ -62,6 +64,7 @@ class Pref
         @cache[key] = value
         if @db then @write()
         
-    get: (key, deflt) -> 
-        @cache[key] ? deflt
+    get: (key, v) -> 
+        
+        @cache[key] ? v
             

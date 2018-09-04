@@ -69,9 +69,12 @@ initLevel = (name) ->
         
     for d in level.dots
         dot = new Dot vec d.v[0], d.v[1], d.v[2]
-        if d.o
-            dot.setOwn d.o
-            dot.setUnits d.u if d.u
+        if d.u
+            dot.setOwn 'usr'
+            dot.setUnits d.u 
+        if d.b
+            dot.setOwn 'bot'
+            dot.setUnits d.b 
         if d.l
             dot.level = d.l
             if pref.get d.l

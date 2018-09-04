@@ -15,7 +15,7 @@ levels =
         dots: [
             v: [0,0,1]
             l: 'TUTORIAL 1'
-            o: 'bot'
+            b: 0
         ,
             v: [0,-0.3,0.8]
             l: 'TUTORIAL 2'
@@ -51,12 +51,10 @@ levels =
         hint: ["You control the blue nodes. Your task is to fight the red nodes.\n\nNodes contain processes. The more processes, the stronger the node.", "Attack the infected red node by dragging from your blue node.\n\nEach time you attack, half of the available processes will be sent."]
         dots: [
             v: [-0.5,0,1]
-            o: 'usr'
             u: 360
         ,
             v: [0.5,0,1]
-            o: 'bot'
-            u: 270
+            b: 270
         ]
         
     'TUTORIAL 2':
@@ -65,33 +63,26 @@ levels =
         next: 'TUTORIAL 3'
         hint: ["To win, you need to deactivate all red nodes.\n\nIt is OK to leave inactive red nodes!", "This level contains 4 inactive and 2 active red nodes.\n\nDrag anywhere to rotate the sphere."]
         dots: [
-            v: [0.0,0.0,1]
-            o: 'usr'
+            v: [0,0,1]
             u: 90
         ,
             v: [-0.2,0,1]
-            o: 'bot'
-            u: 11
+            b: 11
         ,
             v: [0.2,0,1]
-            o: 'bot'
-            u: 11
+            b: 11
         ,
             v: [0,0.2,1]
-            o: 'bot'
-            u: 11
+            b: 11
         ,
             v: [0,-0.2,1]
-            o: 'bot'
-            u: 11
+            b: 11
         ,
             v: [-0.1,0.1,-1]
-            o: 'bot'
-            u: 15
+            b: 15
         ,
             v: [0.1,0.1,-1]
-            o: 'bot'
-            u: 15
+            b: 15
         ]    
         
     'TUTORIAL 3':
@@ -101,20 +92,16 @@ levels =
         hint: ["Sending to nodes that you don't own isn't free.\n\nThe farther away the target node, the higher the cost.", "The cost factor is multiplied by the number of processes sent. The more you send, the more you loose.\n\nNotice that you need more attacks -- and loose more processes -- when defeating the far node."]
         dots: [
             v: [-0.9,-0.2,0.1]
-            o: 'usr'
             u: 360
         ,
             v: [-0.9,0.2,0.1]
-            o: 'usr'
             u: 360
         ,
             v: [-0.9,0,0.1]
-            o: 'bot'
-            u: 180
+            b: 180
         ,
             v: [0.9,0,0.1]
-            o: 'bot'
-            u: 180
+            b: 180
         ]
         
     'TUTORIAL 4':
@@ -124,19 +111,16 @@ levels =
         hint: ["Sending processes to nodes you own cost nothing.\n\nIt is efficient to occupy far away neutral nodes with few processes first and send larger groups later.", "Contrary to common believe,\nyou can't send processes between already connected nodes."]
         dots: [
             v: [-0.7,0.1,0.3]
-            o: 'usr'
             u: 180
         ,
             v: [-0.7,-0.1,0.3]
-            o: 'usr'
             u: 12
         ,
             v: [0.7,-0.1,0.3]
             u: 10
         ,
             v: [0.7,0.1,0.3]
-            o: 'bot'
-            u: 135
+            b: 135
         ]
         lines: [ [0,1] ]
         
@@ -147,7 +131,6 @@ levels =
         hint: ["New processes are spawned regularily in active nodes.\n\nAlways make sure you have more active nodes than the opponent.", "You can see the number of active nodes in the top right corner.\n\nThe graph plots the relative amount of available processes."]
         dots: [
             v: [0,0,1]
-            o: 'usr'
             u: 60
         ,
             v: [-0.5,-0.5,1]
@@ -167,24 +150,19 @@ levels =
             v: [ 0, 1,1]
         ,
             v: [-1,-1,-1]
-            o: 'bot'
-            u: 12
+            b: 12
         ,
             v: [ 1,-1,-1]
-            o: 'bot'
-            u: 12
+            b: 12
         ,
             v: [-1, 1,-1]
-            o: 'bot'
-            u: 12
+            b: 12
         ,
             v: [ 1, 1,-1]
-            o: 'bot'
-            u: 12
+            b: 12
         ,
             v: [0,0,-1]
-            o: 'bot'
-            u: 12
+            b: 12
         ]
         
     'EASY AI':
@@ -194,7 +172,6 @@ levels =
         hint: ["Be prepared, the red nodes are fighting back!", "You learned the basics, let's see if you can beat this slow and simple AI."]
         dots: [
             v: [0,0,1]
-            o: 'usr'
             u: 60
         ,
             v: [-0.5,-0.5,1]
@@ -222,8 +199,7 @@ levels =
             v: [ 1, 1,-1]
         ,
             v: [0,0,-1]
-            o: 'bot'
-            u: 60
+            b: 60
         ]
         bot:
             speed: 8
