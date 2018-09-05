@@ -196,7 +196,7 @@ choice = (info) ->
 # 000   000  0000000     0000000    0000000      000     
 
 menuAbout = ->
-    
+    menu.about?.remove()
     closeAbout = (e) -> menu.about.remove(); delete menu.about
     t = ''
     t += "<div class='konnekt'>KONNEKT</div> is my entry for the <a href='https://js13kgames.com/' target='_blank'>js13kgames</a> 2018 competition.<br>"

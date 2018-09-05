@@ -19,6 +19,14 @@ class Snd
         @gain = @ctx.createGain()
         @gain.connect @ctx.destination
         
+        instrument = 
+            instrument: 'bell3'
+            noteName:   'C4'
+            sampleRate: 44100
+            duration:   0.4
+            
+        @synth = new Synth instrument, @ctx, @gain
+        
         @addOsc 'sine'
         @addOsc 'sine'
         @addOsc 'sawtooth'
@@ -64,6 +72,8 @@ class Snd
         pref.set 'volume', @vol
         
     play: (n) ->
+        
+        @synth.playNote noteName:'C'
         
         d = switch n
             when 'send bot', 'send usr' then 6
