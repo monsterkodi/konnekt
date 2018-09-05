@@ -1,2 +1,0 @@
-coffee  . map false
-styl    . ext css  . replace .. /styl/ /js/
