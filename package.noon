@@ -1,7 +1,0 @@
-name            konnekt
-description     svg experiment
-author          monsterkodi
-license         Unlicense
-devDependencies
-                babel-minify  ^0.4.3
-                minify        ^3.0.5
