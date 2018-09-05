@@ -91,11 +91,9 @@ isFullscreen = -> document.fullscreenElement or document.webkitFullscreenElement
 toggleFullscreen = ->
     
     if isFullscreen()
-        menu.buttons.FULLSCREEN.innerHTML = 'FULLSCREEN'
         efs = document.exitFullscreen or document.webkitExitFullscreen or document.mozCancelFullScreen
         efs.call document
     else
-        menu.buttons.FULLSCREEN.innerHTML = 'WINDOWED'
         el = document.documentElement
         rfs = el.requestFullscreen or el.webkitRequestFullScreen or el.mozRequestFullScreen or el.msRequestFullscreen 
         rfs.call el
@@ -201,11 +199,11 @@ menuAbout = ->
     
     closeAbout = (e) -> menu.about.remove(); delete menu.about
     t = ''
-    t += "KONNEKT is my entry for the <a href='https://js13kgames.com/' target='_blank'>js13kgames</a> 2018 competition.<br>"
+    t += "<div class='konnekt'>KONNEKT</div> is my entry for the <a href='https://js13kgames.com/' target='_blank'>js13kgames</a> 2018 competition.<br>"
     t += "Thanks to the organizers!<p>"
     t += "The sources are available at "
     t += "<a href='https://github.com/monsterkodi/konnekt' target='_blank'>github</a>.<p>"
-    t += "I hope you had some fun playing the game."
+    t += "I hope you had some fun playing the game.<div class='version'>v1.0</div>"
     menu.about = elem 'div', class:'about', html:t, click:closeAbout, main
     
 menu.usr = elem 'div', class:'button usr', menu.right

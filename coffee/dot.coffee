@@ -206,7 +206,6 @@ class Dot
                 depth: -> (v.z+1)/2
                 
         world.tmpline.usr = new Line @, target, true
-        @c.classList.add 'src'
         
     rot: (q) -> @v = q.rotate @v
         

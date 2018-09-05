@@ -15,8 +15,7 @@ class Bot
 
     tmpl: (d,c) ->
 
-        delTmpl 'bot'
-        d.c.classList.add 'src'
+        delTmpl 'bot'        
         world.tmpline.bot = new Line d, c, true
         world.update = 1
         
@@ -27,7 +26,10 @@ class Bot
         if @tsum > @speed * 60
             
             dots = world.dots.filter (d) -> d.own == 'bot'
+            
             @tsum = 0
+            
+            return if dots.length == 0
                             
             dots.sort (a,b) -> b.units - a.units
             

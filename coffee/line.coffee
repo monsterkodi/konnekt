@@ -15,12 +15,16 @@ class Line
         
         if tmp
             @c.classList.add 'tmp'
+            @s.c.classList.add 'src'
         else
             @s.n?.push @e
             @e.n?.push @s
             world.lines.push @
        
-    del: -> @c.remove()
+    del: -> 
+        @s.c.classList.remove 'src'
+        @c.remove()
+        
     depth: -> (@s.depth()+@e.depth())/2 
     zdepth: -> Math.min(@s.depth(),@e.depth()) - 0.001
     raise: -> @c.parentNode?.appendChild @c

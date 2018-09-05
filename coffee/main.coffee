@@ -87,11 +87,12 @@ delTmpl = (o) ->
 win.addEventListener 'mousedown', (e) ->
     
     delTmpl 'usr'
-    mouse.drag?.c?.classList.remove 'src'
     
     world.inertRot = new Quat
     
     hint()
+    popup()
+    
     if world.level.name == 'menu'
         msg()
     else if world.winner and e.buttons == 1 and not e.target.classList.contains 'button'

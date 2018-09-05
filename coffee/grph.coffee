@@ -36,6 +36,6 @@ class Grph
             
     plot: -> 
         
-        @g.setAttribute 'transform', "translate(#{screen.size.x-60-@smpls.bot.length}, 40)"
+        @g.setAttribute 'transform', "translate(#{screen.size.x-60-@smpls.bot.length}, 47)"
 
 
