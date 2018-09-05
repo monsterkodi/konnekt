@@ -47,13 +47,13 @@ class Synt
         
     playNote: (noteIndex) ->
         
-        log "index #{noteIndex}"
+        # log "note #{noteIndex}"
         if not @samples[noteIndex]?
             
             @samples[noteIndex] = new Float32Array @sampleLength
             
             frequency = @freq noteIndex
-            log @config.instrument, noteIndex, frequency
+            # log @config.instrument, noteIndex, frequency
             w = 2.0 * Math.PI * frequency
             func = @[@config.instrument]
             for sampleIndex in [0...@sampleLength]
