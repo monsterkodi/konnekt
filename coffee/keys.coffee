@@ -38,24 +38,25 @@ class Keyboard
         As:   'j'
         B:    'm'
 
-    @allNotes: =>
-        if not @_allNotes?
-            @_allNotes = {}            
+    @allFreq: =>
+        if not @allFreq_?
+            @allFreq_ = {}            
             for n in @allNoteNames()
                 nb = n.slice(0,-1)
                 o = Number(n.slice(-1))
                 frequency = @notes[nb] / Math.pow(2, (8-o))
-                @_allNotes[n] = frequency.toFixed(3)
-        @_allNotes
+                @allFreq_[n] = frequency.toFixed(3)
+        @allFreq_
     
     @noteIndex: (noteName) => @allNoteNames().indexOf noteName  
     @numNotes: => @noteNames.length * 9
     @maxNoteIndex: => @numNotes()-1
     @allNoteNames: =>
-        if not @_allNoteNames?
-            @_allNoteNames = []
+        if not @allNoteNames_?
+            @allNoteNames_ = []
             for o in [0..8]
                 for n in @noteNames
-                    @_allNoteNames.push "#{n}#{o}"
-        @_allNoteNames
+                    @allNoteNames_.push "#{n}#{o}"
+            log '@allNoteNames', @allNoteNames_
+        @allNoteNames_
         

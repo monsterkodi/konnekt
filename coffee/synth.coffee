@@ -19,36 +19,31 @@ class Synth
         
         @isr = 1.0/@config.sampleRate
         @initBuffers()
-        @setDuration @config.duration
 
-    setNote: (v) => @config.noteName = v
-
-    playNote: (note) =>
-        
-        audioBuffer = @createAudioBufferForNoteIndex Keyboard.noteIndex note.noteName
-
-        node = @ctx.createBufferSource()
-        node.buffer = audioBuffer
-        node.connect @gain
-        node.state = node.noteOn
-        node.start 0
-    
     initBuffers: =>
         
         @sampleLength = @config.duration*@config.sampleRate        
         @sampleLength = Math.floor @sampleLength
         @createBuffers()
         
-    createBuffers: =>
+    createBuffers: => @samples = new Array Keyboard.numNotes()        
+    # createBuffers: =>
+        # numNotes = Keyboard.numNotes()
+        # @samples = new Array numNotes
+        # for i in [0...numNotes]
+            # @samples[i] = new Float32Array @sampleLength
+        # @
         
-        numNotes = Keyboard.numNotes()
-        @samples = new Array numNotes
-        for i in [0...numNotes]
-            @samples[i] = new Float32Array @sampleLength
-        @
-        
-    sampleForNoteIndex: (noteIndex) => @samples[noteIndex]
+    playNote: (name) =>
+        log "playNote #{name}", Keyboard.noteIndex name
+        audioBuffer = @createAudioBufferForNoteIndex Keyboard.noteIndex name
 
+        node = @ctx.createBufferSource()
+        node.buffer = audioBuffer
+        node.connect @gain
+        node.state = node.noteOn
+        node.start 0
+            
     createAudioBufferForNoteIndex: (noteIndex) =>
         
         sample = @sampleForNoteIndex noteIndex
@@ -58,6 +53,22 @@ class Synth
             buffer[i] = sample[i]
         audioBuffer
     
+    sampleForNoteIndex: (noteIndex) =>
+        if not @samples[noteIndex]?
+            @samples[noteIndex] = new Float32Array @sampleLength
+            @initNoteAtIndex noteIndex
+        @samples[noteIndex]
+
+    initNoteAtIndex: (noteIndex) =>
+        log @config.instrument, noteIndex
+        noteName = Keyboard.allNoteNames()[noteIndex]
+        frequency = Keyboard.allFreq()[noteName]
+        w = 2.0 * Math.PI * frequency
+        func = @[@config.instrument]
+        for sampleIndex in [0...@sampleLength]
+            x = sampleIndex/(@sampleLength-1)
+            @samples[noteIndex][sampleIndex] = func sampleIndex*@isr, w, x
+
     setDuration: (v) =>
         
         if @config.duration != v
@@ -103,7 +114,7 @@ class Synth
         a + (b-a)*w
     
     cellnoise: (x) =>
-        n = Math.floor(x)
+        n = Math.floor x
         n = (n << 13) ^ n
         n = (n * (n * n * 15731 + 789221) + 1376312589)
         n = (n>>14) & 65535
@@ -116,33 +127,7 @@ class Synth
 000  000  0000       000     000     000   000  000   000  000 0 000  000       000  0000     000          000
 000  000   000  0000000      000     000   000   0000000   000   000  00000000  000   000     000     0000000 
 ###
-
-    setInstrument: (v) =>
-        if @config.instrument != _.value(v)
-            @config.instrument = _.value(v)
-            @initInstrument()
-            
-    initInstrument: =>
-        @createBuffers()
-            
-    initNoteAtIndex: (noteIndex) =>
-        log @config.instrument, noteIndex
-        noteName = Keyboard.allNoteNames()[noteIndex]
-        frequency = Keyboard.allNotes()[noteName]
-        w = 2.0 * Math.PI * frequency
-        func = @[@config.instrument]
-        for sampleIndex in [0...@sampleLength]
-            x = sampleIndex/(@sampleLength-1)
-            @samples[noteIndex][sampleIndex] = func sampleIndex*@isr, w, x
-
-    sampleForNoteIndex: (noteIndex) =>
-        if not @samples[noteIndex]?
-            @samples[noteIndex] = new Float32Array @sampleLength
-            @initNoteAtIndex noteIndex
-        @samples[noteIndex]
-                
-    createBuffers: => @samples = new Array Keyboard.numNotes()
-                
+                                
     ###
     00000000   000   0000000   000   000   0000000 
     000   000  000  000   000  0000  000  000   000

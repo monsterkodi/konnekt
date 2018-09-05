@@ -73,7 +73,7 @@ class Snd
         
     play: (n) ->
         
-        @synth.playNote noteName:'C'
+        @synth.playNote 'C4'
         
         d = switch n
             when 'send bot', 'send usr' then 6
