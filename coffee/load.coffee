@@ -117,6 +117,9 @@ initLevel = (name) ->
     world.level   = level
     world.addUnit = level.addUnit
     
+    if level.synt
+        snd.setSynt level.synt
+    
     if world.addUnit
         grph = new Grph
     

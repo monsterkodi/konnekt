@@ -70,6 +70,9 @@ levels =
     
     'TUTORIAL 1':
         
+        synt:
+            usr: instrument:'piano1'
+            bot: instrument:'piano2'
         addUnit: 0
         next: 'TUTORIAL 2'
         hint: ["You control the blue nodes. Your task is to fight the red nodes.\n\nNodes contain processes. The more processes, the stronger the node.", "Attack the infected red node by dragging from your blue node.\n\nEach time you attack, half of the available processes will be sent."]
@@ -83,6 +86,9 @@ levels =
         
     'TUTORIAL 2':
         
+        synt:
+            usr: instrument:'bell1'
+            bot: instrument:'bell2'
         addUnit: 0
         next: 'TUTORIAL 3'
         hint: ["To win, you need to deactivate all red nodes.\n\nIt is OK to leave inactive red nodes!", "This level contains 4 inactive and 2 active red nodes.\n\nDrag anywhere to rotate the sphere."]
@@ -111,6 +117,9 @@ levels =
         
     'TUTORIAL 3':
         
+        synt:
+            usr: instrument:'bell3'
+            bot: instrument:'bell4'
         addUnit: 0
         next: 'TUTORIAL 4'
         hint: ["Sending to nodes that you don't own isn't free.\n\nThe farther away the target node, the higher the cost.", "The cost factor is multiplied by the number of processes sent. The more you send, the more you loose.\n\nNotice that you need more attacks -- and loose more processes -- when defeating the far node."]
@@ -189,7 +198,9 @@ levels =
         ]
         
     'EASY':
-        
+        synt:
+            usr: instrument:'organ1'
+            bot: instrument:'organ2'
         addUnit: 2 
         next: 'menu'
         hint: ["Be prepared, the red nodes are fighting back!", "You learned the basics, remove the virus from the system!"]
@@ -229,6 +240,9 @@ levels =
             i:    -1
             
     'CIRCLES':
+        synt:
+            usr: instrument:'string'
+            bot: instrument:'flute'
         addUnit: 4
         dots: [
             v: [0,0,1]
@@ -248,6 +262,9 @@ levels =
             i:    -1
         
     'POLES':
+        synt:
+            usr: instrument:'bell3'
+            bot: instrument:'bell4'
         addUnit: 4
         dots: [
             v: [0,0,1]
@@ -269,6 +286,9 @@ levels =
             i:    -1
         
     'RING':
+        synt:
+            usr: instrument:'bell1'
+            bot: instrument:'bell2'
         addUnit: 4
         dots: [
             v: [0,0,1]

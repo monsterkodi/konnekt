@@ -6,7 +6,7 @@ konrad -q
 
 cd coffee
 
-cat vec.coffee quat.coffee pref.coffee keys.coffee synth.coffee snd.coffee grph.coffee glob.coffee lvls.coffee sprk.coffee dot.coffee bot.coffee line.coffee load.coffee menu.coffee main.coffee > ../js/min.coffee
+cat vec.coffee quat.coffee pref.coffee synt.coffee snd.coffee grph.coffee glob.coffee lvls.coffee sprk.coffee dot.coffee bot.coffee line.coffee load.coffee menu.coffee main.coffee > ../js/min.coffee
 
 cd ../js
 

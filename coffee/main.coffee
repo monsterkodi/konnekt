@@ -209,12 +209,7 @@ pause = (m='PAUSED', cls='', status='pause') ->
     showMenu world.winner and 'next' or world.pause and 'pause' or 'game'
     
     msg (world.pause and m or ''), cls
-            
-    if world.pause
-        snd.tch = {}
-        for i in [0...snd.osc.length]
-            snd.freq i
-        
+                    
 visibility = -> if document.hidden and not world.pause then pause()
 
 #  0000000   000   000  000  00     00  
@@ -227,8 +222,6 @@ anim = (now) ->
     
     nextTick = -> win.requestAnimationFrame anim; now
     
-    snd.tick()
-        
     world.delta = (now-world.time)/16
     world.time  = now
     

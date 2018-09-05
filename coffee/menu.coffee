@@ -7,6 +7,8 @@
 ###
 
 menuVolume = (vol) ->
+    
+    snd.play 'menu', 'draw'
     menu.buttons.VOL?.innerHTML = "#{Math.floor(vol * 100) / 100}"
 
 menus = 
@@ -64,6 +66,8 @@ menus =
 
 showMenu = (m) ->
     
+    snd.play 'menu', 'send'
+    
     for k,v of menu.buttons
         v.remove()
         delete menu.buttons[k]
@@ -74,7 +78,7 @@ showMenu = (m) ->
         info = item[name]
         info.class ?= 'button'
         info.text ?= name
-                
+        
         if info.class == 'choice'
             choice info
         else
@@ -89,7 +93,7 @@ showMenu = (m) ->
 isFullscreen = -> document.fullscreenElement or document.webkitFullscreenElement or document.mozFullScreenElement
 
 toggleFullscreen = ->
-    
+    snd.play 'menu', 'draw'
     if isFullscreen()
         efs = document.exitFullscreen or document.webkitExitFullscreen or document.mozCancelFullScreen
         efs.call document
@@ -196,8 +200,9 @@ choice = (info) ->
 # 000   000  0000000     0000000    0000000      000     
 
 menuAbout = ->
+    snd.play 'menu', 'draw'
     menu.about?.remove()
-    closeAbout = (e) -> menu.about.remove(); delete menu.about
+    closeAbout = (e) -> menu.about.remove(); delete menu.about; snd.play 'menu', 'won'
     t = ''
     t += "<div class='konnekt'>KONNEKT</div> is my entry for the <a href='https://js13kgames.com/' target='_blank'>js13kgames</a> 2018 competition.<br>"
     t += "Thanks to the organizers!<p>"

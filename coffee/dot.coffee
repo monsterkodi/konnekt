@@ -31,17 +31,17 @@ class Dot
     #    000     000  000 0 000  000       000   000  
     #    000     000  000   000  00000000  000   000  
     
-    startTimer: (units) ->
+    startTimer: (units, @snd='send', @cst=0) ->
         
         @targetUnits += units
         clearInterval @timer
-        @timer = setInterval @onTimer, 100
+        @timer = setInterval @onTimer, 160
         
     onTimer: => 
         
         return if world.pause
         
-        snd.play "send #{@own}"
+        snd.play @own, @snd, @cst
         
         if @targetUnits > @units
             @units += 10
@@ -150,13 +150,13 @@ class Dot
             ou = -uh
             new Sprk @, ul
             if uh == d.targetUnits
-                snd.play "draw #{@own}"
+                sound = 'draw'
                 new Sprk d, uh
             else if uh < d.targetUnits
-                snd.play "lost #{@own}"
+                sound = 'lost'
                 new Sprk d, uh
             else 
-                snd.play "won #{@own}"
+                sound = 'won'
                 lnk = 1
                 ou = uh - d.targetUnits
                 new Sprk d, d.targetUnits               
@@ -164,10 +164,11 @@ class Dot
                 d.setOwn @own
         else
             lnk = 1
+            sound = 'send'
             d.setOwn @own 
             new Sprk d, Math.floor ul * cost
         
-        @startTimer  -ul
+        @startTimer  -ul, sound, parseInt cost*18
         d.startTimer ou
         
         if lnk
