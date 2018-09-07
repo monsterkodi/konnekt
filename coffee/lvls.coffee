@@ -6,9 +6,8 @@
 0000000  00000000      0      00000000  0000000  0000000 
 ###
 
-levels = 
-    
-    menu:
+levelList = [
+        name: 'menu'
         addUnit:0
         msg:  "KONNEKT"
         hint: ["WELCOME TO", "A JS13K 2018 GAME\nBY MONSTERKODI"]
@@ -67,14 +66,12 @@ levels =
             [10,11]
             [11,12]
         ]
-    
-    'TUTORIAL 1':
-        
+    ,
+        name: 'TUTORIAL 1'
         synt:
             usr: instrument:'piano1'
             bot: instrument:'piano2'
         addUnit: 0
-        next: 'TUTORIAL 2'
         hint: ["You control the blue nodes. Your task is to fight the red nodes.\n\nNodes contain processes. The more processes, the stronger the node.", "Attack the infected red node by dragging from your blue node.\n\nEach time you attack, half of the available processes will be sent."]
         dots: [
             v: [-0.5,0,1]
@@ -84,13 +81,12 @@ levels =
             b: 270
         ]
         
-    'TUTORIAL 2':
-        
+    ,
+        name:    'TUTORIAL 2'
         synt:
             usr: instrument:'bell1'
             bot: instrument:'bell2'
         addUnit: 0
-        next: 'TUTORIAL 3'
         hint: ["To win, you need to deactivate all red nodes.\n\nIt is OK to leave inactive red nodes!", "This level contains 4 inactive and 2 active red nodes.\n\nDrag anywhere to rotate the sphere."]
         dots: [
             v: [0,0,1]
@@ -114,14 +110,12 @@ levels =
             v: [0.1,0.1,-1]
             b: 15
         ]    
-        
-    'TUTORIAL 3':
-        
+    ,
+        name: 'TUTORIAL 3'
         synt:
             usr: instrument:'bell3'
             bot: instrument:'bell4'
         addUnit: 0
-        next: 'TUTORIAL 4'
         hint: ["Sending to nodes that you don't own isn't free.\n\nThe farther away the target node, the higher the cost.", "The cost factor is multiplied by the number of processes sent. The more you send, the more you loose.\n\nNotice that you need more attacks -- and loose more processes -- when defeating the far node."]
         dots: [
             v: [-0.9,-0.2,0.1]
@@ -136,11 +130,9 @@ levels =
             v: [0.9,0,0.1]
             b: 180
         ]
-        
-    'TUTORIAL 4':
-        
+    ,
+        name: 'TUTORIAL 4'
         addUnit: 0
-        next: 'TUTORIAL 5'
         hint: ["Sending processes to nodes you own cost nothing.\n\nIt is efficient to occupy far away neutral nodes with few processes first and send larger groups later.", "Contrary to common believe,\nyou can't send processes between already connected nodes."]
         dots: [
             v: [-0.7,0.1,0.3]
@@ -155,11 +147,9 @@ levels =
             b: 135
         ]
         lines: [ [0,1] ]
-        
-    'TUTORIAL 5':
-        
+    ,    
+        name: 'TUTORIAL 5'
         addUnit: 3
-        next: 'EASY'
         hint: ["New processes are spawned regularily in active nodes.\n\nAlways make sure you have more active nodes than the opponent.", "You can see the number of active nodes in the top right corner.\n\nThe graph plots the relative amount of available processes."]
         dots: [
             v: [0,0,1]
@@ -196,13 +186,12 @@ levels =
             v: [0,0,-1]
             b: 12
         ]
-        
-    'EASY':
+    ,
+        name: 'EASY'
         synt:
             usr: instrument:'organ1'
             bot: instrument:'organ2'
         addUnit: 2 
-        next: 'menu'
         hint: ["Be prepared, the red nodes are fighting back!", "You learned the basics, remove the virus from the system!"]
         dots: [
             v: [0,0,1]
@@ -238,8 +227,8 @@ levels =
         bot:
             speed: 8
             i:    -1
-            
-    'CIRCLES':
+    ,            
+        name: 'CIRCLES'
         synt:
             usr: instrument:'string'
             bot: instrument:'flute'
@@ -260,8 +249,8 @@ levels =
         bot:
             speed: 7
             i:    -1
-        
-    'POLES':
+    ,
+        name: 'POLES'
         synt:
             usr: instrument:'bell3'
             bot: instrument:'bell4'
@@ -284,8 +273,8 @@ levels =
         bot:
             speed: 6
             i:    -1
-        
-    'RING':
+    ,
+        name: 'RING'
         synt:
             usr: instrument:'bell1'
             bot: instrument:'bell2'
@@ -308,8 +297,8 @@ levels =
         bot:
             speed: 5
             i:    -1
-        
-    'CLOSE':
+    ,
+        name: 'CLOSE'
         addUnit: 4
         dots: [
             v: [-0.4,0,1]
@@ -325,8 +314,8 @@ levels =
         bot:
             speed: 4
             i:    -1
-
-    'UNFAIR':
+    ,
+        name: 'UNFAIR'
         addUnit: 6
         dots: [
             v: [0,0,1]
@@ -344,8 +333,8 @@ levels =
         bot:
             speed: 3
             i:    -1
-            
-    'FRENZY':
+    ,
+        name: 'FRENZY'
         addUnit: 12
         dots: [
             v: [0,0,1]
@@ -385,7 +374,12 @@ levels =
         bot:
             speed: 2
             i:    -1
+    ]
         
-            
+levels = {}
+for index in [0...levelList.length]
+    level = levelList[index]
+    level.index = index
+    levels[level.name] = level
             
             

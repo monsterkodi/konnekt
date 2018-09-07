@@ -7,7 +7,7 @@
 
 loadNext = ->
     if world.winner == 'usr'
-        loadLevel world.level.next ? 'menu'
+        loadLevel levelList[world.level.index+1]?.name ? 'menu'
     else
         forceLevel world.level.name
 
@@ -63,8 +63,6 @@ initLevel = (name) ->
     
     level = levels[name]
     
-    level.name = name
-        
     for d in level.dots
         
         if d.c
@@ -108,7 +106,7 @@ initLevel = (name) ->
     if level.hint
         hint level.hint[0], level.hint[1]
     else
-        hint()
+        hint '', level.name
 
     if name == 'menu'
         delete level.msg
