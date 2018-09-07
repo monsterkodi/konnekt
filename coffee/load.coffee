@@ -8,8 +8,10 @@
 loadNext = ->
     if world.winner == 'usr'
         loadLevel levelList[world.level.index+1]?.name ? 'menu'
-    else
+    else if world.level.index < 6 
         forceLevel world.level.name
+    else
+        loadLevel 'menu'
 
 forceLevel = (level) -> world.level = null; loadLevel level
         

@@ -15,7 +15,7 @@ class Pref
         @cache = prefs:'prefs', volume:0.03125
         
         try
-            @req = window.indexedDB.open 'online', 2
+            @req = window.indexedDB.open 'konekt', 3
             @req.onerror = (e) => @loadMenu 'open error'
             @req.onsuccess = (e) =>
                 @db = e.target.result
