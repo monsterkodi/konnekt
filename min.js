@@ -1,1 +1,3220 @@
-(function(){var e,t,n,s,i,o,d,r,a,u,l,c,m,p,h,v,g,b,y,f,x,w,k,U,L,z,T,E,O,A,R,S,I,N,M,C,F,P,j,q,D,Y,B,V,K,H,G,X,W,Z,_,J,$,Q,ee,te,ne,se,ie,de,oe=Math.ceil,re=Math.exp,ae=Math.pow,ue=Math.floor,le=Math.cos,ce=Math.sin,me=Math.sqrt,pe=Math.PI,ve=Number.EPSILON,he=Math.max,ge=Math.min,be=[].indexOf;K=function(e,t){return e+(t-e)*Math.random()},b=function(e,t,n){return he(e,ge(t,n))},de=function(e){return Math.abs(e)<ve},R=console.log,B=function(e){return 180*e/pe},y=function(e){return pe*e/180},u=class{constructor(e=0,t=0,n=0){this.x=e,this.y=t,this.z=n}cpy(){return te(this.x,this.y,this.z)}add(e){return this.x+=e.x,this.y+=e.y,this.z+=e.z,this}mul(e){return this.x*=e,this.y*=e,this.z*=e,this}times(e){return this.cpy().mul(e)}minus(e){return te(this.x-e.x,this.y-e.y,this.z-e.z)}to(e){return e.minus(this)}dist(e){return this.minus(e).length()}dot(e){return this.x*e.x+this.y*e.y+this.z*e.z}cross(e){return te(this.y*e.z-this.z*e.y,this.z*e.x-this.x*e.z,this.x*e.y-this.y*e.x)}length(){return me(this.x*this.x+this.y*this.y+this.z*this.z)}norm(){var e;return e=this.length(),0===e?(this.x=0,this.y=0,this.z=0):(e=1/e,this.x*=e,this.y*=e,this.z*=e),this}angle(e){return Math.acos(b(-1,1,this.dot(e)/me(this.length()*e.length())))}},te=function(e,t,n){return new u(e,t,n)},o=class e{constructor(e,t,n,s){this.x=e||0,this.y=t||0,this.z=n||0,this.w=null==s?1:s}copy(e){return this.x=e.x,this.y=e.y,this.z=e.z,this.w=e.w,this}static axis(t,n=0){var i,d;return i=n/2,d=ce(i),new e(t.x*d,t.y*d,t.z*d,le(i))}rotate(e){var t,n,s,i,d,o,r;return d=e.x,o=e.y,r=e.z,n=this.w*d+this.y*r-this.z*o,s=this.w*o+this.z*d-this.x*r,i=this.w*r+this.x*o-this.y*d,t=-this.x*d-this.y*o-this.z*r,d=n*this.w+t*-this.x+s*-this.z-i*-this.y,o=s*this.w+t*-this.y+i*-this.x-n*-this.z,r=i*this.w+t*-this.z+n*-this.y-s*-this.x,te(d,o,r)}length(){return me(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w)}zero(){return de(this.x)&&de(this.y)&&de(this.z)}norm(){var e;return e=this.length(),0===e?(this.x=0,this.y=0,this.z=0,this.w=1):(e=1/e,this.x*=e,this.y*=e,this.z*=e,this.w*=e),this}mul(e){var t,n,s,i;return n=this.x,s=this.y,i=this.z,t=this.w,this.x=n*e.w+t*e.x+s*e.z-i*e.y,this.y=s*e.w+t*e.y+i*e.x-n*e.z,this.z=i*e.w+t*e.z+n*e.y-s*e.x,this.w=t*e.w-n*e.x-s*e.y-i*e.z,this}slerp(e,n){var t,i,d,o,r,a,u,l,c,m,p;return 0===n?this:1===n?this.copy(e):(c=this.x,m=this.y,p=this.z,l=this.w,t=l*e.w+c*e.x+m*e.y+p*e.z,0>t?(this.w=-e.w,this.x=-e.x,this.y=-e.y,this.z=-e.z,t=-t):this.copy(e),1<=t)?(this.w=l,this.x=c,this.y=m,this.z=p,this):(u=1-t*t,u<=ve)?(r=1-n,this.w=r*l+n*this.w,this.x=r*c+n*this.x,this.y=r*m+n*this.y,this.z=r*p+n*this.z,this.norm()):(a=me(u),i=Math.atan2(a,t),d=ce((1-n)*i)/a,o=ce(n*i)/a,this.w=l*d+this.w*o,this.x=c*d+this.x*o,this.y=m*d+this.y*o,this.z=p*d+this.z*o,this)}},i=class{constructor(){}load(){var e;this.cache={prefs:"prefs",volume:.03125};try{return this.req=window.indexedDB.open("online",2),this.req.onerror=()=>this.loadMenu("open error"),this.req.onsuccess=t=>(this.db=t.target.result,this.read()),this.req.onupgradeneeded=t=>{var e,n,s;return e=t.target.result,s=e.createObjectStore("prefs",{keyPath:"prefs"}),n=s.put(this.cache)}}catch(t){return e=t,this.loadMenu("prefs catch")}}loadMenu(){var e;if(void 0===("undefined"!=typeof ie&&null!==ie?ie.level:void 0)||"menu"===(null==(e=ie.level)?void 0:e.name))return O("menu")}read(){var e,t,n;return n=this.db.transaction(["prefs"],"readonly"),t=n.objectStore("prefs"),e=t.get("prefs"),e.onerror=()=>this.loadMenu("read error"),e.onsuccess=()=>e.result?(this.cache=e.result,J.volume(this.cache.volume),this.loadMenu("read")):(this.write(),this.loadMenu("empty"))}write(){var e,t,n;return n=this.db.transaction(["prefs"],"readwrite"),t=n.objectStore("prefs"),e=t.put(this.cache)}clear(){var e;return this.cache={prefs:"prefs",volume:null==(e=this.cache.volume)?.03125:e},this.write()}set(e,t){if(this.cache[e]=t,this.db)return this.write()}get(e,t){var n;return null==(n=this.cache[e])?t:n}},a=class{constructor(e,t,n){var s;this.piano2=this.piano2.bind(this),this.organ2=this.organ2.bind(this),this.config=e,this.ctx=t,this.gain=n,this.freqs=[4186.01,4434.92,4698.63,4978.03,5274.04,5587.65,5919.91,6271.93,6644.88,7040,7458.62,7902.13],null==(s=this.config).duration&&(s.duration=.3),this.isr=1/44100,this.initBuffers()}initBuffers(){return this.sampleLength=44100*this.config.duration,this.sampleLength=ue(this.sampleLength),this.createBuffers()}createBuffers(){return this.samples=Array(108)}playNote(e){var t,n,s,d,o,r,a,l,c,m,p,v,h,g;if(null==this.samples[e])for(this.samples[e]=new Float32Array(this.sampleLength),s=this.freq(e),h=2*pe*s,d=this[this.config.instrument],(p=r=0,l=this.sampleLength);0<=l?r<l:r>l;p=0<=l?++r:--r)g=p/(this.sampleLength-1),this.samples[e][p]=d(p*this.isr,h,g);for(m=this.samples[e],t=this.ctx.createBuffer(1,m.length,44100),n=t.getChannelData(0),(o=v=0,c=m.length);0<=c?v<c:v>c;o=0<=c?++v:--v)n[o]=m[o];return a=this.ctx.createBufferSource(),a.buffer=t,a.connect(this.gain),a.state=a.noteOn,a.start(0)}freq(e){return this.freqs[e%12]/ae(2,8-e/12).toFixed(3)}setDuration(e){if(this.config.duration!==e)return this.config.duration=e,this.initBuffers()}fmod(e,t){return e%t}sign(e){return 0<e&&1||-1}frac(e){return e%1}sqr(e,t){return ce(t)>e?1:-1}step(e,t){return t>=e&&1||0}over(e,t){return 1-(1-e)*(1-t)}mix(e,t,n){return e+(t-e)*ge(he(n,0),1)}saw(e,t){var n;return n=e%1,n<t?n/t:1-(n-t)/(1-t)}grad(e,t){return e=e<<13^e,e=e*(15731*(e*e)+789221)+1376312589,536870912&e?-t:t}noise(e){var t,n,s,d,o;return d=ue(e),s=e-d,o=s*s*s*(s*(6*s-15)+10),t=this.grad(d+0,s+0),n=this.grad(d+1,s-1),t+(n-t)*o}piano1(e,t,n){var s,i,o;return i=t*e,o=.6*ce(1*i)*re(-8e-4*i),o+=.3*ce(2*i)*re(-.001*i),o+=.1*ce(4*i)*re(-.0015*i),o+=.2*o*o*o,o*=.9+.1*le(70*e),o=2*o*re(-22*e)+o,s=.8,n>s&&(o*=ae(1-(n-s)/(1-s),2)),o}piano2(e,n,s){var i,o,u,l,c,m,p,v;return e+=15e-5*this.noise(12*e),c=e,l=.2*(e*n),l=this.fmod(l,1),i=.15+.6*c,o=.65-.5*c,m=50*l*(l-1)*(l-.2)*(l-i)*(l-o),l=.401*(e*n),l=this.fmod(l,1),i=.12+.65*c,o=.67-.55*c,p=50*l*(l-1)*(l-.4)*(l-i)*(l-o),l=.399*(e*n),l=this.fmod(l,1),i=.14+.55*c,o=.66-.65*c,v=50*l*(l-1)*(l-.8)*(l-i)*(l-o),m+=.02*this.noise(1e3*e),m/=.0015*(e*n)+.1,p/=.002*(e*n)+.1,v/=.0025*(e*n)+.1,m=(m+p+v)/3,u=.8,s>u&&(m*=ae(1-(s-u)/(1-u),2)),m}piano3(e,t,n){var s,i,o,r,u;return r=1-e,s=ce(.5*(e*t))*Math.log(e+.3)*r,i=.4*(ce(e*t)*e),u=(s+i)*r,o=.8,n>o&&(u*=ae(1-(n-o)/(1-o),2)),u}piano4(e,t,n){var s;return s=ce(t*e),s*=1-n*n*n*n}piano5(e,t,n){var s,i;return s=t*e,i=.6*ce(1*s)*re(-8e-4*s),i+=.3*ce(2*s)*re(-.001*s),i+=.1*ce(4*s)*re(-.0015*s),i+=.2*i*i*i,i*=.5+.5*le(70*e),i=2*i*re(-22*e)+i,i*=1-n*n*n*n}organ1(e,t,n){var s,i;return i=.6*le(t*e)*re(-4*e),i+=.4*le(2*t*e)*re(-3*e),i+=.01*le(4*t*e)*re(-1*e),i=i*i*i+i*i*i*i*i+i*i,s=.5+.5*le(3.14*n),i=ce(3.14*(i*s)),i*=20*e*re(-.1*n)}organ2(e,t,n){var s,i,d,o,r;return o=t*e,s=.5+.5*le(0+12*e),i=.5+.5*le(1+8*e),d=.5+.5*le(2+4*e),r=this.saw(.25*o,s)*re(-2*n),r+=this.saw(.125*o,i)*re(-3*n),r+=this.saw(.0625*o,d)*re(-4*n),r*=.8+.2*le(64*e)}bell1(e,t,n){var s,i;return s=t*e,i=.1*re(-e/1)*ce(.56*s),i+=.067*re(-e/.9)*ce(.56*s),i+=.1*re(-e/.65)*ce(.92*s),i+=.18*re(-e/.55)*ce(.92*s),i+=.267*re(-e/.325)*ce(1.19*s),i+=.167*re(-e/.35)*ce(1.7*s),i+=.146*re(-e/.25)*ce(2*s),i+=.133*re(-e/.2)*ce(2.74*s),i+=.133*re(-e/.15)*ce(3*s),i+=.1*re(-e/.1)*ce(3.76*s),i+=.133*re(-e/.075)*ce(4.07*s),i*=1-n*n*n*n}bell2(e,t,n){var s,i;return s=t*e,i=.1*re(-e/1)*ce(.56*s),i+=.067*re(-e/.9)*ce(.56*s),i+=.1*re(-e/.65)*ce(.92*s),i+=.18*re(-e/.55)*ce(.92*s),i+=.267*re(-e/.325)*ce(1.19*s),i+=.167*re(-e/.35)*ce(1.7*s),i+=2*i*re(-22*e),i*=1-n*n*n*n}bell3(e,t,n){var s,i;return s=t*e,i=0,i+=.1*re(-e/1)*ce(.25*s),i+=.2*re(-e/.75)*ce(.5*s),i+=.4*re(-e/.5)*ce(1*s),i+=.2*re(-e/.25)*ce(2*s),i+=.1*re(-e/.1)*ce(4*s),i+=2*i*re(-22*e),i*=1-n*n*n*n}bell4(e,t,n){var s,i;return s=t*e,i=0,i+=.1*re(-e/.9)*ce(.62*s),i+=.2*re(-e/.7)*ce(.86*s),i+=.5*re(-e/.5)*ce(1*s),i+=.2*re(-e/.2)*ce(1.27*s),i+=.1*re(-e/.1)*ce(1.4*s),i+=2*i*re(-22*e),i*=1-n*n*n*n}string(e,t,n){var s,i,d;return i=t*e,s=ce(.251*i)*pe,d=.5*ce(1*i+s)*re(-1*n),d+=.4*ce(2*i+s)*re(-2*n),d+=.3*ce(4*i+s)*re(-3*n),d+=.2*ce(8*i+s)*re(-4*n),d+=1*d*re(-10*e),d*=1-n*n*n*n,d}flute(e,t,n){var s,i;return i=6*n*re(-2*n)*ce(t*e),i*=.6+.4*ce(32*(1-n)),s=.87,n>s&&(i*=ae(1-(n-s)/(1-s),2)),i}},d=class{constructor(){this.volDown=this.volDown.bind(this),this.volUp=this.volUp.bind(this),this.vol=0,this.ctx=new(window.AudioContext||window.webkitAudioContext),this.gain=this.ctx.createGain(),this.gain.connect(this.ctx.destination),this.synt={},this.setSynt({usr:{instrument:"bell3"},bot:{instrument:"bell3"},menu:{instrument:"string"}})}play(e,t,n=0){return this.synt[e].playNote(function(){return"draw"===t?36+n:"send"===t?48+n:"won"===t?60+n:"lost"===t?72+n:void 0}())}setSynt(e){var t,n,s;for(t in R("setSynt",e),n=[],e)s=e[t],n.push(this.synt[t]=new a(s,this.ctx,this.gain));return n}volDown(){return .0625>this.vol?this.volume(0):this.volume(this.vol/2)}volUp(){return this.volume(b(.03125,1,2*this.vol))}volume(e){return this.vol=e,M(this.vol),this.gain.gain.value=this.vol,Y.set("volume",this.vol)}},n=class{constructor(){this.maxSmpl=300,this.smpls={bot:[],usr:[]},this.g=l("g"),this.p={bot:m(this.g,"path",{class:"grph bot"}),usr:m(this.g,"path",{class:"grph usr"})}}sample(){var e,t,n,i,r,a,l,c,m,p,v,h,g;for(a=function(e){return 60*(.5-e)},p=ie.units.bot+ie.units.usr,l=["usr","bot"],m=[],(t=0,n=l.length);t<n;t++){for(r=l[t],this.smpls[r].push(ie.units[r]/p),this.smpls[r].length>this.maxSmpl&&this.smpls[r].shift(),e=`M 0 ${a(this.smpls[r][0])} `,g=0,c=this.smpls[r],(h=0,i=c.length);h<i;h++)v=c[h],g+=1,e+=`L ${g} ${a(v)} `;m.push(this.p[r].setAttribute("d",e))}return m}plot(){return this.g.setAttribute("transform",`translate(${X.size.x-60-this.smpls.bot.length}, 47)`)}},se=window,S=document.getElementById("main"),Y=new i,$=S.children[0],j=function(t,e){var n,s,i,d;if(null!=e)for(d=Object.keys(e),n=0,i=d.length;n<i;n++)s=d[n],t.setAttribute(s,e[s]);return t},m=function(n,s,t){var i;return i=document.createElementNS("http://www.w3.org/2000/svg",s),n.appendChild(j(i,t)),i},l=function(e,t){return m($,e,t)},p=function(e,t){var a,u,l,c,m,p,h,g,b;for(p=e.angle(t),c=parseInt(p/.087),g=ee(e),a=`M ${g.x} ${g.y}`,m=o.axis(e.cross(t).norm(),p/(c+1)),b=e.cpy(),(u=l=0,h=c);0<=h?l<h:l>h;u=0<=h?++l:--l)b=m.rotate(b),g=ee(b),a+=` L ${g.x} ${g.y}`;return g=ee(t),a+=` L ${g.x} ${g.y}`,a},v=function(e){return e.c.style.opacity=(e.depth()+.3)/1.3},X={size:te(),center:te(),radius:0},ee=function(e){return te(X.center.x+e.x*X.radius,X.center.y+e.y*X.radius)},G=function(e){return e=e.minus(X.center).times(1/X.radius),1<e.length()?e.norm():te(e.x,e.y,me(1-e.x*e.x-e.y*e.y))},H=function(e){return o.axis(te(0,1,0),e.x/X.radius).mul(o.axis(te(1,0,0),e.y/-X.radius))},I={left:S.children[1],right:S.children[2],buttons:{}},ie={pause:0,update:0,time:0,delta:0,ticks:0,dots:[],sparks:[],lines:[],tmpline:{},units:{},userRot:new o,inertRot:new o,circle:null,rotSum:te()},F={pos:te(),drag:null,hover:null,touch:null},h=null,J=new d,U=null,E={menu:{addUnit:0,msg:"KONNEKT",hint:["WELCOME TO","A JS13K 2018 GAME\nBY MONSTERKODI"],dots:[{v:[0,0,1],b:0,l:"TUTORIAL 1"},{v:[0,-.3,.8],l:"TUTORIAL 2"},{v:[-.3,-.58,.75],l:"TUTORIAL 3"},{v:[.3,-.58,.75],l:"TUTORIAL 4"},{v:[0,-.82,.58],l:"TUTORIAL 5"},{v:[0,-.97,.19],l:"EASY"},{v:[-1,0,0],l:"CIRCLES"},{v:[-1,0,-1],l:"RING"},{v:[-1,1,-1],l:"POLES"},{v:[1,1,-1],l:"CLOSE"},{v:[1,0,-1],l:"UNFAIR"},{v:[1,0,-.01],l:"FRENZY"},{v:[0,1,0],l:"RANDOM"}],lines:[[0,1],[1,2],[1,3],[3,4],[2,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[11,12]]},"TUTORIAL 1":{synt:{usr:{instrument:"piano1"},bot:{instrument:"piano2"}},addUnit:0,next:"TUTORIAL 2",hint:["You control the blue nodes. Your task is to fight the red nodes.\n\nNodes contain processes. The more processes, the stronger the node.","Attack the infected red node by dragging from your blue node.\n\nEach time you attack, half of the available processes will be sent."],dots:[{v:[-.5,0,1],u:360},{v:[.5,0,1],b:270}]},"TUTORIAL 2":{synt:{usr:{instrument:"bell1"},bot:{instrument:"bell2"}},addUnit:0,next:"TUTORIAL 3",hint:["To win, you need to deactivate all red nodes.\n\nIt is OK to leave inactive red nodes!","This level contains 4 inactive and 2 active red nodes.\n\nDrag anywhere to rotate the sphere."],dots:[{v:[0,0,1],u:90},{v:[-.2,0,1],b:11},{v:[.2,0,1],b:11},{v:[0,.2,1],b:11},{v:[0,-.2,1],b:11},{v:[-.1,.1,-1],b:15},{v:[.1,.1,-1],b:15}]},"TUTORIAL 3":{synt:{usr:{instrument:"bell3"},bot:{instrument:"bell4"}},addUnit:0,next:"TUTORIAL 4",hint:["Sending to nodes that you don't own isn't free.\n\nThe farther away the target node, the higher the cost.","The cost factor is multiplied by the number of processes sent. The more you send, the more you loose.\n\nNotice that you need more attacks -- and loose more processes -- when defeating the far node."],dots:[{v:[-.9,-.2,.1],u:360},{v:[-.9,.2,.1],u:360},{v:[-.9,0,.1],b:180},{v:[.9,0,.1],b:180}]},"TUTORIAL 4":{addUnit:0,next:"TUTORIAL 5",hint:["Sending processes to nodes you own cost nothing.\n\nIt is efficient to occupy far away neutral nodes with few processes first and send larger groups later.","Contrary to common believe,\nyou can't send processes between already connected nodes."],dots:[{v:[-.7,.1,.3],u:180},{v:[-.7,-.1,.3],u:12},{v:[.7,-.1,.3]},{v:[.7,.1,.3],b:135}],lines:[[0,1]]},"TUTORIAL 5":{addUnit:3,next:"EASY",hint:["New processes are spawned regularily in active nodes.\n\nAlways make sure you have more active nodes than the opponent.","You can see the number of active nodes in the top right corner.\n\nThe graph plots the relative amount of available processes."],dots:[{v:[0,0,1],u:60},{v:[-.5,-.5,1]},{v:[.5,-.5,1]},{v:[-.5,.5,1]},{v:[.5,.5,1]},{v:[-1,0,1]},{v:[1,0,1]},{v:[0,-1,1]},{v:[0,1,1]},{v:[-1,-1,0],b:12},{v:[1,-1,0],b:12},{v:[-1,1,0],b:12},{v:[1,1,0],b:12},{v:[0,0,-1],b:12}]},EASY:{synt:{usr:{instrument:"organ1"},bot:{instrument:"organ2"}},addUnit:2,next:"menu",hint:["Be prepared, the red nodes are fighting back!","You learned the basics, remove the virus from the system!"],dots:[{v:[0,0,1],u:60},{v:[-.5,-.5,1]},{v:[.5,-.5,1]},{v:[-.5,.5,1]},{v:[.5,.5,1]},{v:[-1,0,1]},{v:[1,0,1]},{v:[0,-1,1]},{v:[0,1,1]},{v:[-1,-1,-1]},{v:[1,-1,-1]},{v:[-1,1,-1]},{v:[1,1,-1]},{v:[0,0,-1],b:60}],bot:{speed:8,i:-1}},CIRCLES:{synt:{usr:{instrument:"string"},bot:{instrument:"flute"}},addUnit:4,dots:[{v:[0,0,1],u:60},{c:[8,45,0,0]},{c:[8,45,0,180]},{c:[16,90,0,0]},{v:[0,0,-1],b:60}],bot:{speed:7,i:-1}},POLES:{synt:{usr:{instrument:"bell3"},bot:{instrument:"bell4"}},addUnit:4,dots:[{v:[0,0,1],u:60},{c:[8,20,90,0]},{c:[8,20,-90,0]},{c:[8,20,0,90]},{c:[8,20,0,-90]},{v:[0,0,-1],b:60}],bot:{speed:6,i:-1}},RING:{synt:{usr:{instrument:"bell1"},bot:{instrument:"bell2"}},addUnit:4,dots:[{v:[0,0,1],u:60},{c:[5,90,-30,90,30]},{c:[5,-90,-30,90,30]},{c:[5,70,-120,90,30]},{c:[5,70,-60,-90,30]},{v:[0,0,-1],b:60}],bot:{speed:5,i:-1}},CLOSE:{addUnit:4,dots:[{v:[-.4,0,1],u:60},{c:[11,90,-15,45,15]},{c:[11,-90,-15,45,15]},{v:[.4,0,1],b:60}],bot:{speed:4,i:-1}},UNFAIR:{addUnit:6,dots:[{v:[0,0,1],u:90},{c:[4,15,180,0]},{c:[8,30,180,0]},{c:[16,45,180,0]},{v:[0,0,-1],b:360}],bot:{speed:3,i:-1}},FRENZY:{addUnit:12,dots:[{v:[0,0,1],u:180},{c:[4,22.5,0,0]},{c:[4,22.5,180,0]},{c:[4,22.5,90,0]},{c:[4,22.5,-90,0]},{c:[6,40,0,0]},{c:[6,40,180,0]},{c:[6,40,90,0]},{c:[6,40,-90,0]},{v:[0,0,-1],b:12},{v:[1,0,0],b:12},{v:[-1,0,0],b:12},{v:[0,1,0],b:12},{v:[0,-1,0],b:12}],bot:{speed:2,i:-1}}},r=class{constructor(e,t){var n,s,d;for(this.dot=e,this.units=oe(t/3),this.sparks=[],this.ticks=0,this.g=l("g"),(n=s=0,d=this.units);0<=d?s<d:s>d;n=0<=d?++s:--s)this.sparks.push(m(this.g,"circle",{class:`spark ${this.dot.own}`,r:X.radius/60}));ie.sparks.push(this)}upd(){var e,t,n,i,d,o,r,a,l,c,m,h,g,b;if(r=ee(this.dot.v),this.g.setAttribute("transform",`translate(${r.x}, ${r.y})`),b=.5+.5*this.dot.depth(),ie.pause||(this.ticks+=1),o=he(5*this.units,120),this.ticks>o){for(a=this.sparks,n=0,i=a.length;n<i;n++)m=a[n],m.remove();return ie.sparks.splice(ie.sparks.indexOf(this),1)}for(e=0,t=this.ticks/o,l=this.sparks,c=[],(h=0,d=l.length);h<d;h++)m=l[h],e+=2*pe/this.sparks.length,g=te(le(e),ce(e)),g.mul(this.dot.radius()+o*t*b*X.radius/500),m.setAttribute("r",(.5+.5*t)*b*X.radius/60),m.setAttribute("opacity",le(t*pe)),m.setAttribute("cx",g.x),c.push(m.setAttribute("cy",g.y));return c}},t=class{constructor(e){this.onTimer=this.onTimer.bind(this),this.v=e,this.minUnits=12,this.own="",this.units=0,this.targetUnits=0,this.n=[],this.i=ie.dots.length,this.v.norm(),this.g=l("g"),this.c=m(this.g,"circle",{class:"dot",id:this.i,cx:0,cy:0,r:1.3}),this.c.dot=this,ie.dots.push(this)}startTimer(e,t="send",n=0){return this.snd=t,this.cst=n,this.targetUnits+=e,clearInterval(this.timer),this.timer=setInterval(this.onTimer,160)}onTimer(){if(!ie.pause)return J.play(this.own,this.snd,this.cst),this.targetUnits>this.units?(this.units+=10,this.units>=this.targetUnits&&(this.units=this.targetUnits)):(this.units-=10,this.units<=this.targetUnits&&(this.units=this.targetUnits)),this.units===this.targetUnits&&(clearInterval(this.timer),delete this.timer),0===this.units&&this.unlink(),this.drawPie()}setUnits(e){return this.units=e,this.targetUnits=this.units,this.drawPie()}addUnit(e=1){if(0!==e)return this.targetUnits=b(0,360,this.targetUnits+e),this.units=b(0,360,this.units+e),this.drawPie()}drawPie(){var e,t,n;return this.pie||(this.pie=m(this.g,"path",{class:"pie"})),this.units<this.minUnits?(this.c.classList.remove("linked"),n=0,e=-1,this.pie.setAttribute("d","M0,-1 A1,1 0 1,0 0,1 A1,1 0 0,0 0,-1 z")):(this.c.classList.add("linked"),n=ce(y(this.units)),e=-le(y(this.units)),t=180>=this.units&&"1,0"||"0,0",this.pie.setAttribute("d",`M0,0 L0,-1 A1,1 0 ${t} ${n},${e} z`))}depth(){return(this.v.z+1)/2}zdepth(){return this.depth()}radius(){return(this.depth()+.3)/1.5*X.radius/20}raise(){return this.g.parentNode.appendChild(this.g)}closest(){return ie.dots.slice(0).sort((e,t)=>this.dist(e)-this.dist(t)).slice(1)}dist(e){return this.v.angle(e.v)}neutralize(){return this.own="",this.units=0,this.targetUnits=0,this.c.classList.remove("bot"),this.c.classList.remove("usr")}linked(e){return 0<=be.call(this.n,e)||0<=be.call(e.n,this)}unlink(){return ie.lines=ie.lines.filter(e=>e.s!==this&&e.e!==this||(e.e.n=e.e.n.filter(e=>e!==this),e.s.n=e.s.n.filter(e=>e!==this),e.c.remove(),!1)),this.n=[],this.neutralize()}link(e){var t,n,i,d,o,a,u;if(!(e===this||this.targetUnits<this.minUnits||this.linked(e)))return t=.5*B(this.dist(e))/180,e.own===this.own&&(t=0),u=oe(.5*this.targetUnits),a=oe(u*(1-t)),0===t&&360<e.targetUnits+a&&(o=e.targetUnits+a-360,a-=o,u-=o),i=a,""!==e.own&&e.own!==this.own?(i=-a,new r(this,u),a===e.targetUnits?(d="draw",new r(e,a)):a<e.targetUnits?(d="lost",new r(e,a)):(d="won",n=1,i=a-e.targetUnits,new r(e,e.targetUnits),e.unlink(),e.setOwn(this.own))):(n=1,d="send",e.setOwn(this.own),new r(e,ue(u*t))),this.startTimer(-u,d,parseInt(18*t)),e.startTimer(i),n?(ie.update=1,new s(this,e)):null}setOwn(e){return this.own=e,this.c.classList.toggle("bot","bot"===this.own),this.c.classList.toggle("usr","usr"===this.own)}send(e){var t,n,i,d;return f("usr"),F.touch&&F.touch!==this&&!this.linked(F.touch)?d=F.touch:(n=function(t){return e.angle(t.v)},t=ie.dots.slice(0).sort((e,t)=>n(e)-n(t)),d=t[0]),i=d===this||this.linked(d)?{v:e,depth:function(){return(e.z+1)/2}}:d,ie.tmpline.usr=new s(this,i,!0)}rot(e){return this.v=e.rotate(this.v)}upd(){var e;return e=ee(this.v),this.g.setAttribute("transform",`translate(${e.x},${e.y}) scale(${this.radius()})`),v(this)}},e=class{constructor(){this.speed=4,this.tsum=0}tmpl(e,t){return f("bot"),ie.tmpline.bot=new s(e,t,!0),ie.update=1}anim(e){var t,n,s,i,o,r;if(this.tsum+=e,this.tsum>60*this.speed){if(i=ie.dots.filter(function(e){return"bot"===e.own}),this.tsum=0,0===i.length)return;for(i.sort(function(e,t){return t.units-e.units}),s=i[0],n=s.closest(),(o=0,r=n.length);o<r;o++)if(t=n[o],!s.linked(t))return s.link(t),void this.tmpl(s,t)}}},s=class{constructor(e,t,n){var s,i;this.s=e,this.e=t,this.c=l("path",{class:"line"}),this.s.own&&this.c.classList.add(this.s.own),n?(this.c.classList.add("tmp"),this.s.c.classList.add("src")):(null!=(s=this.s.n)&&s.push(this.e),null!=(i=this.e.n)&&i.push(this.s),ie.lines.push(this))}del(){return this.s.c.classList.remove("src"),this.c.remove()}depth(){return(this.s.depth()+this.e.depth())/2}zdepth(){return ge(this.s.depth(),this.e.depth())-.001}raise(){var e;return null==(e=this.c.parentNode)?void 0:e.appendChild(this.c)}upd(){return this.c.setAttribute("d",p(this.s.v,this.e.v)),v(this),this.c.style.strokeWidth=(this.depth()+.3)/1.5*X.radius/50}},A=function(){var e;return"usr"===ie.winner?O(null==(e=ie.level.next)?"menu":e):k(ie.level.name)},k=function(e){return ie.level=null,O(e)},O=function(e){if($.innerHTML="",I.bot.innerHTML="",I.usr.innerHTML="",ie.circle=l("circle",{class:"world",cx:X.center.x,cy:X.center.y,r:X.radius}),ie.circle.v=te(),ie.ticks=0,ie.dots=[],ie.lines=[],ie.update=1,ie.winner=null,F.drag=null,h=null,f("usr"),f("bot"),L(),D(),"menu"===e?Z("menu"):Z("game"),("RANDOM"===e?V():z(e),ie.pause))return q()},z=function(r){var c,m,p,g,b,f,x,w,k,z,T,O,A,R,S,I,N,M,C;if((null==(O=ie.level)?void 0:O.name)!==r){for(z=E[r],z.name=r,A=z.dots,(f=0,w=A.length);f<w;f++){if(m=A[f],m.c){for(g=M=0,R=m.c[0];0<=R?M<R:M>R;g=0<=R?++M:--M)T=o.axis(te(0,1,0),y(m.c[2])).mul(o.axis(te(1,0,0),y(m.c[3]))),C=te(0,0,1),C=o.axis(te(1,0,0),y(m.c[1])).rotate(C),c=null==(S=m.c[4])?360/m.c[0]:S,C=o.axis(te(0,0,1),y(g*c)).rotate(C),C=T.rotate(C),p=new t(C);continue}p=new t(te(m.v[0],m.v[1],m.v[2])),m.u&&(p.setOwn("usr"),p.setUnits(m.u)),m.b&&(p.setOwn("bot"),p.setUnits(m.b)),"menu"===r&&(p.level=m.l,Y.get(m.l)&&p.setOwn("usr"))}for(N=null==(I=z.lines)?[]:I,b=0,k=N.length;b<k;b++)x=N[b],new s(ie.dots[x[0]],ie.dots[x[1]]);if(z.bot&&(x=ie.dots.length,g=(x+z.bot.i)%x,h=new e(ie.dots[g]),z.bot.speed&&(h.speed=z.bot.speed)),z.msg?P(z.msg):P(),z.hint?L(z.hint[0],z.hint[1]):L(),"menu"===r&&(delete z.msg,delete z.hint),ie.level=z,ie.addUnit=z.addUnit,z.synt&&J.setSynt(z.synt),ie.addUnit)return U=new n}},V=function(){var s,o,r,a,l,c,m,p,g,f,y,x,w,k,L;for(U=new n,ie.addUnit=1,ie.level={name:"RANDOM"},o=new t(te(0,0,1)),o.setOwn("usr"),p=null==(f=ie.nodes)?2*parseInt(K(8,20)):f,(a=c=1,y=p/2);1<=y?c<y:c>y;a=1<=y?++c:--c){for(L=te(K(-1,1),K(-1,1),K(0,1)),L.norm();;){for(g=!0,x=ie.dots,(k=0,m=x.length);k<m;k++)if(r=x[k],.2>L.angle(r.v)){L=te(K(-1,1),K(-1,1),K(0,1)),L.norm(),g=!1;break}if(g)break}new t(L)}for(a=l=w=p/2-1;0>=w?0>=l:0<=l;a=0>=w?++l:--l)new t(ie.dots[a].v.times(-1).add(te(.01)));return s=ie.dots[ie.dots.length-1],s.setOwn("bot"),h=new e,s.startTimer(360),o.startTimer(360)},M=function(e){var t;return J.play("menu","draw"),null==(t=I.buttons.VOL)?void 0:t.innerHTML=`${ue(100*e)/100}`},C={menu:[{OPTIONS:{click:function(){return Z("options")}}}],game:[{PAUSE:{click:function(){return q()}}}],options:[{OPTIONS:{click:function(){return Z("menu")}}},{FULLSCREEN:{click:function(){return Q()}}},{VOLUME:{class:"choice",values:["-","VOL","+"],cb:function(e){if("+"===e)return J.volUp();return"-"===e?J.volDown():void 0}}},{ABOUT:{click:function(){return N()}}},{"RESET PROGRESS":{click:function(){return Y.clear(),k("menu")}}}],pause:[{UNPAUSE:{click:function(){return q()}}},{MENU:{click:function(){return O("menu")}}},{RESET:{click:function(){return k(ie.level.name)}}},{FULLSCREEN:{click:function(){return Q()}}},{VOLUME:{class:"choice",values:["-","VOL","+"],cb:function(e){if("+"===e)return J.volUp();return"-"===e?J.volDown():void 0}}}],next:[{NEXT:{click:function(){return A()}}},{MENU:{click:function(){return O("menu")}}},{RESET:{click:function(){return k(ie.level.name)}}}]},Z=function(e){var t,n,s,i,d,o,r,a,u,l;for(i in J.play("menu","send"),a=I.buttons,a)l=a[i],l.remove(),delete I.buttons[i];for(o=C[e],u=[],(s=0,d=o.length);s<d;s++)n=o[s],r=Object.keys(n)[0],t=n[r],null==t.class&&(t.class="button"),null==t.text&&(t.text=r),"choice"===t.class?u.push(g(t)):u.push(I.buttons[r]=x("div",t,I.left));return u},T=function(){return document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement},Q=function(){var e,t,n;return J.play("menu","draw"),T()?(e=document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen,e.call(document)):(t=document.documentElement,n=t.requestFullscreen||t.webkitRequestFullScreen||t.mozRequestFullScreen||t.msRequestFullscreen,n.call(t))},x=function(n,t,s){var i;return i=document.createElement(n),null!=t.text&&(i.innerText=t.text),null!=t.html&&(i.innerHTML=t.html),null!=t.click&&i.addEventListener("click",t.click),s.appendChild(j(i,t)),i},P=function(e,t=""){var n;if(null!=(n=X.msg)&&n.remove(),e)return X.msg=x("div",{class:`msg ${t}`,text:e},S),w("msg",X.msg)},L=function(e,t){var n,s;if(null!=(n=X.hint1)&&n.remove(),null!=(s=X.hint2)&&s.remove(),e&&(X.hint1=x("div",{class:"hint1",text:e},S),w("hint",X.hint1)),t)return X.hint2=x("div",{class:"hint2",text:t},S),w("hint",X.hint2)},D=function(e,n){var t,i;if(null!=(t=X.popup)&&t.remove(),n)return i=ee(e),X.popup=x("div",{class:"popup",text:n},S),X.popup.style.left=`${i.x}px`,X.popup.style.top=`${i.y-X.radius/7}px`,w("hint",X.popup)},g=function(e){var t,n,s,i,d,o;for(I.buttons[e.text]=x("div",e,I.left),d=e.values,o=[],(s=0,i=d.length);s<i;s++)t=d[s],n=function(t,n){return function(s){var e,i,d,o;for(i=t.values,d=0,e=i.length;d<e;d++)o=i[d],I.buttons[o].classList.remove("highlight");return"+"!==n&&"-"!==n&&"VOL"!==n&&s.target.classList.add("highlight"),"VOL"!==n&&t.cb(n),s.stopPropagation()}},I.buttons[t]=x("div",{class:"button",text:t,click:n(e,t)},I.left),"VOL"===t?o.push(M(J.vol)):o.push(void 0);return o},N=function(){var e,n,s;return J.play("menu","draw"),null!=(n=I.about)&&n.remove(),e=function(){return I.about.remove(),delete I.about,J.play("menu","won")},s="",s+="<div class='konnekt'>KONNEKT</div> is my entry for the <a href='https://js13kgames.com/' target='_blank'>js13kgames</a> 2018 competition.<br>",s+="Thanks to the organizers!<p>",s+="The sources are available at ",s+="<a href='https://github.com/monsterkodi/konnekt' target='_blank'>github</a>.<p>",s+="I hope you had some fun playing the game.<div class='version'>v1.0</div>",I.about=x("div",{class:"about",html:s,click:e},S)},I.usr=x("div",{class:"button usr"},I.right),I.bot=x("div",{class:"button bot"},I.right),w=function(t,n){var e;if(n)return e=function(){return"msg"===t?X.radius/6:"hint"===t?X.radius/20:"menu"===t?he(12,X.radius/30):void 0}(),n.style.fontSize=`${parseInt(e)}px`},_=function(){var e;return e=$.getBoundingClientRect(),X.size=te(e.width,e.height),X.center=te(e.width/2,e.height/2),X.radius=.4*ge(X.size.x,X.size.y),ie.update=1,ie.circle&&(ie.circle.setAttribute("cx",X.center.x),ie.circle.setAttribute("cy",X.center.y),ie.circle.setAttribute("r",X.radius)),w("hint",X.hint1),w("hint",X.hint2),w("msg",X.msg),w("menu",I.left),null==U?void 0:U.plot()},_(),se.addEventListener("mousemove",function(t){var e,n,s,i;if(F.pos=te(t.clientX,t.clientY),"rot"===F.drag){for(ie.userRot=H(te(t.movementX,t.movementY)),i=ie.dots,(n=0,s=i.length);n<s;n++)e=i[n],e.rot(ie.userRot),ie.update=1;return ie.rotSum.add(te(t.movementX/10,t.movementY/10))}if(F.drag)switch(t.buttons){case 1:return F.drag.send(G(F.pos)),ie.update=1;case 2:return F.drag.v=G(F.pos),ie.update=1;}}),f=function(e){var t;return null!=(t=ie.tmpline[e])&&t.del(),delete ie.tmpline[e]},se.addEventListener("mousedown",function(t){if(f("usr"),ie.inertRot=new o,L(),D(),"menu"===ie.level.name)P();else if(ie.winner&&1===t.buttons&&!t.target.classList.contains("button"))return void A();if(F.drag=t.target.dot){if("menu"===ie.level.name)return void(1===t.buttons&&O(F.drag.level));if(!ie.pause&&F.drag.c.classList.contains("linked")&&"bot"!==F.drag.own)return}return F.drag="rot"}),se.addEventListener("mouseup",function(){return"rot"===F.drag?ie.inertRot=H(ie.rotSum):F.drag&&(ie.inertRot=new o,ie.tmpline.usr&&ie.tmpline.usr.e.c&&F.drag.link(ie.tmpline.usr.e),F.drag.c.classList.remove("src")),f("usr"),F.drag=null,ie.update=1}),$.addEventListener("mouseover",function(t){var e;if((F.touch=t.target.dot,!F.drag)&&(e=t.target.dot))if(!ie.pause&&e.c.classList.contains("linked")&&"usr"===e.own||"menu"===ie.level.name){if(e!==F.hover&&(W(e),e.c.classList.add("src"),"menu"===ie.level.name))return P(),L(),D(e.v,e.level);}else if(F.hover)return W()}),W=function(e,t=1){var n;return t&&null!=(n=F.hover)&&n.c.classList.remove("src"),F.hover=e},$.addEventListener("mouseout",function(t){var e;if(F.touch=null,(e=t.target.dot)&&e===F.hover&&(W(null,e!==F.drag),"menu"===ie.level.name))return D()}),se.addEventListener("keydown",function(t){switch(t.keyCode){case 32:case 27:return q();}}),q=function(e="PAUSED",t="",n="pause"){var s;if("menu"!==(null==(s=ie.level)?void 0:s.name))return ie.pause=!ie.pause,Z(ie.winner&&"next"||ie.pause&&"pause"||"game"),P(ie.pause&&e||"",t)},ne=function(){if(document.hidden&&!ie.pause)return q()},c=function(e){var t,n,s,i,r,a,m,p,v,g,b,f,y,w,k,L,z,T,E,O,A,R,S,N,M,C,F,P;if(L=function(){return se.requestAnimationFrame(c),e},ie.delta=(e-ie.time)/16,ie.time=e,!ie.level)return L();if(!ie.pause&&"menu"!==ie.level.name){if(ie.ticks+=1,0==ie.ticks%60){for(T=["usr","bot"],r=0,g=T.length;r<g;r++){if(z=T[r],n=ie.dots.filter(function(e){return e.own===z}),ie.units[z]=n.reduce(function(e,t){return e+t.targetUnits},0),n=n.filter(function(e){return e.units>=e.minUnits}),I[z].innerHTML=`&#9679; ${n.length}`,0===n.length)return"bot"===z?(ie.winner="usr",q("ONLINE!","usr"),Y.set(ie.level.name,!0)):(ie.winner="bot",q("OFFLINE!","bot")),null!=(E=X.hint)&&E.remove(),ie.update=1,L();for(F=0,b=n.length;F<b;F++)t=n[F],t.addUnit(ie.addUnit)}null!=U&&U.sample(),null!=U&&U.plot()}null!=h&&h.anim(ie.delta)}if(ie.rotSum.mul(.8),ie.inertRot.slerp(new o,.01*ie.delta),!ie.inertRot.zero()||ie.update){for(O=ie.dots,s=0,f=O.length;s<f;s++)t=O[s],t.rot(ie.inertRot),t.upd();for(A=ie.lines,a=0,y=A.length;a<y;a++)p=A[a],p.upd();for(null!=(R=ie.tmpline.usr)&&R.upd(),null!=(S=ie.tmpline.bot)&&S.upd(),i=ie.lines.concat(ie.dots),null!=ie.tmpline.usr&&i.push(ie.tmpline.usr),null!=ie.tmpline.bot&&i.push(ie.tmpline.bot),N=i.sort(function(e,t){return e.zdepth()-t.zdepth()}),(m=0,w=N.length);m<w;m++)P=N[m],P.raise();ie.update=0}for(M=ie.sparks.slice(0),v=0,k=M.length;v<k;v++)C=M[v],C.upd();return L()},se.addEventListener("resize",_),se.addEventListener("contextmenu",function(t){return t.preventDefault()}),document.addEventListener("visibilitychange",ne,!1),Y.load(),se.requestAnimationFrame(c)}).call(this);
+(function() {
+  /*
+  000   000  00000000   0000000
+  000   000  000       000     
+   000 000   0000000   000     
+     000     000       000     
+      0      00000000   0000000
+  */
+  /*
+  000      00000000  000   000  00000000  000       0000000
+  000      000       000   000  000       000      000     
+  000      0000000    000 000   0000000   000      0000000 
+  000      000          000     000       000           000
+  0000000  00000000      0      00000000  0000000  0000000 
+  */
+  /*
+  00     00  00000000  000   000  000   000    
+  000   000  000       0000  000  000   000    
+  000000000  0000000   000 0 000  000   000    
+  000 0 000  000       000  0000  000   000    
+  000   000  00000000  000   000   0000000     
+  */
+  /*
+   0000000   000       0000000   0000000    
+  000        000      000   000  000   000  
+  000  0000  000      000   000  0000000    
+  000   000  000      000   000  000   000  
+   0000000   0000000   0000000   0000000    
+  */
+  var Bot, Dot, Grph, Line, Pref, Quat, Snd, Sprk, Synt, Vec, add, anim, app, arc, bot, brightness, choice, clamp, d2r, delTmpl, elem, fontSize, forceLevel, grph, hint, index, initLevel, isFullscreen, j, level, levelList, levels, loadLevel, loadNext, log, main, menu, menuAbout, menuVolume, menus, mouse, msg, opt, pause, popup, pref, r2d, randomLevel, randr, ref, rotq, s2u, screen, setHover, showMenu, size, snd, svg, toggleFullscreen, u2s, vec, visibility, win, world, zero,
+    indexOf = [].indexOf;
+
+  randr = function(a, b) {
+    return a + (b - a) * Math.random();
+  };
+
+  clamp = function(a, b, v) {
+    return Math.max(a, Math.min(b, v));
+  };
+
+  zero = function(a) {
+    return Math.abs(a) < Number.EPSILON;
+  };
+
+  log = console.log;
+
+  r2d = function(a) {
+    return 180 * a / Math.PI;
+  };
+
+  d2r = function(a) {
+    return Math.PI * a / 180;
+  };
+
+  Vec = class Vec {
+    constructor(x1 = 0, y1 = 0, z1 = 0) {
+      this.x = x1;
+      this.y = y1;
+      this.z = z1;
+    }
+
+    cpy() {
+      return vec(this.x, this.y, this.z);
+    }
+
+    add(a) {
+      this.x += a.x;
+      this.y += a.y;
+      this.z += a.z;
+      return this;
+    }
+
+    mul(b) {
+      this.x *= b;
+      this.y *= b;
+      this.z *= b;
+      return this;
+    }
+
+    times(f) {
+      return this.cpy().mul(f);
+    }
+
+    minus(a) {
+      return vec(this.x - a.x, this.y - a.y, this.z - a.z);
+    }
+
+    to(a) {
+      return a.minus(this);
+    }
+
+    dist(a) {
+      return this.minus(a).length();
+    }
+
+    dot(a) {
+      return this.x * a.x + this.y * a.y + this.z * a.z;
+    }
+
+    cross(a) {
+      return vec(this.y * a.z - this.z * a.y, this.z * a.x - this.x * a.z, this.x * a.y - this.y * a.x);
+    }
+
+    length() {
+      return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    }
+
+    norm() {
+      var l;
+      l = this.length();
+      if (l === 0) {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+      } else {
+        l = 1 / l;
+        this.x *= l;
+        this.y *= l;
+        this.z *= l;
+      }
+      return this;
+    }
+
+    angle(a) {
+      return Math.acos(clamp(-1, 1, this.dot(a) / Math.sqrt(this.length() * a.length())));
+    }
+
+  };
+
+  vec = function(x, y, z) {
+    return new Vec(x, y, z);
+  };
+
+  /*
+   0000000   000   000   0000000   000000000  
+  000   000  000   000  000   000     000     
+  000 00 00  000   000  000000000     000     
+  000 0000   000   000  000   000     000     
+   00000 00   0000000   000   000     000     
+  */
+  Quat = class Quat {
+    constructor(x, y, z, w) {
+      this.x = x || 0;
+      this.y = y || 0;
+      this.z = z || 0;
+      this.w = w != null ? w : 1;
+    }
+
+    copy(a) {
+      this.x = a.x;
+      this.y = a.y;
+      this.z = a.z;
+      this.w = a.w;
+      return this;
+    }
+
+    static axis(v, a = 0) {
+      var h, s;
+      h = a / 2;
+      s = Math.sin(h);
+      return new Quat(v.x * s, v.y * s, v.z * s, Math.cos(h));
+    }
+
+    rotate(v) {
+      var iw, ix, iy, iz, x, y, z;
+      x = v.x;
+      y = v.y;
+      z = v.z;
+      ix = this.w * x + this.y * z - this.z * y;
+      iy = this.w * y + this.z * x - this.x * z;
+      iz = this.w * z + this.x * y - this.y * x;
+      iw = -this.x * x - this.y * y - this.z * z;
+      x = ix * this.w + iw * -this.x + iy * -this.z - iz * -this.y;
+      y = iy * this.w + iw * -this.y + iz * -this.x - ix * -this.z;
+      z = iz * this.w + iw * -this.z + ix * -this.y - iy * -this.x;
+      return vec(x, y, z);
+    }
+
+    length() {
+      return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
+    }
+
+    zero() {
+      return zero(this.x) && zero(this.y) && zero(this.z);
+    }
+
+    norm() {
+      var l;
+      l = this.length();
+      if (l === 0) {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        this.w = 1;
+      } else {
+        l = 1 / l;
+        this.x = this.x * l;
+        this.y = this.y * l;
+        this.z = this.z * l;
+        this.w = this.w * l;
+      }
+      return this;
+    }
+
+    mul(a) {
+      var aw, ax, ay, az;
+      ax = this.x;
+      ay = this.y;
+      az = this.z;
+      aw = this.w;
+      this.x = ax * a.w + aw * a.x + ay * a.z - (az * a.y);
+      this.y = ay * a.w + aw * a.y + az * a.x - (ax * a.z);
+      this.z = az * a.w + aw * a.z + ax * a.y - (ay * a.x);
+      this.w = aw * a.w - (ax * a.x) - (ay * a.y) - (az * a.z);
+      return this;
+    }
+
+    slerp(a, t) {
+      var cht, ht, ra, rb, s, sht, ssht, w, x, y, z;
+      if (t === 0) {
+        return this;
+      }
+      if (t === 1) {
+        return this.copy(a);
+      }
+      x = this.x;
+      y = this.y;
+      z = this.z;
+      w = this.w;
+      cht = w * a.w + x * a.x + y * a.y + z * a.z;
+      if (cht < 0) {
+        this.w = -a.w;
+        this.x = -a.x;
+        this.y = -a.y;
+        this.z = -a.z;
+        cht = -cht;
+      } else {
+        this.copy(a);
+      }
+      if (cht >= 1.0) {
+        this.w = w;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        return this;
+      }
+      ssht = 1.0 - (cht * cht);
+      if (ssht <= Number.EPSILON) {
+        s = 1 - t;
+        this.w = s * w + t * this.w;
+        this.x = s * x + t * this.x;
+        this.y = s * y + t * this.y;
+        this.z = s * z + t * this.z;
+        return this.norm();
+      }
+      sht = Math.sqrt(ssht);
+      ht = Math.atan2(sht, cht);
+      ra = Math.sin((1 - t) * ht) / sht;
+      rb = Math.sin(t * ht) / sht;
+      this.w = w * ra + this.w * rb;
+      this.x = x * ra + this.x * rb;
+      this.y = y * ra + this.y * rb;
+      this.z = z * ra + this.z * rb;
+      return this;
+    }
+
+  };
+
+  /*
+  00000000   00000000   00000000  00000000
+  000   000  000   000  000       000     
+  00000000   0000000    0000000   000000  
+  000        000   000  000       000     
+  000        000   000  00000000  000     
+  */
+  Pref = class Pref {
+    constructor() {}
+
+    load() {
+      var err;
+      this.cache = {
+        prefs: 'prefs',
+        volume: 0.03125
+      };
+      try {
+        this.req = window.indexedDB.open('konekt', 3);
+        this.req.onerror = (e) => {
+          return this.loadMenu('open error');
+        };
+        this.req.onsuccess = (e) => {
+          this.db = e.target.result;
+          return this.read();
+        };
+        return this.req.onupgradeneeded = (e) => {
+          var db, req, store;
+          db = e.target.result;
+          store = db.createObjectStore("prefs", {
+            keyPath: 'prefs'
+          });
+          return req = store.put(this.cache);
+        };
+      } catch (error) {
+        err = error;
+        return this.loadMenu('prefs catch');
+      }
+    }
+
+    loadMenu(from) {
+      var ref;
+      
+      // log "loadMenu from:#{from} level:#{world.level?.name}"
+      if ((typeof world !== "undefined" && world !== null ? world.level : void 0) === void 0 || ((ref = world.level) != null ? ref.name : void 0) === 'menu') {
+        return loadLevel('menu');
+      }
+    }
+
+    read() {
+      var req, store, trans;
+      trans = this.db.transaction(["prefs"], 'readonly');
+      store = trans.objectStore("prefs");
+      req = store.get('prefs');
+      req.onerror = (e) => {
+        return this.loadMenu('read error');
+      };
+      return req.onsuccess = (e) => {
+        if (!req.result) {
+          this.write();
+          return this.loadMenu('empty');
+        } else {
+          this.cache = req.result;
+          snd.volume(this.cache.volume);
+          return this.loadMenu('read');
+        }
+      };
+    }
+
+    write() {
+      var req, store, trans;
+      trans = this.db.transaction(["prefs"], 'readwrite');
+      store = trans.objectStore('prefs');
+      return req = store.put(this.cache);
+    }
+
+    clear() {
+      var ref;
+      this.cache = {
+        prefs: 'prefs',
+        volume: (ref = this.cache.volume) != null ? ref : 0.03125
+      };
+      return this.write();
+    }
+
+    set(key, value) {
+      this.cache[key] = value;
+      if (this.db) {
+        return this.write();
+      }
+    }
+
+    get(key, v) {
+      var ref;
+      return (ref = this.cache[key]) != null ? ref : v;
+    }
+
+  };
+
+  /*
+   0000000  000   000  000   000  000000000
+  000        000 000   0000  000     000   
+  0000000     00000    000 0 000     000   
+       000     000     000  0000     000   
+  0000000      000     000   000     000   
+  */
+  // piano1, piano2, piano3, piano4, piano5
+  // string, flute
+  // bell1, bell2, bell3, bell4
+  // organ1, organ2
+  Synt = class Synt {
+    constructor(config, ctx, gain) {
+      var base;
+      this.piano2 = this.piano2.bind(this);
+      this.organ2 = this.organ2.bind(this);
+      this.config = config;
+      this.ctx = ctx;
+      this.gain = gain;
+      
+      // 0 1  2 3  4 5 6  7 8  9 10 11
+      // C Cs D Ds E F Fs G Gs A As B
+      this.freqs = [4186.01, 4434.92, 4698.63, 4978.03, 5274.04, 5587.65, 5919.91, 6271.93, 6644.88, 7040.00, 7458.62, 7902.13];
+      if ((base = this.config).duration == null) {
+        base.duration = 0.3;
+      }
+      this.isr = 1.0 / 44100;
+      this.initBuffers();
+    }
+
+    initBuffers() {
+      this.sampleLength = this.config.duration * 44100;
+      this.sampleLength = Math.floor(this.sampleLength);
+      return this.createBuffers();
+    }
+
+    createBuffers() {
+      return this.samples = new Array(108);
+    }
+
+    playNote(noteIndex) {
+      var audioBuffer, buffer, frequency, func, i, j, node, ref, ref1, sample, sampleIndex, u, w, x;
+      
+      // log "note #{noteIndex}"
+      if (this.samples[noteIndex] == null) {
+        this.samples[noteIndex] = new Float32Array(this.sampleLength);
+        frequency = this.freq(noteIndex);
+        // log @config.instrument, noteIndex, frequency
+        w = 2.0 * Math.PI * frequency;
+        func = this[this.config.instrument];
+        for (sampleIndex = j = 0, ref = this.sampleLength; (0 <= ref ? j < ref : j > ref); sampleIndex = 0 <= ref ? ++j : --j) {
+          x = sampleIndex / (this.sampleLength - 1);
+          this.samples[noteIndex][sampleIndex] = func(sampleIndex * this.isr, w, x);
+        }
+      }
+      sample = this.samples[noteIndex];
+      audioBuffer = this.ctx.createBuffer(1, sample.length, 44100);
+      buffer = audioBuffer.getChannelData(0);
+      for (i = u = 0, ref1 = sample.length; (0 <= ref1 ? u < ref1 : u > ref1); i = 0 <= ref1 ? ++u : --u) {
+        buffer[i] = sample[i];
+      }
+      node = this.ctx.createBufferSource();
+      node.buffer = audioBuffer;
+      node.connect(this.gain);
+      node.state = node.noteOn;
+      return node.start(0);
+    }
+
+    freq(noteIndex) {
+      return this.freqs[noteIndex % 12] / Math.pow(2, 8 - noteIndex / 12).toFixed(3);
+    }
+
+    setDuration(v) {
+      if (this.config.duration !== v) {
+        this.config.duration = v;
+        return this.initBuffers();
+      }
+    }
+
+    fmod(x, y) {
+      return x % y;
+    }
+
+    sign(x) {
+      return (x > 0.0) && 1.0 || -1.0;
+    }
+
+    frac(x) {
+      return x % 1.0;
+    }
+
+    sqr(a, x) {
+      if (Math.sin(x) > a) {
+        return 1.0;
+      } else {
+        return -1.0;
+      }
+    }
+
+    step(a, x) {
+      return (x >= a) && 1.0 || 0.0;
+    }
+
+    over(x, y) {
+      return 1.0 - (1.0 - x) * (1.0 - y);
+    }
+
+    mix(a, b, x) {
+      return a + (b - a) * Math.min(Math.max(x, 0.0), 1.0);
+    }
+
+    saw(x, a) {
+      var f;
+      f = x % 1.0;
+      if (f < a) {
+        return f / a;
+      } else {
+        return 1.0 - (f - a) / (1.0 - a);
+      }
+    }
+
+    grad(n, x) {
+      n = (n << 13) ^ n;
+      n = n * (n * n * 15731 + 789221) + 1376312589;
+      if (n & 0x20000000) {
+        return -x;
+      } else {
+        return x;
+      }
+    }
+
+    noise(x) {
+      var a, b, f, i, w;
+      i = Math.floor(x);
+      f = x - i;
+      w = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+      a = this.grad(i + 0, f + 0.0);
+      b = this.grad(i + 1, f - 1.0);
+      return a + (b - a) * w;
+    }
+
+    /*
+    000  000   000   0000000  000000000  00000000   000   000  00     00  00000000  000   000  000000000   0000000
+    000  0000  000  000          000     000   000  000   000  000   000  000       0000  000     000     000     
+    000  000 0 000  0000000      000     0000000    000   000  000000000  0000000   000 0 000     000     0000000 
+    000  000  0000       000     000     000   000  000   000  000 0 000  000       000  0000     000          000
+    000  000   000  0000000      000     000   000   0000000   000   000  00000000  000   000     000     0000000 
+    */
+    /*
+    00000000   000   0000000   000   000   0000000 
+    000   000  000  000   000  0000  000  000   000
+    00000000   000  000000000  000 0 000  000   000
+    000        000  000   000  000  0000  000   000
+    000        000  000   000  000   000   0000000 
+    */
+    piano1(t, w, x) {
+      var d, wt, y;
+      wt = w * t;
+      y = 0.6 * Math.sin(1.0 * wt) * Math.exp(-0.0008 * wt);
+      y += 0.3 * Math.sin(2.0 * wt) * Math.exp(-0.0010 * wt);
+      y += 0.1 * Math.sin(4.0 * wt) * Math.exp(-0.0015 * wt);
+      y += 0.2 * y * y * y;
+      y *= 0.9 + 0.1 * Math.cos(70.0 * t);
+      y = 2.0 * y * Math.exp(-22.0 * t) + y;
+      d = 0.8;
+      if (x > d) {
+        y *= Math.pow(1 - (x - d) / (1 - d), 2); // decay
+      }
+      return y;
+    }
+
+    piano2(t, w, x) {
+      var a, b, d, r, rt, y, y2, y3;
+      t = t + .00015 * this.noise(12 * t);
+      rt = t;
+      r = t * w * .2;
+      r = this.fmod(r, 1);
+      a = 0.15 + 0.6 * rt;
+      b = 0.65 - 0.5 * rt;
+      y = 50 * r * (r - 1) * (r - .2) * (r - a) * (r - b);
+      r = t * w * .401;
+      r = this.fmod(r, 1);
+      a = 0.12 + 0.65 * rt;
+      b = 0.67 - 0.55 * rt;
+      y2 = 50 * r * (r - 1) * (r - .4) * (r - a) * (r - b);
+      r = t * w * .399;
+      r = this.fmod(r, 1);
+      a = 0.14 + 0.55 * rt;
+      b = 0.66 - 0.65 * rt;
+      y3 = 50 * r * (r - 1) * (r - .8) * (r - a) * (r - b);
+      y += .02 * this.noise(1000 * t);
+      y /= t * w * .0015 + .1;
+      y2 /= t * w * .0020 + .1;
+      y3 /= t * w * .0025 + .1;
+      y = (y + y2 + y3) / 3;
+      d = 0.8;
+      if (x > d) {
+        y *= Math.pow(1 - (x - d) / (1 - d), 2); // decay
+      }
+      return y;
+    }
+
+    piano3(t, w, x) {
+      var a, b, d, tt, y;
+      tt = 1 - t;
+      a = Math.sin(t * w * .5) * Math.log(t + 0.3) * tt;
+      b = Math.sin(t * w) * t * .4;
+      y = (a + b) * tt;
+      d = 0.8;
+      if (x > d) {
+        y *= Math.pow(1 - (x - d) / (1 - d), 2); // decay
+      }
+      return y;
+    }
+
+    piano4(t, w, x) {
+      var y;
+      y = Math.sin(w * t);
+      return y *= 1 - x * x * x * x;
+    }
+
+    piano5(t, w, x) {
+      var wt, y;
+      wt = w * t;
+      y = 0.6 * Math.sin(1.0 * wt) * Math.exp(-0.0008 * wt);
+      y += 0.3 * Math.sin(2.0 * wt) * Math.exp(-0.0010 * wt);
+      y += 0.1 * Math.sin(4.0 * wt) * Math.exp(-0.0015 * wt);
+      y += 0.2 * y * y * y;
+      y *= 0.5 + 0.5 * Math.cos(70.0 * t); // vibrato
+      y = 2.0 * y * Math.exp(-22.0 * t) + y;
+      return y *= 1 - x * x * x * x;
+    }
+
+    /*
+     0000000   00000000    0000000    0000000   000   000
+    000   000  000   000  000        000   000  0000  000
+    000   000  0000000    000  0000  000000000  000 0 000
+    000   000  000   000  000   000  000   000  000  0000
+     0000000   000   000   0000000   000   000  000   000
+    */
+    organ1(t, w, x) {
+      var a, y;
+      y = .6 * Math.cos(w * t) * Math.exp(-4 * t);
+      y += .4 * Math.cos(2 * w * t) * Math.exp(-3 * t);
+      y += .01 * Math.cos(4 * w * t) * Math.exp(-1 * t);
+      y = y * y * y + y * y * y * y * y + y * y;
+      a = .5 + .5 * Math.cos(3.14 * x);
+      y = Math.sin(y * a * 3.14);
+      return y *= 20 * t * Math.exp(-.1 * x);
+    }
+
+    organ2(t, w, x) {
+      var a1, a2, a3, wt, y;
+      wt = w * t;
+      a1 = .5 + .5 * Math.cos(0 + t * 12);
+      a2 = .5 + .5 * Math.cos(1 + t * 8);
+      a3 = .5 + .5 * Math.cos(2 + t * 4);
+      y = this.saw(0.2500 * wt, a1) * Math.exp(-2 * x);
+      y += this.saw(0.1250 * wt, a2) * Math.exp(-3 * x);
+      y += this.saw(0.0625 * wt, a3) * Math.exp(-4 * x);
+      return y *= 0.8 + 0.2 * Math.cos(64 * t);
+    }
+
+    /*
+    0000000    00000000  000      000    
+    000   000  000       000      000    
+    0000000    0000000   000      000    
+    000   000  000       000      000    
+    0000000    00000000  0000000  0000000
+    */
+    bell1(t, w, x) {
+      var wt, y;
+      wt = w * t;
+      y = 0.100 * Math.exp(-t / 1.000) * Math.sin(0.56 * wt);
+      y += 0.067 * Math.exp(-t / 0.900) * Math.sin(0.56 * wt);
+      y += 0.100 * Math.exp(-t / 0.650) * Math.sin(0.92 * wt);
+      y += 0.180 * Math.exp(-t / 0.550) * Math.sin(0.92 * wt);
+      y += 0.267 * Math.exp(-t / 0.325) * Math.sin(1.19 * wt);
+      y += 0.167 * Math.exp(-t / 0.350) * Math.sin(1.70 * wt);
+      y += 0.146 * Math.exp(-t / 0.250) * Math.sin(2.00 * wt);
+      y += 0.133 * Math.exp(-t / 0.200) * Math.sin(2.74 * wt);
+      y += 0.133 * Math.exp(-t / 0.150) * Math.sin(3.00 * wt);
+      y += 0.100 * Math.exp(-t / 0.100) * Math.sin(3.76 * wt);
+      y += 0.133 * Math.exp(-t / 0.075) * Math.sin(4.07 * wt);
+      return y *= 1 - x * x * x * x;
+    }
+
+    bell2(t, w, x) {
+      var wt, y;
+      wt = w * t;
+      y = 0.100 * Math.exp(-t / 1.000) * Math.sin(0.56 * wt);
+      y += 0.067 * Math.exp(-t / 0.900) * Math.sin(0.56 * wt);
+      y += 0.100 * Math.exp(-t / 0.650) * Math.sin(0.92 * wt);
+      y += 0.180 * Math.exp(-t / 0.550) * Math.sin(0.92 * wt);
+      y += 0.267 * Math.exp(-t / 0.325) * Math.sin(1.19 * wt);
+      y += 0.167 * Math.exp(-t / 0.350) * Math.sin(1.70 * wt);
+      y += 2.0 * y * Math.exp(-22.0 * t); // attack
+      return y *= 1 - x * x * x * x;
+    }
+
+    bell3(t, w, x) {
+      var wt, y;
+      wt = w * t;
+      y = 0;
+      y += 0.100 * Math.exp(-t / 1) * Math.sin(0.25 * wt);
+      y += 0.200 * Math.exp(-t / 0.75) * Math.sin(0.50 * wt);
+      y += 0.400 * Math.exp(-t / 0.5) * Math.sin(1.00 * wt);
+      y += 0.200 * Math.exp(-t / 0.25) * Math.sin(2.00 * wt);
+      y += 0.100 * Math.exp(-t / 0.1) * Math.sin(4.00 * wt);
+      y += 2.0 * y * Math.exp(-22.0 * t); // attack
+      return y *= 1 - x * x * x * x;
+    }
+
+    bell4(t, w, x) {
+      var wt, y;
+      wt = w * t;
+      y = 0;
+      y += 0.100 * Math.exp(-t / 0.9) * Math.sin(0.62 * wt);
+      y += 0.200 * Math.exp(-t / 0.7) * Math.sin(0.86 * wt);
+      y += 0.500 * Math.exp(-t / 0.5) * Math.sin(1.00 * wt);
+      y += 0.200 * Math.exp(-t / 0.2) * Math.sin(1.27 * wt);
+      y += 0.100 * Math.exp(-t / 0.1) * Math.sin(1.40 * wt);
+      y += 2.0 * y * Math.exp(-22.0 * t); // attack
+      return y *= 1 - x * x * x * x;
+    }
+
+    /*
+     0000000  000000000  00000000   000  000   000   0000000 
+    000          000     000   000  000  0000  000  000      
+    0000000      000     0000000    000  000 0 000  000  0000
+     000     000     000   000  000  000  0000  000   000
+    0000000      000     000   000  000  000   000   0000000 
+    */
+    string(t, w, x) {
+      var f, wt, y;
+      wt = w * t;
+      f = Math.sin(0.251 * wt) * Math.PI;
+      y = 0.5 * Math.sin(1 * wt + f) * Math.exp(-1.0 * x);
+      y += 0.4 * Math.sin(2 * wt + f) * Math.exp(-2.0 * x);
+      y += 0.3 * Math.sin(4 * wt + f) * Math.exp(-3.0 * x);
+      y += 0.2 * Math.sin(8 * wt + f) * Math.exp(-4.0 * x);
+      y += 1.0 * y * Math.exp(-10.0 * t); // attack
+      y *= 1 - x * x * x * x; // fade out
+      return y;
+    }
+
+    /*
+    00000000  000      000   000  000000000  00000000
+    000       000      000   000     000     000     
+    000000    000      000   000     000     0000000 
+    000       000      000   000     000     000     
+    000       0000000   0000000      000     00000000
+    */
+    flute(t, w, x) {
+      var d, y;
+      y = 6.0 * x * Math.exp(-2 * x) * Math.sin(w * t);
+      y *= 0.6 + 0.4 * Math.sin(32 * (1 - x));
+      d = 0.87;
+      if (x > d) {
+        y *= Math.pow(1 - (x - d) / (1 - d), 2); // decay
+      }
+      return y;
+    }
+
+  };
+
+  /*
+   0000000  000   000  0000000  
+  000       0000  000  000   000
+  0000000   000 0 000  000   000
+       000  000  0000  000   000
+  0000000   000   000  0000000  
+  */
+  Snd = class Snd {
+    constructor() {
+      this.volDown = this.volDown.bind(this);
+      this.volUp = this.volUp.bind(this);
+      this.vol = 0;
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this.gain = this.ctx.createGain();
+      this.gain.connect(this.ctx.destination);
+      
+      // piano1, piano2, piano3, piano4, piano5
+      // string1, string2, flute
+      // bell1, bell2, bell3, bell4
+      // organ1, organ2, organ3, organ4
+      this.synt = {};
+      this.setSynt({
+        usr: {
+          instrument: 'bell3'
+        },
+        bot: {
+          instrument: 'bell3'
+        },
+        menu: {
+          instrument: 'string'
+        }
+      });
+    }
+
+    play(o, n, c = 0) {
+      return this.synt[o].playNote((function() {
+        switch (n) {
+          case 'draw':
+            return 3 * 12 + c;
+          case 'send':
+            return 4 * 12 + c;
+          case 'won':
+            return 5 * 12 + c;
+          case 'lost':
+            return 6 * 12 + c;
+        }
+      })());
+    }
+
+    setSynt(synt) {
+      var k, results, v;
+      log('setSynt', synt);
+      results = [];
+      for (k in synt) {
+        v = synt[k];
+        results.push(this.synt[k] = new Synt(v, this.ctx, this.gain));
+      }
+      return results;
+    }
+
+    volDown() {
+      if (this.vol < 0.0625) {
+        return this.volume(0);
+      } else {
+        return this.volume(this.vol / 2);
+      }
+    }
+
+    volUp() {
+      return this.volume(clamp(0.03125, 1, this.vol * 2));
+    }
+
+    volume(vol1) {
+      this.vol = vol1;
+      menuVolume(this.vol);
+      this.gain.gain.value = this.vol;
+      return pref.set('volume', this.vol);
+    }
+
+  };
+
+  /*
+   0000000   00000000   00000000   000   000
+  000        000   000  000   000  000   000
+  000  0000  0000000    00000000   000000000
+  000   000  000   000  000        000   000
+   0000000   000   000  000        000   000
+  */
+  Grph = class Grph {
+    constructor() {
+      this.maxSmpl = 300;
+      this.smpls = {
+        bot: [],
+        usr: []
+      };
+      this.g = add('g');
+      this.p = {
+        bot: app(this.g, 'path', {
+          class: 'grph bot'
+        }),
+        usr: app(this.g, 'path', {
+          class: 'grph usr'
+        })
+      };
+    }
+
+    sample() {
+      var d, j, len, len1, o, r2y, ref, ref1, results, s, smpl, u, x;
+      r2y = function(r) {
+        return (0.5 - r) * 60;
+      };
+      s = world.units.bot + world.units.usr;
+      ref = ['usr', 'bot'];
+      results = [];
+      for (j = 0, len = ref.length; j < len; j++) {
+        o = ref[j];
+        this.smpls[o].push(world.units[o] / s);
+        if (this.smpls[o].length > this.maxSmpl) {
+          this.smpls[o].shift();
+        }
+        d = `M 0 ${r2y(this.smpls[o][0])} `;
+        x = 0;
+        ref1 = this.smpls[o];
+        for (u = 0, len1 = ref1.length; u < len1; u++) {
+          smpl = ref1[u];
+          x += 1;
+          d += `L ${x} ${r2y(smpl)} `;
+        }
+        results.push(this.p[o].setAttribute('d', d));
+      }
+      return results;
+    }
+
+    plot() {
+      return this.g.setAttribute('transform', `translate(${screen.size.x - 60 - this.smpls.bot.length}, 47)`);
+    }
+
+  };
+
+  win = window;
+
+  main = document.getElementById('main');
+
+  pref = new Pref;
+
+  //  0000000  000   000   0000000   
+  // 000       000   000  000        
+  // 0000000    000 000   000  0000  
+  //      000     000     000   000  
+  // 0000000       0       0000000   
+  svg = main.children[0];
+
+  opt = function(e, o) {
+    var j, k, len, ref;
+    if (o != null) {
+      ref = Object.keys(o);
+      for (j = 0, len = ref.length; j < len; j++) {
+        k = ref[j];
+        e.setAttribute(k, o[k]);
+      }
+    }
+    return e;
+  };
+
+  app = function(p, t, o) {
+    var e;
+    e = document.createElementNS("http://www.w3.org/2000/svg", t);
+    p.appendChild(opt(e, o));
+    return e;
+  };
+
+  add = function(t, o) {
+    return app(svg, t, o);
+  };
+
+  arc = function(a, b) {
+    var d, i, j, n, q, r, ref, s, v;
+    r = a.angle(b);
+    n = parseInt(r / 0.087);
+    s = u2s(a);
+    d = `M ${s.x} ${s.y}`;
+    q = Quat.axis(a.cross(b).norm(), r / (n + 1));
+    v = a.cpy();
+    for (i = j = 0, ref = n; (0 <= ref ? j < ref : j > ref); i = 0 <= ref ? ++j : --j) {
+      v = q.rotate(v);
+      s = u2s(v);
+      d += ` L ${s.x} ${s.y}`;
+    }
+    s = u2s(b);
+    d += ` L ${s.x} ${s.y}`;
+    return d;
+  };
+
+  brightness = function(d) {
+    return d.c.style.opacity = (d.depth() + 0.3) / 1.3;
+  };
+
+  //  0000000   0000000  00000000   00000000  00000000  000   000  
+  // 000       000       000   000  000       000       0000  000  
+  // 0000000   000       0000000    0000000   0000000   000 0 000  
+  //      000  000       000   000  000       000       000  0000  
+  // 0000000    0000000  000   000  00000000  00000000  000   000  
+  screen = {
+    size: vec(),
+    center: vec(),
+    radius: 0
+  };
+
+  u2s = function(a) {
+    return vec(screen.center.x + a.x * screen.radius, screen.center.y + a.y * screen.radius);
+  };
+
+  s2u = function(a) {
+    a = a.minus(screen.center).times(1 / screen.radius);
+    if (a.length() > 1) {
+      return a.norm();
+    } else {
+      return vec(a.x, a.y, Math.sqrt(1 - a.x * a.x - a.y * a.y));
+    }
+  };
+
+  rotq = function(a) {
+    return Quat.axis(vec(0, 1, 0), a.x / screen.radius).mul(Quat.axis(vec(1, 0, 0), a.y / -screen.radius));
+  };
+
+  
+  // 00     00  00000000  000   000  000   000  
+  // 000   000  000       0000  000  000   000  
+  // 000000000  0000000   000 0 000  000   000  
+  // 000 0 000  000       000  0000  000   000  
+  // 000   000  00000000  000   000   0000000   
+  menu = {
+    left: main.children[1],
+    right: main.children[2],
+    buttons: {}
+  };
+
+  // 000   000   0000000   00000000   000      0000000    
+  // 000 0 000  000   000  000   000  000      000   000  
+  // 000000000  000   000  0000000    000      000   000  
+  // 000   000  000   000  000   000  000      000   000  
+  // 00     00   0000000   000   000  0000000  0000000    
+  world = {
+    pause: 0,
+    update: 0,
+    time: 0,
+    delta: 0,
+    ticks: 0,
+    dots: [],
+    sparks: [],
+    lines: [],
+    tmpline: {},
+    units: {},
+    userRot: new Quat,
+    inertRot: new Quat,
+    circle: null,
+    rotSum: vec()
+  };
+
+  
+  // 00     00   0000000   000   000   0000000  00000000  
+  // 000   000  000   000  000   000  000       000       
+  // 000000000  000   000  000   000  0000000   0000000   
+  // 000 0 000  000   000  000   000       000  000       
+  // 000   000   0000000    0000000   0000000   00000000  
+  mouse = {
+    pos: vec(),
+    drag: null,
+    hover: null,
+    touch: null
+  };
+
+  bot = null;
+
+  snd = new Snd;
+
+  grph = null;
+
+  levelList = [
+    {
+      
+      // 00     00  00000000  000   000  000   000  
+      // 000   000  000       0000  000  000   000  
+      // 000000000  0000000   000 0 000  000   000  
+      // 000 0 000  000       000  0000  000   000  
+      // 000   000  00000000  000   000   0000000   
+      name: 'menu',
+      addUnit: 0,
+      msg: "KONNEKT",
+      hint: ["WELCOME TO",
+    "A JS13K 2018 GAME\nBY MONSTERKODI"],
+      dots: [
+        {
+          v: [0,
+        0,
+        1],
+          b: 0,
+          l: 'TUTORIAL 1'
+        },
+        {
+          v: [0,
+        -0.3,
+        0.8],
+          l: 'TUTORIAL 2'
+        },
+        {
+          v: [-0.3,
+        -0.58,
+        0.75],
+          l: 'TUTORIAL 3'
+        },
+        {
+          v: [0.3,
+        -0.58,
+        0.75],
+          l: 'TUTORIAL 4'
+        },
+        {
+          v: [0,
+        -0.82,
+        0.58],
+          l: 'TUTORIAL 5'
+        },
+        {
+          v: [0,
+        -0.97,
+        0.19],
+          l: 'EASY'
+        },
+        {
+          v: [-1,
+        0,
+        0],
+          l: 'CIRCLES'
+        },
+        {
+          v: [-1,
+        0,
+        -1],
+          l: 'RING'
+        },
+        {
+          v: [-1,
+        1,
+        -1],
+          l: 'CLOSE'
+        },
+        {
+          v: [1,
+        1,
+        -1],
+          l: 'POLES'
+        },
+        {
+          v: [1,
+        0,
+        -1],
+          l: 'UNFAIR'
+        },
+        {
+          v: [1,
+        0,
+        -0.01],
+          l: 'FRENZY'
+        },
+        {
+          v: [0,
+        1,
+        0],
+          l: 'RANDOM'
+        }
+      ],
+      lines: [[0,
+    1],
+    [1,
+    2],
+    [1,
+    3],
+    [3,
+    4],
+    [2,
+    4],
+    [4,
+    5],
+    [5,
+    6],
+    [6,
+    7],
+    [7,
+    8],
+    [8,
+    9],
+    [9,
+    10],
+    [10,
+    11],
+    [11,
+    12]]
+    },
+    {
+      // 000000000  000   000  000000000   0000000   00000000   000   0000000   000               000  
+      //    000     000   000     000     000   000  000   000  000  000   000  000             00000  
+      //    000     000   000     000     000   000  0000000    000  000000000  000            000000  
+      //    000     000   000     000     000   000  000   000  000  000   000  000               000  
+      //    000      0000000      000      0000000   000   000  000  000   000  0000000           000  
+      name: 'TUTORIAL 1',
+      synt: {
+        usr: {
+          instrument: 'piano1'
+        },
+        bot: {
+          instrument: 'piano2'
+        }
+      },
+      addUnit: 0,
+      hint: ["You control the blue nodes. Your task is to fight the red nodes.\n\nNodes contain processes. The more processes, the stronger the node.",
+    "Attack the infected red node by dragging from your blue node.\n\nEach time you attack, half of the available processes will be sent."],
+      dots: [
+        {
+          v: [-0.5,
+        0,
+        1],
+          u: 360
+        },
+        {
+          v: [0.5,
+        0,
+        1],
+          b: 270
+        }
+      ]
+    },
+    {
+      // 000000000  000   000  000000000   0000000   00000000   000   0000000   000            00000   
+      //    000     000   000     000     000   000  000   000  000  000   000  000               000  
+      //    000     000   000     000     000   000  0000000    000  000000000  000              000   
+      //    000     000   000     000     000   000  000   000  000  000   000  000             000    
+      //    000      0000000      000      0000000   000   000  000  000   000  0000000        000000  
+      name: 'TUTORIAL 2',
+      synt: {
+        usr: {
+          instrument: 'bell1'
+        },
+        bot: {
+          instrument: 'bell2'
+        }
+      },
+      addUnit: 0,
+      hint: ["To win, you need to deactivate all red nodes.\n\nIt is OK to leave inactive red nodes!",
+    "This level contains 4 inactive and 2 active red nodes.\n\nDrag anywhere to rotate the sphere."],
+      dots: [
+        {
+          v: [0,
+        0,
+        1],
+          u: 90
+        },
+        {
+          v: [-0.2,
+        0,
+        1],
+          b: 11
+        },
+        {
+          v: [0.2,
+        0,
+        1],
+          b: 11
+        },
+        {
+          v: [0,
+        0.2,
+        1],
+          b: 11
+        },
+        {
+          v: [0,
+        -0.2,
+        1],
+          b: 11
+        },
+        {
+          v: [-0.1,
+        0.1,
+        -1],
+          b: 15
+        },
+        {
+          v: [0.1,
+        0.1,
+        -1],
+          b: 15
+        }
+      ]
+    },
+    {
+      // 000000000  000   000  000000000   0000000   00000000   000   0000000   000            000000   
+      //    000     000   000     000     000   000  000   000  000  000   000  000                000  
+      //    000     000   000     000     000   000  0000000    000  000000000  000              0000   
+      //    000     000   000     000     000   000  000   000  000  000   000  000                000  
+      //    000      0000000      000      0000000   000   000  000  000   000  0000000        000000   
+      name: 'TUTORIAL 3',
+      synt: {
+        usr: {
+          instrument: 'bell3'
+        },
+        bot: {
+          instrument: 'bell4'
+        }
+      },
+      addUnit: 0,
+      hint: ["Sending to nodes that you don't own isn't free.\n\nThe farther away the target node, the higher the cost.",
+    "The cost factor is multiplied by the number of processes sent. The more you send, the more you loose.\n\nNotice that you need more attacks -- and loose more processes -- when defeating the far node."],
+      dots: [
+        {
+          v: [-0.9,
+        -0.2,
+        0.1],
+          u: 360
+        },
+        {
+          v: [-0.9,
+        0.2,
+        0.1],
+          u: 360
+        },
+        {
+          v: [-0.9,
+        0,
+        0.1],
+          b: 180
+        },
+        {
+          v: [0.9,
+        0,
+        0.1],
+          b: 180
+        }
+      ]
+    },
+    {
+      name: 'TUTORIAL 4',
+      addUnit: 0,
+      hint: ["Sending processes to nodes you own cost nothing.\n\nIt is efficient to occupy far away neutral nodes with few processes first and send larger groups later.",
+    "Contrary to common believe,\nyou can't send processes between already connected nodes."],
+      dots: [
+        {
+          v: [-0.7,
+        0.1,
+        0.3],
+          u: 180
+        },
+        {
+          v: [-0.7,
+        -0.1,
+        0.3],
+          u: 12
+        },
+        {
+          v: [0.7,
+        -0.1,
+        0.3]
+        },
+        {
+          v: [0.7,
+        0.1,
+        0.3],
+          b: 135
+        }
+      ],
+      lines: [[0,
+    1]]
+    },
+    {
+      
+      // 000000000  000   000  000000000   0000000   00000000   000   0000000   000            0000000   
+      //    000     000   000     000     000   000  000   000  000  000   000  000            000       
+      //    000     000   000     000     000   000  0000000    000  000000000  000            0000000   
+      //    000     000   000     000     000   000  000   000  000  000   000  000                 000  
+      //    000      0000000      000      0000000   000   000  000  000   000  0000000        0000000   
+      name: 'TUTORIAL 5',
+      addUnit: 3,
+      hint: ["New processes are spawned regularily in active nodes.\n\nAlways make sure you have more active nodes than the opponent.",
+    "You can see the number of active nodes in the top right corner.\n\nThe graph plots the relative amount of available processes."],
+      dots: [
+        {
+          v: [0,
+        0,
+        1],
+          u: 60
+        },
+        {
+          v: [-0.5,
+        -0.5,
+        1]
+        },
+        {
+          v: [0.5,
+        -0.5,
+        1]
+        },
+        {
+          v: [-0.5,
+        0.5,
+        1]
+        },
+        {
+          v: [0.5,
+        0.5,
+        1]
+        },
+        {
+          v: [-1,
+        0,
+        1]
+        },
+        {
+          v: [1,
+        0,
+        1]
+        },
+        {
+          v: [0,
+        -1,
+        1]
+        },
+        {
+          v: [0,
+        1,
+        1]
+        },
+        {
+          v: [-1,
+        -1,
+        0],
+          b: 12
+        },
+        {
+          v: [1,
+        -1,
+        0],
+          b: 12
+        },
+        {
+          v: [-1,
+        1,
+        0],
+          b: 12
+        },
+        {
+          v: [1,
+        1,
+        0],
+          b: 12
+        },
+        {
+          v: [0,
+        0,
+        -1],
+          b: 12
+        }
+      ]
+    },
+    {
+      // 00000000   0000000    0000000  000   000  
+      // 000       000   000  000        000 000   
+      // 0000000   000000000  0000000     00000    
+      // 000       000   000       000     000     
+      // 00000000  000   000  0000000      000     
+      name: 'EASY',
+      synt: {
+        usr: {
+          instrument: 'organ1'
+        },
+        bot: {
+          instrument: 'organ2'
+        }
+      },
+      addUnit: 2,
+      hint: ["Be prepared, the red nodes are fighting back!",
+    "You learned the basics, remove the virus from the system!"],
+      dots: [
+        {
+          v: [0,
+        0,
+        1],
+          u: 60
+        },
+        {
+          v: [-0.5,
+        -0.5,
+        1]
+        },
+        {
+          v: [0.5,
+        -0.5,
+        1]
+        },
+        {
+          v: [-0.5,
+        0.5,
+        1]
+        },
+        {
+          v: [0.5,
+        0.5,
+        1]
+        },
+        {
+          v: [-1,
+        0,
+        1]
+        },
+        {
+          v: [1,
+        0,
+        1]
+        },
+        {
+          v: [0,
+        -1,
+        1]
+        },
+        {
+          v: [0,
+        1,
+        1]
+        },
+        {
+          v: [-1,
+        -1,
+        -1]
+        },
+        {
+          v: [1,
+        -1,
+        -1]
+        },
+        {
+          v: [-1,
+        1,
+        -1]
+        },
+        {
+          v: [1,
+        1,
+        -1]
+        },
+        {
+          v: [0,
+        0,
+        -1],
+          b: 60
+        }
+      ],
+      bot: {
+        speed: 8,
+        i: -1
+      }
+    },
+    {
+      
+      //  0000000  000  00000000    0000000  000      00000000   0000000  
+      // 000       000  000   000  000       000      000       000       
+      // 000       000  0000000    000       000      0000000   0000000   
+      // 000       000  000   000  000       000      000            000  
+      //  0000000  000  000   000   0000000  0000000  00000000  0000000   
+      name: 'CIRCLES',
+      synt: {
+        usr: {
+          instrument: 'string'
+        },
+        bot: {
+          instrument: 'flute'
+        }
+      },
+      addUnit: 4,
+      dots: [
+        {
+          v: [0,
+        0,
+        1],
+          u: 60
+        },
+        {
+          c: [8,
+        45,
+        0,
+        0]
+        },
+        {
+          c: [8,
+        45,
+        0,
+        180]
+        },
+        {
+          c: [16,
+        90,
+        0,
+        0]
+        },
+        {
+          v: [0,
+        0,
+        -1],
+          b: 60
+        }
+      ],
+      bot: {
+        speed: 7,
+        i: -1
+      }
+    },
+    {
+      // 00000000   000  000   000   0000000   
+      // 000   000  000  0000  000  000        
+      // 0000000    000  000 0 000  000  0000  
+      // 000   000  000  000  0000  000   000  
+      // 000   000  000  000   000   0000000   
+      name: 'RING',
+      synt: {
+        usr: {
+          instrument: 'bell1'
+        },
+        bot: {
+          instrument: 'bell2'
+        }
+      },
+      addUnit: 4,
+      dots: [
+        {
+          v: [0,
+        0,
+        1],
+          u: 60
+        },
+        {
+          c: [5,
+        90,
+        -30,
+        90,
+        30]
+        },
+        {
+          c: [5,
+        -90,
+        -30,
+        90,
+        30]
+        },
+        {
+          c: [5,
+        70,
+        -120,
+        90,
+        30]
+        },
+        {
+          c: [5,
+        70,
+        -60,
+        -90,
+        30]
+        },
+        {
+          v: [0,
+        0,
+        -1],
+          b: 60
+        }
+      ],
+      bot: {
+        speed: 5,
+        i: -1
+      }
+    },
+    {
+      //  0000000  000       0000000    0000000  00000000  
+      // 000       000      000   000  000       000       
+      // 000       000      000   000  0000000   0000000   
+      // 000       000      000   000       000  000       
+      //  0000000  0000000   0000000   0000000   00000000  
+      name: 'CLOSE',
+      addUnit: 4,
+      dots: [
+        {
+          v: [-0.4,
+        0,
+        1],
+          u: 60
+        },
+        {
+          c: [11,
+        90,
+        -15,
+        45,
+        15]
+        },
+        {
+          c: [11,
+        -90,
+        -15,
+        45,
+        15]
+        },
+        {
+          v: [0.4,
+        0,
+        1],
+          b: 60
+        }
+      ],
+      bot: {
+        speed: 4,
+        i: -1
+      }
+    },
+    {
+      // 00000000    0000000   000      00000000   0000000  
+      // 000   000  000   000  000      000       000       
+      // 00000000   000   000  000      0000000   0000000   
+      // 000        000   000  000      000            000  
+      // 000         0000000   0000000  00000000  0000000   
+      name: 'POLES',
+      synt: {
+        usr: {
+          instrument: 'bell3'
+        },
+        bot: {
+          instrument: 'bell4'
+        }
+      },
+      addUnit: 4,
+      dots: [
+        {
+          v: [0,
+        0,
+        1],
+          u: 60
+        },
+        {
+          c: [8,
+        20,
+        90,
+        0]
+        },
+        {
+          c: [8,
+        20,
+        -90,
+        0]
+        },
+        {
+          c: [8,
+        20,
+        0,
+        90]
+        },
+        {
+          c: [8,
+        20,
+        0,
+        -90]
+        },
+        {
+          v: [0,
+        0,
+        -1],
+          b: 60
+        }
+      ],
+      bot: {
+        speed: 6,
+        i: -1
+      }
+    },
+    {
+      
+      // 000   000  000   000  00000000   0000000   000  00000000   
+      // 000   000  0000  000  000       000   000  000  000   000  
+      // 000   000  000 0 000  000000    000000000  000  0000000    
+      // 000   000  000  0000  000       000   000  000  000   000  
+      //  0000000   000   000  000       000   000  000  000   000  
+      name: 'UNFAIR',
+      addUnit: 6,
+      dots: [
+        {
+          v: [0,
+        0,
+        1],
+          u: 90
+        },
+        {
+          c: [4,
+        15,
+        180,
+        0]
+        },
+        {
+          c: [8,
+        30,
+        180,
+        0]
+        },
+        {
+          c: [16,
+        45,
+        180,
+        0]
+        },
+        {
+          v: [0,
+        0,
+        -1],
+          b: 360
+        }
+      ],
+      bot: {
+        speed: 3,
+        i: -1
+      }
+    },
+    {
+      // 00000000  00000000   00000000  000   000  0000000  000   000  
+      // 000       000   000  000       0000  000     000    000 000   
+      // 000000    0000000    0000000   000 0 000    000      00000    
+      // 000       000   000  000       000  0000   000        000     
+      // 000       000   000  00000000  000   000  0000000     000     
+      name: 'FRENZY',
+      addUnit: 12,
+      dots: [
+        {
+          v: [0,
+        0,
+        1],
+          u: 180
+        },
+        {
+          c: [4,
+        22.5,
+        0,
+        0]
+        },
+        {
+          c: [4,
+        22.5,
+        180,
+        0]
+        },
+        {
+          c: [4,
+        22.5,
+        90,
+        0]
+        },
+        {
+          c: [4,
+        22.5,
+        -90,
+        0]
+        },
+        {
+          c: [6,
+        40,
+        0,
+        0]
+        },
+        {
+          c: [6,
+        40,
+        180,
+        0]
+        },
+        {
+          c: [6,
+        40,
+        90,
+        0]
+        },
+        {
+          c: [6,
+        40,
+        -90,
+        0]
+        },
+        {
+          v: [0,
+        0,
+        -1],
+          b: 12
+        },
+        {
+          v: [1,
+        0,
+        0],
+          b: 12
+        },
+        {
+          v: [-1,
+        0,
+        0],
+          b: 12
+        },
+        {
+          v: [0,
+        1,
+        0],
+          b: 12
+        },
+        {
+          v: [0,
+        -1,
+        0],
+          b: 12
+        }
+      ],
+      bot: {
+        speed: 2,
+        i: -1
+      }
+    }
+  ];
+
+  levels = {};
+
+  for (index = j = 0, ref = levelList.length; (0 <= ref ? j < ref : j > ref); index = 0 <= ref ? ++j : --j) {
+    level = levelList[index];
+    level.index = index;
+    levels[level.name] = level;
+  }
+
+  /*
+   0000000  00000000   00000000   000   000
+  000       000   000  000   000  000  000 
+  0000000   00000000   0000000    0000000  
+   000  000        000   000  000  000 
+  0000000   000        000   000  000   000
+  */
+  Sprk = class Sprk {
+    constructor(dot1, units) {
+      var i, ref1, u;
+      this.dot = dot1;
+      this.units = Math.ceil(units / 3);
+      this.sparks = [];
+      this.ticks = 0;
+      this.g = add('g');
+      for (i = u = 0, ref1 = this.units; (0 <= ref1 ? u < ref1 : u > ref1); i = 0 <= ref1 ? ++u : --u) {
+        this.sparks.push(app(this.g, 'circle', {
+          class: `spark ${this.dot.own}`,
+          r: screen.radius / 60
+        }));
+      }
+      world.sparks.push(this);
+    }
+
+    upd() {
+      var angle, f, i1, len, len1, mu, p, ref1, ref2, results, s, u, v, z;
+      p = u2s(this.dot.v);
+      this.g.setAttribute('transform', `translate(${p.x}, ${p.y})`);
+      z = 0.5 + this.dot.depth() * 0.5;
+      if (!world.pause) {
+        this.ticks += 1;
+      }
+      mu = Math.max(5 * this.units, 120);
+      if (this.ticks > mu) {
+        ref1 = this.sparks;
+        for (u = 0, len = ref1.length; u < len; u++) {
+          s = ref1[u];
+          s.remove();
+        }
+        return world.sparks.splice(world.sparks.indexOf(this), 1);
+      } else {
+        angle = 0;
+        f = this.ticks / mu;
+        ref2 = this.sparks;
+        results = [];
+        for (i1 = 0, len1 = ref2.length; i1 < len1; i1++) {
+          s = ref2[i1];
+          angle += 2 * Math.PI / this.sparks.length;
+          v = vec(Math.cos(angle), Math.sin(angle));
+          v.mul(this.dot.radius() + mu * f * z * screen.radius / 500);
+          s.setAttribute('r', (0.5 + 0.5 * f) * z * screen.radius / 60);
+          s.setAttribute('opacity', Math.cos(f * Math.PI));
+          s.setAttribute('cx', v.x);
+          results.push(s.setAttribute('cy', v.y));
+        }
+        return results;
+      }
+    }
+
+  };
+
+  /*
+  0000000     0000000   000000000
+  000   000  000   000     000   
+  000   000  000   000     000   
+  000   000  000   000     000   
+  0000000     0000000      000   
+  */
+  Dot = class Dot {
+    constructor(v1) {
+      this.onTimer = this.onTimer.bind(this);
+      this.v = v1;
+      this.minUnits = 12; // minimum number of units to allow linking other dots 
+      this.own = '';
+      this.units = 0;
+      this.targetUnits = 0;
+      this.n = [];
+      this.i = world.dots.length;
+      this.v.norm();
+      this.g = add('g');
+      this.c = app(this.g, 'circle', {
+        class: 'dot',
+        id: this.i,
+        cx: 0,
+        cy: 0,
+        r: 1.3
+      });
+      this.c.dot = this;
+      world.dots.push(this);
+    }
+
+    
+    // 000000000  000  00     00  00000000  00000000   
+    //    000     000  000   000  000       000   000  
+    //    000     000  000000000  0000000   0000000    
+    //    000     000  000 0 000  000       000   000  
+    //    000     000  000   000  00000000  000   000  
+    startTimer(units, snd1 = 'send', cst = 0) {
+      this.snd = snd1;
+      this.cst = cst;
+      this.targetUnits += units;
+      clearInterval(this.timer);
+      return this.timer = setInterval(this.onTimer, 160);
+    }
+
+    onTimer() {
+      if (world.pause) {
+        return;
+      }
+      snd.play(this.own, this.snd, this.cst);
+      if (this.targetUnits > this.units) {
+        this.units += 10;
+        if (this.units >= this.targetUnits) {
+          this.units = this.targetUnits;
+        }
+      } else {
+        this.units -= 10;
+        if (this.units <= this.targetUnits) {
+          this.units = this.targetUnits;
+        }
+      }
+      if (this.units === this.targetUnits) {
+        clearInterval(this.timer);
+        delete this.timer;
+      }
+      if (this.units === 0) {
+        this.unlink();
+      }
+      return this.drawPie();
+    }
+
+    setUnits(units1) {
+      this.units = units1;
+      this.targetUnits = this.units;
+      return this.drawPie();
+    }
+
+    addUnit(num = 1) {
+      if (num !== 0) {
+        this.targetUnits = clamp(0, 360, this.targetUnits + num);
+        this.units = clamp(0, 360, this.units + num);
+        return this.drawPie();
+      }
+    }
+
+    drawPie() {
+      var c, f, s;
+      if (!this.pie) {
+        this.pie = app(this.g, 'path', {
+          class: 'pie'
+        });
+      }
+      
+      //A rx ry x-axis-rotation large-arc-flag sweep-flag x y
+      if (this.units < this.minUnits) {
+        this.c.classList.remove('linked');
+        s = 0;
+        c = -1;
+        return this.pie.setAttribute('d', "M0,-1 A1,1 0 1,0 0,1 A1,1 0 0,0 0,-1 z");
+      } else {
+        this.c.classList.add('linked');
+        s = Math.sin(d2r(this.units));
+        c = -Math.cos(d2r(this.units));
+        f = this.units <= 180 && '1,0' || '0,0';
+        return this.pie.setAttribute('d', `M0,0 L0,-1 A1,1 0 ${f} ${s},${c} z`);
+      }
+    }
+
+    depth() {
+      return (this.v.z + 1) / 2;
+    }
+
+    zdepth() {
+      return this.depth();
+    }
+
+    radius() {
+      return ((this.depth() + 0.3) / 1.5) * screen.radius / 20;
+    }
+
+    raise() {
+      return this.g.parentNode.appendChild(this.g);
+    }
+
+    closest() {
+      return world.dots.slice(0).sort((a, d) => {
+        return this.dist(a) - this.dist(d);
+      }).slice(1);
+    }
+
+    dist(d) {
+      return this.v.angle(d.v);
+    }
+
+    neutralize() {
+      this.own = '';
+      this.units = 0;
+      this.targetUnits = 0;
+      this.c.classList.remove('bot');
+      return this.c.classList.remove('usr');
+    }
+
+    linked(d) {
+      return (indexOf.call(this.n, d) >= 0) || (indexOf.call(d.n, this) >= 0);
+    }
+
+    unlink() {
+      world.lines = world.lines.filter((l) => {
+        if (l.s === this || l.e === this) {
+          l.e.n = l.e.n.filter((n) => {
+            return n !== this;
+          });
+          l.s.n = l.s.n.filter((n) => {
+            return n !== this;
+          });
+          l.c.remove();
+          return false;
+        } else {
+          return true;
+        }
+      });
+      this.n = [];
+      return this.neutralize();
+    }
+
+    
+    // 000      000  000   000  000   000  
+    // 000      000  0000  000  000  000   
+    // 000      000  000 0 000  0000000    
+    // 000      000  000  0000  000  000   
+    // 0000000  000  000   000  000   000  
+    link(d) {
+      var cost, lnk, ou, sound, tooMuch, uh, ul;
+      if (d === this || this.targetUnits < this.minUnits || this.linked(d)) {
+        return;
+      }
+      cost = 0.5 * r2d(this.dist(d)) / 180;
+      if (d.own === this.own) {
+        cost = 0;
+      }
+      ul = Math.ceil(this.targetUnits * 0.5);
+      uh = Math.ceil(ul * (1 - cost));
+      // log "ul #{ul} uh #{uh} #{cost}"
+      if (cost === 0) {
+        if (d.targetUnits + uh > 360) {
+          tooMuch = d.targetUnits + uh - 360;
+          uh -= tooMuch;
+          ul -= tooMuch;
+        }
+      }
+      ou = uh;
+      if (d.own !== '' && d.own !== this.own) {
+        ou = -uh;
+        new Sprk(this, ul);
+        if (uh === d.targetUnits) {
+          sound = 'draw';
+          new Sprk(d, uh);
+        } else if (uh < d.targetUnits) {
+          sound = 'lost';
+          new Sprk(d, uh);
+        } else {
+          sound = 'won';
+          lnk = 1;
+          ou = uh - d.targetUnits;
+          new Sprk(d, d.targetUnits);
+          d.unlink();
+          d.setOwn(this.own);
+        }
+      } else {
+        lnk = 1;
+        sound = 'send';
+        d.setOwn(this.own);
+        new Sprk(d, Math.floor(ul * cost));
+      }
+      this.startTimer(-ul, sound, parseInt(cost * 18));
+      d.startTimer(ou);
+      if (lnk) {
+        world.update = 1;
+        return new Line(this, d);
+      } else {
+        return null;
+      }
+    }
+
+    setOwn(own) {
+      this.own = own;
+      this.c.classList.toggle('bot', this.own === 'bot');
+      return this.c.classList.toggle('usr', this.own === 'usr');
+    }
+
+    
+    //  0000000  00000000  000   000  0000000    
+    // 000       000       0000  000  000   000  
+    // 0000000   0000000   000 0 000  000   000  
+    //      000  000       000  0000  000   000  
+    // 0000000   00000000  000   000  0000000    
+    send(v) {
+      var clos, dist, target, tgt;
+      delTmpl('usr');
+      if (mouse.touch && mouse.touch !== this && !this.linked(mouse.touch)) {
+        tgt = mouse.touch;
+      } else {
+        dist = function(d) {
+          return v.angle(d.v);
+        };
+        clos = world.dots.slice(0).sort((a, b) => {
+          return dist(a) - dist(b);
+        });
+        tgt = clos[0];
+      }
+      if (tgt !== this && !this.linked(tgt)) {
+        target = tgt;
+      } else {
+        target = {
+          v: v,
+          depth: function() {
+            return (v.z + 1) / 2;
+          }
+        };
+      }
+      return world.tmpline.usr = new Line(this, target, true);
+    }
+
+    rot(q) {
+      return this.v = q.rotate(this.v);
+    }
+
+    upd() {
+      var p;
+      p = u2s(this.v);
+      this.g.setAttribute('transform', `translate(${p.x},${p.y}) scale(${this.radius()})`);
+      return brightness(this);
+    }
+
+  };
+
+  /*
+  0000000     0000000   000000000
+  000   000  000   000     000   
+  0000000    000   000     000   
+  000   000  000   000     000   
+  0000000     0000000      000   
+  */
+  Bot = class Bot {
+    constructor() {
+      this.speed = 4;
+      this.tsum = 0;
+    }
+
+    tmpl(d, c) {
+      delTmpl('bot');
+      world.tmpline.bot = new Line(d, c, true);
+      return world.update = 1;
+    }
+
+    anim(dta) {
+      var c, cls, d, dots, len, u;
+      this.tsum += dta;
+      if (this.tsum > this.speed * 60) {
+        dots = world.dots.filter(function(d) {
+          return d.own === 'bot';
+        });
+        this.tsum = 0;
+        if (dots.length === 0) {
+          return;
+        }
+        dots.sort(function(a, b) {
+          return b.units - a.units;
+        });
+        d = dots[0];
+        cls = d.closest();
+        for (u = 0, len = cls.length; u < len; u++) {
+          c = cls[u];
+          if (!d.linked(c)) {
+            d.link(c);
+            this.tmpl(d, c);
+            return;
+          }
+        }
+      }
+    }
+
+  };
+
+  /*
+  000      000  000   000  00000000  
+  000      000  0000  000  000       
+  000      000  000 0 000  0000000   
+  000      000  000  0000  000       
+  0000000  000  000   000  00000000  
+  */
+  Line = class Line {
+    constructor(s1, e1, tmp) {
+      var ref1, ref2;
+      this.s = s1;
+      this.e = e1;
+      this.c = add('path', {
+        class: 'line'
+      });
+      if (this.s.own) {
+        this.c.classList.add(this.s.own);
+      }
+      if (tmp) {
+        this.c.classList.add('tmp');
+        this.s.c.classList.add('src');
+      } else {
+        if ((ref1 = this.s.n) != null) {
+          ref1.push(this.e);
+        }
+        if ((ref2 = this.e.n) != null) {
+          ref2.push(this.s);
+        }
+        world.lines.push(this);
+      }
+    }
+
+    del() {
+      this.s.c.classList.remove('src');
+      return this.c.remove();
+    }
+
+    depth() {
+      return (this.s.depth() + this.e.depth()) / 2;
+    }
+
+    zdepth() {
+      return Math.min(this.s.depth(), this.e.depth()) - 0.001;
+    }
+
+    raise() {
+      var ref1;
+      return (ref1 = this.c.parentNode) != null ? ref1.appendChild(this.c) : void 0;
+    }
+
+    upd() {
+      this.c.setAttribute('d', arc(this.s.v, this.e.v));
+      brightness(this);
+      return this.c.style.strokeWidth = ((this.depth() + 0.3) / 1.5) * screen.radius / 50;
+    }
+
+  };
+
+  // 000       0000000    0000000   0000000        000      00000000  000   000  00000000  000        
+  // 000      000   000  000   000  000   000      000      000       000   000  000       000        
+  // 000      000   000  000000000  000   000      000      0000000    000 000   0000000   000        
+  // 000      000   000  000   000  000   000      000      000          000     000       000        
+  // 0000000   0000000   000   000  0000000        0000000  00000000      0      00000000  0000000    
+  loadNext = function() {
+    var ref1, ref2;
+    if (world.winner === 'usr') {
+      return loadLevel((ref1 = (ref2 = levelList[world.level.index + 1]) != null ? ref2.name : void 0) != null ? ref1 : 'menu');
+    } else if (world.level.index < 6) {
+      return forceLevel(world.level.name);
+    } else {
+      return loadLevel('menu');
+    }
+  };
+
+  forceLevel = function(level) {
+    world.level = null;
+    return loadLevel(level);
+  };
+
+  loadLevel = function(level) {
+    svg.innerHTML = '';
+    menu.bot.innerHTML = '';
+    menu.usr.innerHTML = '';
+    world.circle = add('circle', {
+      class: 'world',
+      cx: screen.center.x,
+      cy: screen.center.y,
+      r: screen.radius
+    });
+    world.circle.v = vec();
+    world.ticks = 0;
+    world.dots = [];
+    world.lines = [];
+    world.update = 1;
+    world.winner = null;
+    mouse.drag = null;
+    bot = null;
+    delTmpl('usr');
+    delTmpl('bot');
+    hint();
+    popup();
+    if (level === 'menu') {
+      showMenu('menu');
+    } else {
+      showMenu('game');
+    }
+    switch (level) {
+      case 'RANDOM':
+        randomLevel();
+        break;
+      default:
+        initLevel(level);
+    }
+    if (world.pause) {
+      return pause();
+    }
+  };
+
+  
+  // 000  000   000  000  000000000        000      00000000  000   000  00000000  000    
+  // 000  0000  000  000     000           000      000       000   000  000       000    
+  // 000  000 0 000  000     000           000      0000000    000 000   0000000   000    
+  // 000  000  0000  000     000           000      000          000     000       000    
+  // 000  000   000  000     000           0000000  00000000      0      00000000  0000000
+  initLevel = function(name) {
+    var a, d, dot, i, i1, j1, l, len, len1, q, ref1, ref2, ref3, ref4, ref5, ref6, u, v;
+    if (((ref1 = world.level) != null ? ref1.name : void 0) === name) {
+      return;
+    }
+    level = levels[name];
+    ref2 = level.dots;
+    for (u = 0, len = ref2.length; u < len; u++) {
+      d = ref2[u];
+      if (d.c) {
+        for (i = i1 = 0, ref3 = d.c[0]; (0 <= ref3 ? i1 < ref3 : i1 > ref3); i = 0 <= ref3 ? ++i1 : --i1) {
+          q = Quat.axis(vec(0, 1, 0), d2r(d.c[2])).mul(Quat.axis(vec(1, 0, 0), d2r(d.c[3])));
+          v = vec(0, 0, 1);
+          v = Quat.axis(vec(1, 0, 0), d2r(d.c[1])).rotate(v);
+          a = (ref4 = d.c[4]) != null ? ref4 : 360 / d.c[0];
+          v = Quat.axis(vec(0, 0, 1), d2r(i * a)).rotate(v);
+          v = q.rotate(v);
+          dot = new Dot(v);
+        }
+        continue;
+      }
+      dot = new Dot(vec(d.v[0], d.v[1], d.v[2]));
+      if (d.u) {
+        dot.setOwn('usr');
+        dot.setUnits(d.u);
+      }
+      if (d.b) {
+        dot.setOwn('bot');
+        dot.setUnits(d.b);
+      }
+      if (name === 'menu') {
+        dot.level = d.l;
+        if (pref.get(d.l)) {
+          dot.setOwn('usr');
+        }
+      }
+    }
+    ref6 = (ref5 = level.lines) != null ? ref5 : [];
+    for (j1 = 0, len1 = ref6.length; j1 < len1; j1++) {
+      l = ref6[j1];
+      new Line(world.dots[l[0]], world.dots[l[1]]);
+    }
+    if (level.bot) {
+      l = world.dots.length;
+      i = (l + level.bot.i) % l;
+      bot = new Bot(world.dots[i]);
+      if (level.bot.speed) {
+        bot.speed = level.bot.speed;
+      }
+    }
+    if (level.msg) {
+      msg(level.msg);
+    } else {
+      msg();
+    }
+    if (level.hint) {
+      hint(level.hint[0], level.hint[1]);
+    } else {
+      hint('', level.name);
+    }
+    if (name === 'menu') {
+      delete level.msg;
+      delete level.hint;
+    }
+    world.level = level;
+    world.addUnit = level.addUnit;
+    if (level.synt) {
+      snd.setSynt(level.synt);
+    }
+    if (world.addUnit) {
+      return grph = new Grph;
+    }
+  };
+
+  
+  // 00000000    0000000   000   000  0000000     0000000   00     00  
+  // 000   000  000   000  0000  000  000   000  000   000  000   000  
+  // 0000000    000000000  000 0 000  000   000  000   000  000000000  
+  // 000   000  000   000  000  0000  000   000  000   000  000 0 000  
+  // 000   000  000   000  000   000  0000000     0000000   000   000  
+  randomLevel = function() {
+    var b, d, ed, i, i1, j1, len, nodes, ok, ref1, ref2, ref3, ref4, u, v;
+    grph = new Grph;
+    world.addUnit = 1;
+    world.level = {
+      name: 'RANDOM'
+    };
+    d = new Dot(vec(0, 0, 1));
+    d.setOwn('usr');
+    nodes = (ref1 = world.nodes) != null ? ref1 : 2 * parseInt(randr(8, 20));
+    for (i = u = 1, ref2 = nodes / 2; (1 <= ref2 ? u < ref2 : u > ref2); i = 1 <= ref2 ? ++u : --u) {
+      v = vec(randr(-1, 1), randr(-1, 1), randr(0, 1));
+      v.norm();
+      while (true) {
+        ok = true;
+        ref3 = world.dots;
+        for (i1 = 0, len = ref3.length; i1 < len; i1++) {
+          ed = ref3[i1];
+          if (v.angle(ed.v) < 0.2) {
+            v = vec(randr(-1, 1), randr(-1, 1), randr(0, 1));
+            v.norm();
+            ok = false;
+            break;
+          }
+        }
+        if (ok) {
+          break;
+        }
+      }
+      new Dot(v);
+    }
+    for (i = j1 = ref4 = nodes / 2 - 1; (ref4 <= 0 ? j1 <= 0 : j1 >= 0); i = ref4 <= 0 ? ++j1 : --j1) {
+      new Dot(world.dots[i].v.times(-1).add(vec(0.01)));
+    }
+    b = world.dots[world.dots.length - 1];
+    b.setOwn('bot');
+    bot = new Bot();
+    b.startTimer(360);
+    return d.startTimer(360);
+  };
+
+  menuVolume = function(vol) {
+    var ref1;
+    snd.play('menu', 'draw');
+    return (ref1 = menu.buttons.VOL) != null ? ref1.innerHTML = `${Math.floor(vol * 100) / 100}` : void 0;
+  };
+
+  menus = {
+    menu: [
+      {
+        OPTIONS: {
+          click: function() {
+            return showMenu('options');
+          }
+        }
+      }
+    ],
+    game: [
+      {
+        PAUSE: {
+          click: function() {
+            return pause();
+          }
+        }
+      }
+    ],
+    options: [
+      {
+        OPTIONS: {
+          click: function() {
+            return showMenu('menu');
+          }
+        }
+      },
+      {
+        FULLSCREEN: {
+          click: function() {
+            return toggleFullscreen();
+          }
+        }
+      },
+      {
+        VOLUME: {
+          class: 'choice',
+          values: ['-',
+      'VOL',
+      '+'],
+          cb: function(c) {
+            if (c === '+') {
+              return snd.volUp();
+            } else if (c === '-') {
+              return snd.volDown();
+            }
+          }
+        }
+      },
+      {
+        ABOUT: {
+          click: function() {
+            return menuAbout();
+          }
+        }
+      },
+      {
+        'RESET PROGRESS': {
+          click: function() {
+            pref.clear();
+            return forceLevel('menu');
+          }
+        }
+      }
+    ],
+    pause: [
+      {
+        UNPAUSE: {
+          click: function() {
+            return pause();
+          }
+        }
+      },
+      {
+        MENU: {
+          click: function() {
+            return loadLevel('menu');
+          }
+        }
+      },
+      {
+        RESET: {
+          click: function() {
+            return forceLevel(world.level.name);
+          }
+        }
+      },
+      {
+        FULLSCREEN: {
+          click: function() {
+            return toggleFullscreen();
+          }
+        }
+      },
+      {
+        VOLUME: {
+          class: 'choice',
+          values: ['-',
+      'VOL',
+      '+'],
+          cb: function(c) {
+            if (c === '+') {
+              return snd.volUp();
+            } else if (c === '-') {
+              return snd.volDown();
+            }
+          }
+        }
+      }
+    ],
+    next: [
+      {
+        NEXT: {
+          click: function() {
+            return loadNext();
+          }
+        }
+      },
+      {
+        MENU: {
+          click: function() {
+            return loadLevel('menu');
+          }
+        }
+      },
+      {
+        RESET: {
+          click: function() {
+            return forceLevel(world.level.name);
+          }
+        }
+      }
+    ]
+  };
+
+  //  0000000  000   000   0000000   000   000  
+  // 000       000   000  000   000  000 0 000  
+  // 0000000   000000000  000   000  000000000  
+  //      000  000   000  000   000  000   000  
+  // 0000000   000   000   0000000   00     00  
+  showMenu = function(m) {
+    var info, item, k, len, mnu, name, ref1, results, u, v;
+    snd.play('menu', 'send');
+    ref1 = menu.buttons;
+    for (k in ref1) {
+      v = ref1[k];
+      v.remove();
+      delete menu.buttons[k];
+    }
+    mnu = menus[m];
+    results = [];
+    for (u = 0, len = mnu.length; u < len; u++) {
+      item = mnu[u];
+      name = Object.keys(item)[0];
+      info = item[name];
+      if (info.class == null) {
+        info.class = 'button';
+      }
+      if (info.text == null) {
+        info.text = name;
+      }
+      if (info.class === 'choice') {
+        results.push(choice(info));
+      } else {
+        results.push(menu.buttons[name] = elem('div', info, menu.left));
+      }
+    }
+    return results;
+  };
+
+  
+  // 00000000  000   000  000      000       0000000   0000000  00000000   00000000  00000000  000   000  
+  // 000       000   000  000      000      000       000       000   000  000       000       0000  000  
+  // 000000    000   000  000      000      0000000   000       0000000    0000000   0000000   000 0 000  
+  // 000       000   000  000      000           000  000       000   000  000       000       000  0000  
+  // 000        0000000   0000000  0000000  0000000    0000000  000   000  00000000  00000000  000   000  
+  isFullscreen = function() {
+    return document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+  };
+
+  toggleFullscreen = function() {
+    var efs, el, rfs;
+    snd.play('menu', 'draw');
+    if (isFullscreen()) {
+      efs = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen;
+      return efs.call(document);
+    } else {
+      el = document.documentElement;
+      rfs = el.requestFullscreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+      return rfs.call(el);
+    }
+  };
+
+  // 00000000  000      00000000  00     00  
+  // 000       000      000       000   000  
+  // 0000000   000      0000000   000000000  
+  // 000       000      000       000 0 000  
+  // 00000000  0000000  00000000  000   000  
+  elem = function(t, o, p) {
+    var e;
+    // log "#{t} #{p}", o
+    e = document.createElement(t);
+    if (o.text != null) {
+      e.innerText = o.text;
+    }
+    if (o.html != null) {
+      e.innerHTML = o.html;
+    }
+    if (o.click != null) {
+      e.addEventListener('click', o.click);
+    }
+    p.appendChild(opt(e, o));
+    return e;
+  };
+
+  
+  // 00     00   0000000   0000000   
+  // 000   000  000       000        
+  // 000000000  0000000   000  0000  
+  // 000 0 000       000  000   000  
+  // 000   000  0000000    0000000   
+  msg = function(t, cls = '') {
+    var ref1;
+    if ((ref1 = screen.msg) != null) {
+      ref1.remove();
+    }
+    if (t) {
+      screen.msg = elem('div', {
+        class: `msg ${cls}`,
+        text: t
+      }, main);
+      return fontSize('msg', screen.msg);
+    }
+  };
+
+  
+  // 000   000  000  000   000  000000000  
+  // 000   000  000  0000  000     000     
+  // 000000000  000  000 0 000     000     
+  // 000   000  000  000  0000     000     
+  // 000   000  000  000   000     000     
+  hint = function(t1, t2) {
+    var ref1, ref2;
+    if ((ref1 = screen.hint1) != null) {
+      ref1.remove();
+    }
+    if ((ref2 = screen.hint2) != null) {
+      ref2.remove();
+    }
+    if (t1) {
+      screen.hint1 = elem('div', {
+        class: "hint1",
+        text: t1
+      }, main);
+      fontSize('hint', screen.hint1);
+    }
+    if (t2) {
+      screen.hint2 = elem('div', {
+        class: "hint2",
+        text: t2
+      }, main);
+      return fontSize('hint', screen.hint2);
+    }
+  };
+
+  
+  // 00000000    0000000   00000000   000   000  00000000   
+  // 000   000  000   000  000   000  000   000  000   000  
+  // 00000000   000   000  00000000   000   000  00000000   
+  // 000        000   000  000        000   000  000        
+  // 000         0000000   000         0000000   000        
+  popup = function(p, t) {
+    var ref1, s;
+    if ((ref1 = screen.popup) != null) {
+      ref1.remove();
+    }
+    if (t) {
+      s = u2s(p);
+      screen.popup = elem('div', {
+        class: "popup",
+        text: t
+      }, main);
+      screen.popup.style.left = `${s.x}px`;
+      screen.popup.style.top = `${s.y - screen.radius / 7}px`;
+      return fontSize('hint', screen.popup);
+    }
+  };
+
+  
+  //  0000000  000   000   0000000   000   0000000  00000000  
+  // 000       000   000  000   000  000  000       000       
+  // 000       000000000  000   000  000  000       0000000   
+  // 000       000   000  000   000  000  000       000       
+  //  0000000  000   000   0000000   000   0000000  00000000  
+  choice = function(info) {
+    var c, chose, len, ref1, results, u;
+    menu.buttons[info.text] = elem('div', info, menu.left);
+    ref1 = info.values;
+    results = [];
+    for (u = 0, len = ref1.length; u < len; u++) {
+      c = ref1[u];
+      chose = function(info, c) {
+        return function(e) {
+          var i1, len1, ref2, value;
+          ref2 = info.values;
+          for (i1 = 0, len1 = ref2.length; i1 < len1; i1++) {
+            value = ref2[i1];
+            menu.buttons[value].classList.remove('highlight');
+          }
+          if (c !== '+' && c !== '-' && c !== 'VOL') {
+            e.target.classList.add('highlight');
+          }
+          if (c !== 'VOL') {
+            info.cb(c);
+          }
+          return e.stopPropagation();
+        };
+      };
+      menu.buttons[c] = elem('div', {
+        class: 'button',
+        text: c,
+        click: chose(info, c)
+      }, menu.left);
+      if (c === 'VOL') {
+        results.push(menuVolume(snd.vol));
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
+  };
+
+  //  0000000   0000000     0000000   000   000  000000000  
+  // 000   000  000   000  000   000  000   000     000     
+  // 000000000  0000000    000   000  000   000     000     
+  // 000   000  000   000  000   000  000   000     000     
+  // 000   000  0000000     0000000    0000000      000     
+  menuAbout = function() {
+    var closeAbout, ref1, t;
+    snd.play('menu', 'draw');
+    if ((ref1 = menu.about) != null) {
+      ref1.remove();
+    }
+    closeAbout = function(e) {
+      menu.about.remove();
+      delete menu.about;
+      return snd.play('menu', 'won');
+    };
+    t = '';
+    t += "<div class='konnekt'>KONNEKT</div> is my entry for the <a href='https://js13kgames.com/' target='_blank'>js13kgames</a> 2018 competition.<br>";
+    t += "Thanks to the organizers!<p>";
+    t += "The sources are available at ";
+    t += "<a href='https://github.com/monsterkodi/konnekt' target='_blank'>github</a>.<p>";
+    t += "I hope you had some fun playing the game.<div class='version'>v1.0</div>";
+    return menu.about = elem('div', {
+      class: 'about',
+      html: t,
+      click: closeAbout
+    }, main);
+  };
+
+  menu.usr = elem('div', {
+    class: 'button usr'
+  }, menu.right);
+
+  menu.bot = elem('div', {
+    class: 'button bot'
+  }, menu.right);
+
+  /*
+  00     00   0000000   000  000   000    
+  000   000  000   000  000  0000  000    
+  000000000  000000000  000  000 0 000    
+  000 0 000  000   000  000  000  0000    
+  000   000  000   000  000  000   000    
+  */
+
+  //  0000000  000  0000000  00000000  
+  // 000       000     000   000       
+  // 0000000   000    000    0000000   
+  //      000  000   000     000       
+  // 0000000   000  0000000  00000000  
+  fontSize = function(name, e) {
+    var s;
+    if (e) {
+      s = (function() {
+        switch (name) {
+          case 'msg':
+            return screen.radius / 6;
+          case 'hint':
+            return screen.radius / 20;
+          case 'menu':
+            return Math.max(12, screen.radius / 30);
+        }
+      })();
+      return e.style.fontSize = `${parseInt(s)}px`;
+    }
+  };
+
+  size = function() {
+    var br;
+    br = svg.getBoundingClientRect();
+    screen.size = vec(br.width, br.height);
+    screen.center = vec(br.width / 2, br.height / 2);
+    screen.radius = 0.4 * Math.min(screen.size.x, screen.size.y);
+    world.update = 1;
+    if (world.circle) {
+      world.circle.setAttribute('cx', screen.center.x);
+      world.circle.setAttribute('cy', screen.center.y);
+      world.circle.setAttribute('r', screen.radius);
+    }
+    fontSize('hint', screen.hint1);
+    fontSize('hint', screen.hint2);
+    fontSize('msg', screen.msg);
+    fontSize('menu', menu.left);
+    return grph != null ? grph.plot() : void 0;
+  };
+
+  size();
+
+  // 00     00   0000000   000   000  00000000  
+  // 000   000  000   000  000   000  000       
+  // 000000000  000   000   000 000   0000000   
+  // 000 0 000  000   000     000     000       
+  // 000   000   0000000       0      00000000  
+  win.addEventListener('mousemove', function(e) {
+    var d, len, ref1, u;
+    mouse.pos = vec(e.clientX, e.clientY);
+    if (mouse.drag === 'rot') {
+      world.userRot = rotq(vec(e.movementX, e.movementY));
+      ref1 = world.dots;
+      for (u = 0, len = ref1.length; u < len; u++) {
+        d = ref1[u];
+        d.rot(world.userRot);
+        world.update = 1;
+      }
+      return world.rotSum.add(vec(e.movementX / 10, e.movementY / 10));
+    } else if (mouse.drag) {
+      switch (e.buttons) {
+        case 1:
+          mouse.drag.send(s2u(mouse.pos));
+          return world.update = 1;
+        case 2:
+          mouse.drag.v = s2u(mouse.pos);
+          return world.update = 1;
+      }
+    }
+  });
+
+  
+  // 0000000     0000000   000   000  000   000  
+  // 000   000  000   000  000 0 000  0000  000  
+  // 000   000  000   000  000000000  000 0 000  
+  // 000   000  000   000  000   000  000  0000  
+  // 0000000     0000000   00     00  000   000  
+  delTmpl = function(o) {
+    var ref1;
+    if ((ref1 = world.tmpline[o]) != null) {
+      ref1.del();
+    }
+    return delete world.tmpline[o];
+  };
+
+  win.addEventListener('mousedown', function(e) {
+    delTmpl('usr');
+    world.inertRot = new Quat;
+    hint();
+    popup();
+    if (world.level.name === 'menu') {
+      msg();
+    } else if (world.winner && e.buttons === 1 && !e.target.classList.contains('button')) {
+      loadNext();
+      return;
+    }
+    if (mouse.drag = e.target.dot) {
+      if (world.level.name === 'menu') {
+        if (e.buttons === 1) {
+          loadLevel(mouse.drag.level);
+        }
+        return;
+      }
+      if (!world.pause) {
+        if (mouse.drag.c.classList.contains('linked')) {
+          if (mouse.drag.own !== 'bot') {
+            return;
+          }
+        }
+      }
+    }
+    return mouse.drag = 'rot';
+  });
+
+  // 000   000  00000000   
+  // 000   000  000   000  
+  // 000   000  00000000   
+  // 000   000  000        
+  //  0000000   000        
+  win.addEventListener('mouseup', function(e) {
+    if (mouse.drag === 'rot') {
+      world.inertRot = rotq(world.rotSum);
+    } else if (mouse.drag) {
+      world.inertRot = new Quat;
+      if (world.tmpline.usr && world.tmpline.usr.e.c) {
+        mouse.drag.link(world.tmpline.usr.e);
+      }
+      mouse.drag.c.classList.remove('src');
+    }
+    delTmpl('usr');
+    mouse.drag = null;
+    return world.update = 1;
+  });
+
+  
+  // 000   000   0000000   000   000  00000000  00000000     
+  // 000   000  000   000  000   000  000       000   000    
+  // 000000000  000   000   000 000   0000000   0000000      
+  // 000   000  000   000     000     000       000   000    
+  // 000   000   0000000       0      00000000  000   000    
+  svg.addEventListener('mouseover', function(e) {
+    var d;
+    mouse.touch = e.target.dot;
+    if (mouse.drag) {
+      return;
+    }
+    if (d = e.target.dot) {
+      if (!world.pause && d.c.classList.contains('linked') && d.own === 'usr' || world.level.name === 'menu') {
+        if (d !== mouse.hover) {
+          setHover(d);
+          d.c.classList.add('src');
+          if (world.level.name === 'menu') {
+            msg();
+            hint();
+            return popup(d.v, d.level);
+          }
+        }
+      } else if (mouse.hover) {
+        return setHover();
+      }
+    }
+  });
+
+  setHover = function(a, r = 1) {
+    var ref1;
+    if (r) {
+      if ((ref1 = mouse.hover) != null) {
+        ref1.c.classList.remove('src');
+      }
+    }
+    return mouse.hover = a;
+  };
+
+  svg.addEventListener('mouseout', function(e) {
+    var d;
+    mouse.touch = null;
+    if (d = e.target.dot) {
+      if (d === mouse.hover) {
+        setHover(null, d !== mouse.drag);
+        if (world.level.name === 'menu') {
+          return popup();
+        }
+      }
+    }
+  });
+
+  
+  // 000   000  00000000  000   000  
+  // 000  000   000        000 000   
+  // 0000000    0000000     00000    
+  // 000  000   000          000     
+  // 000   000  00000000     000     
+  win.addEventListener('keydown', function(e) {
+    switch (e.keyCode) {
+      case 32:
+      case 27:
+        return pause(); // space, esc
+    }
+  });
+
+  // else log 'keydown', e
+
+  // 00000000    0000000   000   000   0000000  00000000  
+  // 000   000  000   000  000   000  000       000       
+  // 00000000   000000000  000   000  0000000   0000000   
+  // 000        000   000  000   000       000  000       
+  // 000        000   000   0000000   0000000   00000000  
+  pause = function(m = 'PAUSED', cls = '', status = 'pause') {
+    var ref1;
+    if (((ref1 = world.level) != null ? ref1.name : void 0) === 'menu') {
+      return;
+    }
+    world.pause = !world.pause;
+    showMenu(world.winner && 'next' || world.pause && 'pause' || 'game');
+    return msg(world.pause && m || '', cls);
+  };
+
+  visibility = function() {
+    if (document.hidden && !world.pause) {
+      return pause();
+    }
+  };
+
+  //  0000000   000   000  000  00     00  
+  // 000   000  0000  000  000  000   000  
+  // 000000000  000 0 000  000  000000000  
+  // 000   000  000  0000  000  000 0 000  
+  // 000   000  000   000  000  000   000  
+  anim = function(now) {
+    var d, dots, i1, items, j1, k1, l, l1, len, len1, len2, len3, len4, len5, m1, nextTick, ow, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, spark, u, x;
+    nextTick = function() {
+      win.requestAnimationFrame(anim);
+      return now;
+    };
+    world.delta = (now - world.time) / 16;
+    world.time = now;
+    if (!world.level) {
+      return nextTick();
+    }
+    if (!world.pause && world.level.name !== 'menu') {
+      world.ticks += 1;
+      if (world.ticks % 60 === 0) {
+        ref1 = ['usr', 'bot'];
+        for (u = 0, len = ref1.length; u < len; u++) {
+          ow = ref1[u];
+          dots = world.dots.filter(function(d) {
+            return d.own === ow;
+          });
+          world.units[ow] = dots.reduce((function(a, b) {
+            return a + b.targetUnits;
+          }), 0);
+          dots = dots.filter(function(d) {
+            return d.units >= d.minUnits;
+          });
+          menu[ow].innerHTML = `&#9679; ${dots.length}`;
+          if (dots.length === 0) {
+            if (ow === 'bot') {
+              world.winner = 'usr';
+              pause('ONLINE!', 'usr');
+              pref.set(world.level.name, true);
+            } else {
+              world.winner = 'bot';
+              pause('OFFLINE!', 'bot');
+            }
+            if ((ref2 = screen.hint) != null) {
+              ref2.remove();
+            }
+            world.update = 1;
+            return nextTick();
+          }
+          for (i1 = 0, len1 = dots.length; i1 < len1; i1++) {
+            d = dots[i1];
+            d.addUnit(world.addUnit);
+          }
+        }
+        if (grph != null) {
+          grph.sample();
+        }
+        if (grph != null) {
+          grph.plot();
+        }
+      }
+      if (bot != null) {
+        bot.anim(world.delta);
+      }
+    }
+    world.rotSum.mul(0.8);
+    world.inertRot.slerp(new Quat(), 0.01 * world.delta);
+    if (!world.inertRot.zero() || world.update) {
+      ref3 = world.dots;
+      for (j1 = 0, len2 = ref3.length; j1 < len2; j1++) {
+        d = ref3[j1];
+        d.rot(world.inertRot);
+        d.upd();
+      }
+      ref4 = world.lines;
+      for (k1 = 0, len3 = ref4.length; k1 < len3; k1++) {
+        l = ref4[k1];
+        l.upd();
+      }
+      if ((ref5 = world.tmpline.usr) != null) {
+        ref5.upd();
+      }
+      if ((ref6 = world.tmpline.bot) != null) {
+        ref6.upd();
+      }
+      items = world.lines.concat(world.dots);
+      if (world.tmpline.usr != null) {
+        items.push(world.tmpline.usr);
+      }
+      if (world.tmpline.bot != null) {
+        items.push(world.tmpline.bot);
+      }
+      ref7 = items.sort(function(a, b) {
+        return a.zdepth() - b.zdepth();
+      });
+      for (l1 = 0, len4 = ref7.length; l1 < len4; l1++) {
+        x = ref7[l1];
+        x.raise();
+      }
+      world.update = 0;
+    }
+    ref8 = world.sparks.slice(0);
+    for (m1 = 0, len5 = ref8.length; m1 < len5; m1++) {
+      spark = ref8[m1];
+      spark.upd();
+    }
+    return nextTick();
+  };
+
+  win.addEventListener('resize', size);
+
+  win.addEventListener('contextmenu', function(e) {
+    return e.preventDefault();
+  });
+
+  document.addEventListener('visibilitychange', visibility, false);
+
+  pref.load();
+
+  win.requestAnimationFrame(anim);
+
+}).call(this);
