@@ -1021,7 +1021,7 @@
       addUnit: 0,
       msg: "KONNEKT",
       hint: ["WELCOME TO",
-    "A JS13K 2018 GAME\nBY MONSTERKODI"],
+    "a JS13K 2018 GAME\nBY MONSTERKODI"],
       dots: [
         {
           v: [0,
