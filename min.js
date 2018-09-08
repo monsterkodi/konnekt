@@ -27,7 +27,7 @@
   000   000  000      000   000  000   000  
    0000000   0000000   0000000   0000000    
   */
-  var Bot, Dot, Grph, Line, Pref, Quat, Snd, Sprk, Synt, Vec, add, anim, app, arc, bot, brightness, choice, clamp, d2r, delTmpl, elem, fontSize, forceLevel, grph, hint, index, initLevel, isFullscreen, j, level, levelList, levels, loadLevel, loadNext, log, main, menu, menuAbout, menuVolume, menus, mouse, msg, onDown, onMove, onUp, opt, pause, popup, pref, r2d, randomLevel, randr, ref, rotq, s2u, screen, setHover, showMenu, size, snd, svg, toggleFullscreen, u2s, vec, visibility, win, world, zero,
+  var Bot, Dot, Grph, Line, Pref, Quat, Snd, Sprk, Synt, Vec, add, anim, app, arc, bot, brightness, choice, clamp, d2r, dbg, delTmpl, elem, fontSize, forceLevel, grph, hint, index, initLevel, isFullscreen, j, level, levelList, levels, loadLevel, loadNext, log, main, menu, menuAbout, menuVolume, menus, mouse, msg, onDown, onMove, onUp, opt, pause, popup, pref, r2d, randomLevel, randr, ref, rotq, s2u, screen, setHover, showMenu, size, snd, svg, toggleFullscreen, u2s, vec, visibility, win, world, zero,
     indexOf = [].indexOf;
 
   randr = function(a, b) {
@@ -2923,6 +2923,10 @@
   // 000000000  000   000   000 000   0000000   
   // 000 0 000  000   000     000     000       
   // 000   000   0000000       0      00000000  
+  dbg = elem('div', {
+    class: 'dbg'
+  }, main);
+
   onMove = function(e) {
     var d, len, moved, ref1, u;
     if (e.touches != null) {
@@ -2933,6 +2937,7 @@
       mouse.pos = vec(e.clientX, e.clientY);
       moved = vec(e.movementX, e.movementY);
     }
+    dbg.innerHTML = `moved: ${moved.x} ${moved.y}`;
     if (mouse.drag === 'rot') {
       world.userRot = rotq(moved);
       ref1 = world.dots;
@@ -2947,13 +2952,13 @@
         case 1:
           mouse.drag.send(s2u(mouse.pos));
           return world.update = 1;
-        case 2:
-          mouse.drag.v = s2u(mouse.pos);
-          return world.update = 1;
       }
     }
   };
 
+  // when 2
+  // mouse.drag.v = s2u mouse.pos
+  // world.update = 1
   win.addEventListener('mousemove', onMove);
 
   win.addEventListener('touchmove', onMove);
@@ -2998,7 +3003,8 @@
         }
       }
     }
-    return mouse.drag = 'rot';
+    mouse.drag = 'rot';
+    return e.preventDefault();
   };
 
   win.addEventListener('mousedown', onDown);
