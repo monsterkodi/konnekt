@@ -2978,10 +2978,12 @@
   };
 
   onDown = function(e) {
+    var ref1, ref2;
     delTmpl('usr');
     world.inertRot = new Quat;
     hint();
     popup();
+    dbg.innerHTML = `down: ${((ref1 = e.touches) != null ? ref1[0].clientX : void 0)} ${((ref2 = e.touches) != null ? ref2[0].clientY : void 0)}`;
     if (world.level.name === 'menu') {
       msg();
     } else if (world.winner && e.buttons === 1 && !e.target.classList.contains('button')) {
@@ -3003,8 +3005,7 @@
         }
       }
     }
-    mouse.drag = 'rot';
-    return e.preventDefault();
+    return mouse.drag = 'rot';
   };
 
   win.addEventListener('mousedown', onDown);
