@@ -27,7 +27,7 @@
   000   000  000      000   000  000   000  
    0000000   0000000   0000000   0000000    
   */
-  var Bot, Dot, Grph, Line, Pref, Quat, Snd, Sprk, Synt, Vec, add, anim, app, arc, bot, brightness, choice, clamp, d2r, delTmpl, elem, fontSize, forceLevel, grph, hint, index, initLevel, isFullscreen, j, level, levelList, levels, loadLevel, loadNext, log, main, menu, menuAbout, menuVolume, menus, mouse, msg, opt, pause, popup, pref, r2d, randomLevel, randr, ref, rotq, s2u, screen, setHover, showMenu, size, snd, svg, toggleFullscreen, u2s, vec, visibility, win, world, zero,
+  var Bot, Dot, Grph, Line, Pref, Quat, Snd, Sprk, Synt, Vec, add, anim, app, arc, bot, brightness, choice, clamp, d2r, delTmpl, elem, fontSize, forceLevel, grph, hint, index, initLevel, isFullscreen, j, level, levelList, levels, loadLevel, loadNext, log, main, menu, menuAbout, menuVolume, menus, mouse, msg, onDown, onMove, onUp, opt, pause, popup, pref, r2d, randomLevel, randr, ref, rotq, s2u, screen, setHover, showMenu, size, snd, svg, toggleFullscreen, u2s, vec, visibility, win, world, zero,
     indexOf = [].indexOf;
 
   randr = function(a, b) {
@@ -745,6 +745,7 @@
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
       this.gain = this.ctx.createGain();
       this.gain.connect(this.ctx.destination);
+      this.gain.gain.value = this.vol;
       
       // piano1, piano2, piano3, piano4, piano5
       // string1, string2, flute
@@ -2922,18 +2923,25 @@
   // 000000000  000   000   000 000   0000000   
   // 000 0 000  000   000     000     000       
   // 000   000   0000000       0      00000000  
-  win.addEventListener('mousemove', function(e) {
-    var d, len, ref1, u;
-    mouse.pos = vec(e.clientX, e.clientY);
+  onMove = function(e) {
+    var d, len, moved, ref1, u;
+    if (e.touches != null) {
+      mouse.pos = vec(e.touches[0].clientX, e.touches[0].clientY);
+      moved = vec(e.touches[0].movementX, e.touches[0].movementY);
+      e.preventDefault();
+    } else {
+      mouse.pos = vec(e.clientX, e.clientY);
+      moved = vec(e.movementX, e.movementY);
+    }
     if (mouse.drag === 'rot') {
-      world.userRot = rotq(vec(e.movementX, e.movementY));
+      world.userRot = rotq(moved);
       ref1 = world.dots;
       for (u = 0, len = ref1.length; u < len; u++) {
         d = ref1[u];
         d.rot(world.userRot);
         world.update = 1;
       }
-      return world.rotSum.add(vec(e.movementX / 10, e.movementY / 10));
+      return world.rotSum.add(moved.times(1 / 10));
     } else if (mouse.drag) {
       switch (e.buttons) {
         case 1:
@@ -2944,7 +2952,11 @@
           return world.update = 1;
       }
     }
-  });
+  };
+
+  win.addEventListener('mousemove', onMove);
+
+  win.addEventListener('touchmove', onMove);
 
   
   // 0000000     0000000   000   000  000   000  
@@ -2960,7 +2972,7 @@
     return delete world.tmpline[o];
   };
 
-  win.addEventListener('mousedown', function(e) {
+  onDown = function(e) {
     delTmpl('usr');
     world.inertRot = new Quat;
     hint();
@@ -2987,14 +2999,19 @@
       }
     }
     return mouse.drag = 'rot';
-  });
+  };
 
+  win.addEventListener('mousedown', onDown);
+
+  win.addEventListener('touchstart', onDown);
+
+  
   // 000   000  00000000   
   // 000   000  000   000  
   // 000   000  00000000   
   // 000   000  000        
   //  0000000   000        
-  win.addEventListener('mouseup', function(e) {
+  onUp = function(e) {
     if (mouse.drag === 'rot') {
       world.inertRot = rotq(world.rotSum);
     } else if (mouse.drag) {
@@ -3007,7 +3024,11 @@
     delTmpl('usr');
     mouse.drag = null;
     return world.update = 1;
-  });
+  };
+
+  win.addEventListener('mouseup', onUp);
+
+  win.addEventListener('touchend', onUp);
 
   
   // 000   000   0000000   000   000  00000000  00000000     
