@@ -27,7 +27,7 @@
   000   000  000      000   000  000   000  
    0000000   0000000   0000000   0000000    
   */
-  var Bot, Dot, Grph, Line, Pref, Quat, Snd, Sprk, Synt, Vec, add, anim, app, arc, bot, brightness, choice, clamp, d2r, dbg, delTmpl, elem, fontSize, forceLevel, grph, hint, index, initLevel, isFullscreen, j, level, levelList, levels, loadLevel, loadNext, log, main, menu, menuAbout, menuVolume, menus, mouse, msg, onDown, onMove, onUp, opt, pause, popup, pref, r2d, randomLevel, randr, ref, rotq, s2u, screen, setHover, showMenu, size, snd, svg, toggleFullscreen, u2s, vec, visibility, win, world, zero,
+  var Bot, Dot, Grph, Line, Pref, Quat, Snd, Sprk, Synt, Vec, add, anim, app, arc, bot, brightness, choice, clamp, d2r, dbg, delTmpl, elem, fontSize, forceLevel, grph, hint, index, initLevel, isFullscreen, j, level, levelList, levels, loadLevel, loadNext, log, main, menu, menuAbout, menuVolume, menus, mouse, msg, onDown, onMove, onTouch, onUp, opt, pause, popup, pref, r2d, randomLevel, randr, ref, rotq, s2u, screen, setHover, showMenu, size, snd, svg, toggleFullscreen, u2s, vec, visibility, win, world, zero,
     indexOf = [].indexOf;
 
   randr = function(a, b) {
@@ -2929,14 +2929,14 @@
 
   onMove = function(e) {
     var d, len, moved, ref1, u;
-    if (e.touches != null) {
-      mouse.pos = vec(e.touches[0].clientX, e.touches[0].clientY);
-      moved = vec(e.touches[0].movementX, e.touches[0].movementY);
-      e.preventDefault();
-    } else {
-      mouse.pos = vec(e.clientX, e.clientY);
-      moved = vec(e.movementX, e.movementY);
-    }
+    
+    // if e.touches?
+    // mouse.pos = vec e.touches[0].clientX, e.touches[0].clientY
+    // moved = vec e.touches[0].movementX, e.touches[0].movementY
+    // e.preventDefault()
+    // else
+    mouse.pos = vec(e.clientX, e.clientY);
+    moved = vec(e.movementX, e.movementY);
     dbg.innerHTML = `moved: ${moved.x} ${moved.y}`;
     if (mouse.drag === 'rot') {
       world.userRot = rotq(moved);
@@ -2961,7 +2961,7 @@
   // world.update = 1
   win.addEventListener('mousemove', onMove);
 
-  win.addEventListener('touchmove', onMove);
+  win.addEventListener('touchmove', onTouch);
 
   
   // 0000000     0000000   000   000  000   000  
@@ -3010,7 +3010,7 @@
 
   win.addEventListener('mousedown', onDown);
 
-  win.addEventListener('touchstart', onDown);
+  win.addEventListener('touchstart', onTouch);
 
   
   // 000   000  00000000   
@@ -3035,9 +3035,33 @@
 
   win.addEventListener('mouseup', onUp);
 
-  win.addEventListener('touchend', onUp);
+  win.addEventListener('touchend', onTouch);
 
-  
+  onTouch = function(e) {
+    var mouseEvent, touch, type;
+    e.preventDefault();
+    if (e.touches.length > 1 || e.type === "touchend" && e.touches.length > 0) {
+      return;
+    }
+    mouseEvent = document.createEvent("MouseEvents");
+    switch (e.type) {
+      case "touchstart":
+        type = "mousedown";
+        break;
+      case "touchmove":
+        type = "mousemove";
+        break;
+      case "touchend":
+        type = "mouseup";
+        break;
+      default:
+        return;
+    }
+    touch = evt.changedTouches[0];
+    mouseEvent.initMouseEvent(type, true, true, evt.originalTarget.ownerDocument.defaultView, 0, touch.screenX, touch.screenY, touch.clientX, touch.clientY, evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, 0, null);
+    return e.originalTarget.dispatchEvent(mouseEvent);
+  };
+
   // 000   000   0000000   000   000  00000000  00000000     
   // 000   000  000   000  000   000  000       000   000    
   // 000000000  000   000   000 000   0000000   0000000      
