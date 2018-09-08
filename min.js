@@ -2929,12 +2929,6 @@
 
   onMove = function(e) {
     var d, len, moved, ref1, u;
-    
-    // if e.touches?
-    // mouse.pos = vec e.touches[0].clientX, e.touches[0].clientY
-    // moved = vec e.touches[0].movementX, e.touches[0].movementY
-    // e.preventDefault()
-    // else
     mouse.pos = vec(e.clientX, e.clientY);
     moved = vec(e.movementX, e.movementY);
     dbg.innerHTML = `moved: ${moved.x} ${moved.y}`;
@@ -2960,8 +2954,6 @@
   // mouse.drag.v = s2u mouse.pos
   // world.update = 1
   win.addEventListener('mousemove', onMove);
-
-  win.addEventListener('touchmove', onTouch);
 
   
   // 0000000     0000000   000   000  000   000  
@@ -3010,9 +3002,6 @@
 
   win.addEventListener('mousedown', onDown);
 
-  win.addEventListener('touchstart', onTouch);
-
-  
   // 000   000  00000000   
   // 000   000  000   000  
   // 000   000  00000000   
@@ -3035,11 +3024,16 @@
 
   win.addEventListener('mouseup', onUp);
 
-  win.addEventListener('touchend', onTouch);
-
+  
+  // 000000000   0000000   000   000   0000000  000   000  
+  //    000     000   000  000   000  000       000   000  
+  //    000     000   000  000   000  000       000000000  
+  //    000     000   000  000   000  000       000   000  
+  //    000      0000000    0000000    0000000  000   000  
   onTouch = function(e) {
     var mouseEvent, touch, type;
     e.preventDefault();
+    e.stopPropagation();
     if (e.touches.length > 1 || e.type === "touchend" && e.touches.length > 0) {
       return;
     }
@@ -3059,9 +3053,19 @@
     }
     touch = evt.changedTouches[0];
     mouseEvent.initMouseEvent(type, true, true, evt.originalTarget.ownerDocument.defaultView, 0, touch.screenX, touch.screenY, touch.clientX, touch.clientY, evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, 0, null);
+    mouseEvent.buttons = 1;
+    mouseEvent.movementX = 2;
+    mouseEvent.movementY = 0;
     return e.originalTarget.dispatchEvent(mouseEvent);
   };
 
+  win.addEventListener('touchend', onTouch);
+
+  win.addEventListener('touchstart', onTouch);
+
+  win.addEventListener('touchmove', onTouch);
+
+  
   // 000   000   0000000   000   000  00000000  00000000     
   // 000   000  000   000  000   000  000       000   000    
   // 000000000  000   000   000 000   0000000   0000000      
