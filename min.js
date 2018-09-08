@@ -3052,7 +3052,8 @@
         return;
     }
     touch = evt.changedTouches[0];
-    mouseEvent.initMouseEvent(type, true, true, evt.originalTarget.ownerDocument.defaultView, 0, touch.screenX, touch.screenY, touch.clientX, touch.clientY, evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, 0, null);
+    mouseEvent.initMouseEvent(type, true, true, evt.originalTarget.ownerDocument.defaultView, 0, touch.screenX, touch.screenY, touch.clientX, touch.clientY, 0, 0, 0, 0, 0, null);
+    dbg.innerHTML = JSON.stringify(touch);
     return e.originalTarget.dispatchEvent(mouseEvent);
   };
 
