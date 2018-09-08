@@ -3033,7 +3033,7 @@
   onTouch = function(e) {
     var mouseEvent, touch, type;
     e.preventDefault();
-    e.stopPropagation();
+    // e.stopPropagation()
     if (e.touches.length > 1 || e.type === "touchend" && e.touches.length > 0) {
       return;
     }
@@ -3053,17 +3053,14 @@
     }
     touch = evt.changedTouches[0];
     mouseEvent.initMouseEvent(type, true, true, evt.originalTarget.ownerDocument.defaultView, 0, touch.screenX, touch.screenY, touch.clientX, touch.clientY, evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, 0, null);
-    mouseEvent.buttons = 1;
-    mouseEvent.movementX = 2;
-    mouseEvent.movementY = 0;
     return e.originalTarget.dispatchEvent(mouseEvent);
   };
-
-  win.addEventListener('touchend', onTouch);
 
   win.addEventListener('touchstart', onTouch);
 
   win.addEventListener('touchmove', onTouch);
+
+  win.addEventListener('touchend', onTouch);
 
   
   // 000   000   0000000   000   000  00000000  00000000     
