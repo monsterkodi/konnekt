@@ -66,7 +66,7 @@ menus =
 
 showMenu = (m) ->
     
-    snd.play 'menu', 'send'
+    snd.play 'menu', 'send', parseInt randr 0,8
     
     for k,v of menu.buttons
         v.remove()
@@ -166,6 +166,7 @@ popup = (p,t) ->
         screen.popup.style.left = "#{s.x}px"
         screen.popup.style.top  = "#{s.y - screen.radius/7}px"
         fontSize 'hint', screen.popup
+        snd.play 'line', 'draw', parseInt randr 0,8
         
 #  0000000  000   000   0000000   000   0000000  00000000  
 # 000       000   000  000   000  000  000       000       

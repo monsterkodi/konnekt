@@ -34,7 +34,7 @@ levelList = [
             v:[0,-0.82,0.58]
             l:'TUTORIAL 5'
         ,
-            v: [0,-0.97,0.19]
+            v: [0,-1,0.01]
             l: 'EASY'
         ,
             v:[-1,0,0]
@@ -384,6 +384,9 @@ levelList = [
         
         name: 'UNFAIR'
         addUnit: 6
+        synt:
+            usr: instrument:'bell3'
+            bot: instrument:'bell4'
         dots: [
             v: [0,0,1]
             u: 90
@@ -408,7 +411,10 @@ levelList = [
         # 000       000   000  00000000  000   000  0000000     000     
         
         name: 'FRENZY'
-        addUnit: 12
+        addUnit: 8
+        synt:
+            usr: instrument:'bell3'
+            bot: instrument:'bell4'                
         dots: [
             v: [0,0,1]
             u: 180

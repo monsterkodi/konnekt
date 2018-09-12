@@ -192,6 +192,7 @@ win.addEventListener 'keydown', (e) ->
     
     switch e.keyCode
         when 32, 27 then pause() # space, esc
+        when 82     then forceLevel world.level.name
         # else log 'keydown', e
                                     
 # 00000000    0000000   000   000   0000000  00000000  

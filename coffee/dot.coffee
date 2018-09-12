@@ -136,8 +136,6 @@ class Dot
         ul = Math.ceil @targetUnits * 0.5
         uh = Math.ceil ul * (1-cost)
 
-        # log "ul #{ul} uh #{uh} #{cost}"
-        
         if cost == 0
             if d.targetUnits + uh > 360
                 tooMuch = d.targetUnits + uh - 360
@@ -190,6 +188,7 @@ class Dot
     
     send: (v) -> 
         
+        oldTarget = world.tmpline.usr?.e
         delTmpl 'usr'
 
         if mouse.touch and mouse.touch != @ and not @linked mouse.touch
@@ -201,6 +200,8 @@ class Dot
         
         if tgt != @ and not @linked tgt
             target = tgt
+            if oldTarget != target
+                snd.play 'line', 'won', parseInt 0.1 * r2d @dist target
         else
             target = 
                 v: v

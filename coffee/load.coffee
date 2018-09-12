@@ -133,7 +133,7 @@ randomLevel = ->
     
     grph = new Grph
     
-    world.addUnit = 1
+    world.addUnit = parseInt randr 1, 8
     world.level = name: 'RANDOM'
     
     d = new Dot vec 0,0,1
@@ -163,7 +163,11 @@ randomLevel = ->
     b = world.dots[world.dots.length-1]
     b.setOwn 'bot'
     bot = new Bot()
+    bot.speed = parseInt randr 2, 6
+    snd.setSynt 
+        usr: instrument:"bell#{parseInt randr 1,5}"
+        bot: instrument:"piano#{parseInt randr 1,6}"
     
-    b.startTimer 360
-    d.startTimer 360
+    b.startTimer 180
+    d.startTimer 180
     
